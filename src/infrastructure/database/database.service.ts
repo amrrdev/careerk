@@ -11,7 +11,15 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
     // TODO: use @nestjs/config for proper environment management
     const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
     const adapter = new PrismaPg(pool);
-    super({ adapter, log: ['info', 'error', 'warn'] });
+    super({
+      adapter,
+      log: [
+        { emit: 'event', level: 'query' },
+        { emit: 'stdout', level: 'info' },
+        { emit: 'stdout', level: 'warn' },
+        { emit: 'stdout', level: 'error' },
+      ],
+    });
     this.pool = pool;
   }
 
