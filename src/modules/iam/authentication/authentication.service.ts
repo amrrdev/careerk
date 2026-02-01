@@ -1,6 +1,7 @@
 import {
   ConflictException,
   HttpException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -10,6 +11,10 @@ import { JobSeekerRepository } from 'src/modules/job-seeker/repositories/job-see
 import { CompanyRepository } from 'src/modules/company/repositories/company.repository';
 import { RegisterJobSeekerDto } from './dto/register-job-seeker.dto';
 import { LoginDto } from './dto/login.dto';
+import jwtConfig from '../config/jwt.config';
+import { type ConfigType } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { UserType } from '../enums/user-type.enum';
 
 @Injectable()
 export class AuthenticationService {
@@ -17,6 +22,8 @@ export class AuthenticationService {
     private readonly jobSeekerRepository: JobSeekerRepository,
     private readonly companyRepository: CompanyRepository,
     private readonly hashingService: HashingService,
+    private readonly jwtService: JwtService,
+    @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -27,26 +34,38 @@ export class AuthenticationService {
       ]);
 
       const user = jobSeeker || company;
-      const userType = jobSeeker ? 'job-seeker' : company ? 'compant' : null;
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
+
+      const userType = jobSeeker ? UserType.JOB_SEEKER : UserType.COMPANY;
 
       const isPasswordValid = await this.hashingService.compare(loginDto.password, user.password);
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid credentials');
       }
-      // TODO: Generate JWT tokens with userType in payload
+      const accessToken = await this.jwtService.signAsync(
+        {
+          sub: user.id,
+          email: user.email,
+          type: userType,
+        },
+        {
+          issuer: this.jwtConfigurations.issuer,
+          secret: this.jwtConfigurations.secret,
+          expiresIn: this.jwtConfigurations.accessTokenTtl,
+          audience: this.jwtConfigurations.audience,
+        },
+      );
+
       return {
-        status: 'success',
-        ...user,
-        userType,
+        accessToken,
       };
     } catch (err) {
       if (err instanceof HttpException) {
         throw err;
       }
-      throw new InternalServerErrorException('Failed to create job seeker');
+      throw new InternalServerErrorException('Login failed');
     }
   }
 
