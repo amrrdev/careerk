@@ -1,0 +1,176 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "direct",
+      "title": "Senior Backend Developer",
+      "description": "We are looking for an experienced Senior Backend Developer...",
+      "company": {
+        "id": "660e8400-e29b-41d4-a716-446655440001",
+        "name": "TechCorp Inc.",
+        "logo": "https://cdn.example.com/logos/techcorp.png",
+        "website": "https://techcorp.com",
+        "size": "100-500",
+        "industry": "Software Development",
+        "location": "San Francisco, CA"
+      },
+      "location": "San Francisco, CA",
+      "workArrangement": "hybrid",
+      "employmentType": "full-time",
+      "experienceLevel": "senior",
+      "salaryMin": 120000,
+      "salaryMax": 180000,
+      "skills": [
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440010",
+          "name": "Node.js",
+          "category": "backend"
+        },
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440011",
+          "name": "PostgreSQL",
+          "category": "database"
+        }
+      ],
+      "publishedAt": "2024-01-15T10:30:00Z",
+      "applicationDeadline": "2024-03-15",
+      "viewsCount": 1247,
+      "applicationsCount": 89,
+      "status": "published",
+      "isFeatured": true,
+      "url": null
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "type": "scraped",
+      "title": "Frontend React Developer",
+      "description": "Join our dynamic team as a Frontend React Developer...",
+      "company": {
+        "id": "660e8400-e29b-41d4-a716-446655440002",
+        "name": "StartupXYZ",
+        "logo": "https://cdn.example.com/logos/startupxyz.png",
+        "website": "https://startupxyz.io",
+        "size": "10-50",
+        "industry": "FinTech",
+        "location": "Remote"
+      },
+      "location": "Remote",
+      "workArrangement": "remote",
+      "employmentType": null,
+      "experienceLevel": "mid",
+      "salaryMin": 80000,
+      "salaryMax": 110000,
+      "skills": [
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440013",
+          "name": "React",
+          "category": "frontend"
+        },
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440014",
+          "name": "JavaScript",
+          "category": "programming"
+        }
+      ],
+      "publishedAt": "2024-01-20T14:20:00Z",
+      "applicationDeadline": null,
+      "viewsCount": 892,
+      "applicationsCount": 0,
+      "status": "published",
+      "isFeatured": false,
+      "url": "https://jobs.linkedin.com/view/12345678"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "type": "direct",
+      "title": "DevOps Engineer",
+      "description": "Looking for a skilled DevOps Engineer to manage our cloud infrastructure...",
+      "company": {
+        "id": "660e8400-e29b-41d4-a716-446655440003",
+        "name": "CloudNative Co.",
+        "logo": "https://cdn.example.com/logos/cloudnative.png",
+        "website": "https://cloudnative.io",
+        "size": "50-100",
+        "industry": "Cloud Services",
+        "location": "Austin, TX"
+      },
+      "location": "Austin, TX",
+      "workArrangement": "onsite",
+      "employmentType": "full-time",
+      "experienceLevel": "mid",
+      "salaryMin": 95000,
+      "salaryMax": 130000,
+      "skills": [
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440016",
+          "name": "Docker",
+          "category": "devops"
+        },
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440017",
+          "name": "AWS",
+          "category": "cloud"
+        },
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440018",
+          "name": "Kubernetes",
+          "category": "devops"
+        }
+      ],
+      "publishedAt": "2024-01-18T09:15:00Z",
+      "applicationDeadline": "2024-02-28",
+      "viewsCount": 543,
+      "applicationsCount": 34,
+      "status": "published",
+      "isFeatured": false,
+      "url": null
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440004",
+      "type": "scraped",
+      "title": "Mobile App Developer (Flutter)",
+      "description": "We're seeking a talented Flutter developer to build cross-platform mobile apps...",
+      "company": {
+        "id": "660e8400-e29b-41d4-a716-446655440004",
+        "name": "MobileFirst Inc.",
+        "logo": "https://cdn.example.com/logos/mobilefirst.png",
+        "website": "https://mobilefirst.com",
+        "size": "200-500",
+        "industry": "Mobile Apps",
+        "location": "New York, NY"
+      },
+      "location": "New York, NY",
+      "workArrangement": "hybrid",
+      "employmentType": null,
+      "experienceLevel": "senior",
+      "salaryMin": 110000,
+      "salaryMax": 150000,
+      "skills": [
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440019",
+          "name": "Flutter",
+          "category": "mobile"
+        },
+        {
+          "id": "770e8400-e29b-41d4-a716-446655440020",
+          "name": "Dart",
+          "category": "programming"
+        }
+      ],
+      "publishedAt": "2024-01-22T11:00:00Z",
+      "applicationDeadline": null,
+      "viewsCount": 1024,
+      "applicationsCount": 0,
+      "status": "published",
+      "isFeatured": true,
+      "url": "https://jobs.indeed.com/view/98765432"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 156,
+    "totalPages": 8
+  }
+}
