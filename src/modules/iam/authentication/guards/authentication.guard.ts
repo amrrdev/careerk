@@ -2,7 +2,6 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Reflector } from '@nestjs/core';
 import { AccessTokenGuard } from './access-token.guard';
 import { AUTH_TYPE_KEY } from '../../iam.constants';
-import { Request } from 'express';
 import { AuthType } from '../../enums/auth-type.enum';
 
 @Injectable()
