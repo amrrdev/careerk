@@ -23,52 +23,174 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+CareerK - A job platform API built with NestJS, PostgreSQL, and Redis.
 
-## Project setup
+## Prerequisites
+
+- Node.js (v18 or higher)
+- pnpm
+- Docker and Docker Compose
+
+## Project Setup
+
+### 1. Clone the repository
 
 ```bash
-$ pnpm install
+git clone <repository-url>
+cd careerk
 ```
 
-## Compile and run the project
+### 2. Install dependencies
 
 ```bash
-# development
-$ pnpm run start
+pnpm install
+```
 
-# watch mode
-$ pnpm run start:dev
+### 3. Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# PostgreSQL
+POSTGRES_DB=careerk_db
+POSTGRES_USER=careerk
+POSTGRES_PASSWORD=your_secure_postgres_password
+DATABASE_URL=postgresql://careerk:your_secure_postgres_password@localhost:5432/careerk_db
+
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_TOKEN_AUDIENCE=localhost:3000
+JWT_TOKEN_ISSUER=localhost:3000
+JWT_ACCESS_TOKEN_TTL=3600
+JWT_REFRESH_TOKEN_TTL=86400
+
+# Redis
+# Note: Wrap password in quotes if it contains special characters like # ! @
+REDIS_PASSWORD="your_secure_redis_password"
+REDIS_HOST=localhost
+REDIS_PORT=6379
+```
+
+⚠️ **Important:** If your Redis password contains special characters (`#`, `!`, `@`, etc.), you **must** wrap it in double quotes, otherwise the `.env` parser will treat `#` as a comment.
+
+### 4. Start Docker Services
+
+```bash
+# Start PostgreSQL and Redis
+docker-compose up -d
+
+# Verify services are running
+docker ps
+```
+
+### 5. Run Database Migrations
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+```
+## Compile and Run the Project
+
+```bash
+
+# development watch mode
+pnpm run start:dev
 
 # production mode
-$ pnpm run start:prod
+pnpm run start:prod
 ```
 
-## Run tests
+The API will be available at `http://localhost:3000`
+
+## API Documentation
+
+### Authentication Endpoints
+
+- `POST /auth/register/job-seeker` - Register a new job seeker
+- `POST /auth/login` - Login (returns access + refresh tokens)
+- `POST /auth/refresh-token` - Get new tokens using refresh token
+
+### Features
+
+- ✅ JWT Authentication (Access + Refresh tokens)
+- ✅ Refresh Token Rotation (Redis-based)
+- ✅ Password Hashing (bcrypt)
+- ✅ Role-based Authentication (Job Seeker / Company)
+- ✅ Token Type Validation (prevents refresh token misuse)
+
+## Docker Services
+
+### PostgreSQL
+- **Port:** 5432
+- **Database:** careerk_db
+- **User:** careerk (default)
+
+### Redis
+- **Port:** 6379
+- **Used for:** Refresh token rotation and caching
+
+### Managing Docker Services
+
+```bash
+# Start services
+docker-compose up -d
+
+# Stop services
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Access PostgreSQL shell
+docker exec -it careerk-postgres psql -U careerk -d careerk_db
+
+# Access Redis CLI
+docker exec -it careerk-redis redis-cli -a "your_redis_password"
+```
+
+## Run Tests
 
 ```bash
 # unit tests
-$ pnpm run test
+pnpm run test
 
 # e2e tests
-$ pnpm run test:e2e
+pnpm run test:e2e
 
 # test coverage
-$ pnpm run test:cov
+pnpm run test:cov
 ```
 
-## Deployment
+## Project Architecture
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+See [Architecture.md](./Architecture.md) for detailed information about the project structure and design patterns.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Troubleshooting
 
+### Redis Connection Issues
+
+If you see `WRONGPASS invalid username-password pair`:
+1. Check your `.env` file - wrap Redis password in quotes if it contains special characters
+2. Restart Docker: `docker-compose down && docker-compose up -d`
+3. Verify password: `docker exec -it careerk-redis redis-cli -a "your_password" ping`
+
+### Database Connection Issues
+
+If Prisma can't connect:
+1. Verify Docker containers are running: `docker ps`
+2. Check `DATABASE_URL` in `.env` matches your PostgreSQL credentials
+3. Run migrations: `npx prisma migrate dev`
+
+### Tables Don't Exist
+
+If you see "table does not exist" errors:
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate reset  # Resets database and runs all migrations
+npx prisma migrate dev    # Runs pending migrations
 ```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
 ## Resources
 
