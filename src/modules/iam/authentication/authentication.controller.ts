@@ -45,7 +45,7 @@ export class AuthenticationController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ResponseMessage('Login Successfully')
+  @ResponseMessage('Login successfully')
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { refreshToken, ...result } = await this.authenticationService.login(loginDto);
     this.setRefreshTokenCookie(response, refreshToken);
