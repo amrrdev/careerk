@@ -4,6 +4,7 @@ import { RegisterJobSeekerDto } from './dto/register-job-seeker.dto';
 import { LoginDto } from './dto/login.dto';
 import { Auth } from './decorators/auth.decorator';
 import { AuthType } from '../enums/auth-type.enum';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 @Auth(AuthType.None)
@@ -24,5 +25,11 @@ export class AuthenticationController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
     return this.authenticationService.login(loginDto);
+  }
+
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authenticationService.refreshToken(refreshTokenDto);
   }
 }

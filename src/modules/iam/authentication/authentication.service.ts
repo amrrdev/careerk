@@ -15,6 +15,9 @@ import jwtConfig from '../config/jwt.config';
 import { type ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserType } from '../enums/user-type.enum';
+import { ActiveUserData } from '../interfaces/active-user.interface';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { TokenType } from '../enums/token-type.enum';
 
 @Injectable()
 export class AuthenticationService {
@@ -44,23 +47,8 @@ export class AuthenticationService {
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid credentials');
       }
-      const accessToken = await this.jwtService.signAsync(
-        {
-          sub: user.id,
-          email: user.email,
-          type: userType,
-        },
-        {
-          issuer: this.jwtConfigurations.issuer,
-          secret: this.jwtConfigurations.secret,
-          expiresIn: this.jwtConfigurations.accessTokenTtl,
-          audience: this.jwtConfigurations.audience,
-        },
-      );
 
-      return {
-        accessToken,
-      };
+      return await this.generateTokens({ email: user.email, sub: user.id, type: userType });
     } catch (err) {
       if (err instanceof HttpException) {
         throw err;
@@ -80,15 +68,57 @@ export class AuthenticationService {
         password: hashedPassword,
       });
 
-      // TODO: implement JWT access/refresh tokens
+      const { accessToken, refreshToken } = await this.generateTokens({
+        email: jobSeeker.email,
+        sub: jobSeeker.id,
+        type: UserType.JOB_SEEKER,
+      });
 
       const { password, ...result } = jobSeeker;
-      return result;
+      return {
+        ...result,
+        accessToken,
+        refreshToken,
+      };
     } catch (err) {
       if (err instanceof HttpException) {
         throw err;
       }
       throw new InternalServerErrorException('Failed to create job seeker');
+    }
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    try {
+      const payload = await this.jwtService.verifyAsync<{
+        sub: string;
+        type: UserType;
+        tokenType: TokenType;
+      }>(refreshTokenDto.refreshToken, {
+        secret: this.jwtConfigurations.secret,
+        issuer: this.jwtConfigurations.issuer,
+        audience: this.jwtConfigurations.audience,
+      });
+
+      if (payload.tokenType !== TokenType.REFRESH) {
+        throw new UnauthorizedException('Invalid token type');
+      }
+
+      const user =
+        payload.type === UserType.JOB_SEEKER
+          ? await this.jobSeekerRepository.findById(payload.sub)
+          : await this.companyRepository.findById(payload.sub);
+
+      if (!user) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      return await this.generateTokens({ email: user.email, sub: user.id, type: payload.type });
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
 
@@ -104,4 +134,46 @@ export class AuthenticationService {
   }
 
   // async registerCompany(registerCompanyDto: RegisterCompanyDto) {}
+
+  private async generateTokens(user: ActiveUserData) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signAccessToken(user.sub, user.email, user.type),
+      this.signRefreshToken(user.sub, user.type),
+    ]);
+
+    return { accessToken, refreshToken };
+  }
+
+  private async signAccessToken(userId: string, email: string, userType: UserType) {
+    return await this.jwtService.signAsync(
+      {
+        email,
+        sub: userId,
+        type: userType,
+        tokenType: TokenType.ACCESS,
+      },
+      {
+        issuer: this.jwtConfigurations.issuer,
+        secret: this.jwtConfigurations.secret,
+        audience: this.jwtConfigurations.audience,
+        expiresIn: this.jwtConfigurations.accessTokenTtl,
+      },
+    );
+  }
+
+  private async signRefreshToken(userId: string, userType: UserType) {
+    return await this.jwtService.signAsync(
+      {
+        sub: userId,
+        type: userType,
+        tokenType: TokenType.REFRESH,
+      },
+      {
+        issuer: this.jwtConfigurations.issuer,
+        secret: this.jwtConfigurations.secret,
+        audience: this.jwtConfigurations.audience,
+        expiresIn: this.jwtConfigurations.refreshTokenTtl,
+      },
+    );
+  }
 }
