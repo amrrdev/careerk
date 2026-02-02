@@ -187,7 +187,7 @@ pnpm run test:cov
 - ✅ JWT Authentication (Access + Refresh tokens)
 - ✅ Refresh Token Rotation (Redis-based)
 - ✅ Password Hashing (bcrypt)
-- ✅ Role-based Authentication (Job Seeker / Company)
+- ✅ Role-based Authorization (Job Seeker / Company)
 - ✅ Token Type Validation (prevents refresh token misuse)
 - ✅ Secure token storage and invalidation
 
