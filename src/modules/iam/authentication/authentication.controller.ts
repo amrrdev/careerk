@@ -15,6 +15,7 @@ import { Auth } from './decorators/auth.decorator';
 import { AuthType } from '../enums/auth-type.enum';
 import type { Request, Response } from 'express';
 import { REFRESH_TOKEN_COOKIE_KEY, REFRESH_TOKEN_COOKIE_OPTIONS } from '../iam.constants';
+import { ResponseMessage } from 'src/core/decorators/response-message.decorator';
 
 @Controller('auth')
 @Auth(AuthType.None)
@@ -26,6 +27,7 @@ export class AuthenticationController {
   }
 
   @Post('register/job-seeker')
+  @ResponseMessage('Job Seeker created successfully')
   async registerJobSeeker(
     @Body() registerJobSeekerDto: RegisterJobSeekerDto,
     @Res({ passthrough: true }) response: Response,
@@ -43,6 +45,7 @@ export class AuthenticationController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ResponseMessage('Login successfully')
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { refreshToken, ...result } = await this.authenticationService.login(loginDto);
     this.setRefreshTokenCookie(response, refreshToken);
