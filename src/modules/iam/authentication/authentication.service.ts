@@ -90,31 +90,30 @@ export class AuthenticationService {
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
     try {
-      const payload = await this.jwtService.verifyAsync<{ sub: string; tokenType: TokenType }>(
-        refreshTokenDto.refreshToken,
-        {
-          secret: this.jwtConfigurations.secret,
-          issuer: this.jwtConfigurations.issuer,
-          audience: this.jwtConfigurations.audience,
-        },
-      );
+      const payload = await this.jwtService.verifyAsync<{
+        sub: string;
+        type: UserType;
+        tokenType: TokenType;
+      }>(refreshTokenDto.refreshToken, {
+        secret: this.jwtConfigurations.secret,
+        issuer: this.jwtConfigurations.issuer,
+        audience: this.jwtConfigurations.audience,
+      });
 
       if (payload.tokenType !== TokenType.REFRESH) {
         throw new UnauthorizedException('Invalid token type');
       }
-      const [jobSeeker, company] = await Promise.all([
-        this.jobSeekerRepository.findById(payload.sub),
-        this.companyRepository.findById(payload.sub),
-      ]);
 
-      const user = jobSeeker || company;
+      const user =
+        payload.type === UserType.JOB_SEEKER
+          ? await this.jobSeekerRepository.findById(payload.sub)
+          : await this.companyRepository.findById(payload.sub);
+
       if (!user) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      const userType = jobSeeker ? UserType.JOB_SEEKER : UserType.COMPANY;
-
-      return await this.generateTokens({ email: user.email, sub: user.id, type: userType });
+      return await this.generateTokens({ email: user.email, sub: user.id, type: payload.type });
     } catch (err) {
       if (err instanceof HttpException) {
         throw err;
@@ -139,7 +138,7 @@ export class AuthenticationService {
   private async generateTokens(user: ActiveUserData) {
     const [accessToken, refreshToken] = await Promise.all([
       this.signAccessToken(user.sub, user.email, user.type),
-      this.signRefreshToken(user.sub),
+      this.signRefreshToken(user.sub, user.type),
     ]);
 
     return { accessToken, refreshToken };
@@ -148,8 +147,8 @@ export class AuthenticationService {
   private async signAccessToken(userId: string, email: string, userType: UserType) {
     return await this.jwtService.signAsync(
       {
+        email,
         sub: userId,
-        email: email,
         type: userType,
         tokenType: TokenType.ACCESS,
       },
@@ -162,10 +161,11 @@ export class AuthenticationService {
     );
   }
 
-  private async signRefreshToken(userId: string) {
+  private async signRefreshToken(userId: string, userType: UserType) {
     return await this.jwtService.signAsync(
       {
         sub: userId,
+        type: userType,
         tokenType: TokenType.REFRESH,
       },
       {

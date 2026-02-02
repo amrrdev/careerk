@@ -11,6 +11,7 @@ import jwtConfig from '../../config/jwt.config';
 import { type ConfigType } from '@nestjs/config';
 import { REQUEST_USER_KEY } from '../../iam.constants';
 import { TokenType } from '../../enums/token-type.enum';
+import { UserType } from '../../enums/user-type.enum';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
@@ -29,7 +30,7 @@ export class AccessTokenGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync<{
         sub: string;
         email: string;
-        type: string;
+        type: UserType;
         tokenType: TokenType;
       }>(token, this.jwtConfiguration);
 
