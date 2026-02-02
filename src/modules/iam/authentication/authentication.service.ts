@@ -51,7 +51,16 @@ export class AuthenticationService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
-      return await this.generateTokens({ email: user.email, sub: user.id, type: userType });
+      const { accessToken, refreshToken } = await this.generateTokens({
+        email: user.email,
+        sub: user.id,
+        type: userType,
+      });
+      return {
+        ...user,
+        accessToken,
+        refreshToken,
+      };
     } catch (err) {
       if (err instanceof HttpException) {
         throw err;
