@@ -11,6 +11,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './authentication/guards/access-token.guard';
 import { AuthenticationGuard } from './authentication/guards/authentication.guard';
+import { RedisModule } from 'src/infrastructure/redis/redis.module';
+import { refreshTokenStorageService } from './authentication/refresh-token-storage.service';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { AuthenticationGuard } from './authentication/guards/authentication.guar
     JwtModule.registerAsync(jwtConfig.asProvider()),
     JobSeekerModule,
     CompanyModule,
+    RedisModule,
   ],
   controllers: [AuthenticationController],
   providers: [
@@ -31,6 +34,7 @@ import { AuthenticationGuard } from './authentication/guards/authentication.guar
       useClass: AuthenticationGuard,
     },
     AccessTokenGuard,
+    refreshTokenStorageService,
   ],
 })
 export class IamModule {}
