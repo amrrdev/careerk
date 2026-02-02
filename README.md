@@ -27,26 +27,35 @@ CareerK - A job platform API built with NestJS, PostgreSQL, and Redis.
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
-- pnpm
-- Docker and Docker Compose
+Before you begin, ensure you have the following installed:
 
-## Project Setup
+- **Node.js**: v18 or higher ([Download](https://nodejs.org/))
+- **pnpm**: v8 or higher
+  ```bash
+  npm install -g pnpm
+  ```
+- **Docker & Docker Compose**: For running PostgreSQL and Redis ([Download](https://www.docker.com/))
 
-### 1. Clone the repository
+---
+
+## Getting Started
+
+Follow these steps to set up the project locally:
+
+### 1️⃣ Clone the Repository
 
 ```bash
 git clone <repository-url>
 cd careerk
 ```
 
-### 2. Install dependencies
+### 2️⃣ Install Dependencies
 
 ```bash
 pnpm install
 ```
 
-### 3. Environment Variables
+### 3️⃣ Set Up Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -73,37 +82,97 @@ REDIS_PORT=6379
 
 ⚠️ **Important:** If your Redis password contains special characters (`#`, `!`, `@`, etc.), you **must** wrap it in double quotes, otherwise the `.env` parser will treat `#` as a comment.
 
-### 4. Start Docker Services
+### 4️⃣ Start Docker Services
+
+Start PostgreSQL and Redis using Docker Compose:
 
 ```bash
-# Start PostgreSQL and Redis
 docker-compose up -d
+```
 
-# Verify services are running
+This will:
+- Pull the PostgreSQL 18 Alpine image
+- Pull the Redis 7.4 Alpine image
+- Create containers named `careerk-postgres` and `careerk-redis`
+- Start the services on ports 5432 and 6379
+- Create persistent volumes for data
+
+**Verify services are running:**
+
+```bash
 docker ps
 ```
 
-### 5. Run Database Migrations
+You should see both `careerk-postgres` and `careerk-redis` in the list.
+
+### 5️⃣ Generate Prisma Client
+
+Generate the Prisma Client based on your schema:
 
 ```bash
-# Generate Prisma client
 npx prisma generate
+```
 
-# Run migrations
+This creates the TypeScript types and client for your database models.
+
+### 6️⃣ Run Database Migrations
+
+Apply all pending migrations to create the database schema:
+
+```bash
 npx prisma migrate dev
 ```
-## Compile and Run the Project
+
+### 7️⃣ Seed Database (Optional)
+
+To populate the database with 30,000 job seekers and 30,000 companies:
 
 ```bash
+# Copy SQL files to PostgreSQL container
+docker cp prisma/seed/seed-job-seekers.sql careerk-postgres:/tmp/
+docker cp prisma/seed/seed-companies.sql careerk-postgres:/tmp/
 
-# development watch mode
-pnpm run start:dev
-
-# production mode
-pnpm run start:prod
+# Execute seed scripts
+docker exec -it careerk-postgres psql -U careerk -d careerk_db -f /tmp/seed-job-seekers.sql
+docker exec -it careerk-postgres psql -U careerk -d careerk_db -f /tmp/seed-companies.sql
 ```
 
-The API will be available at `http://localhost:3000`
+Default seeded credentials:
+- **Email:** Any seeded email (e.g., `john.smith123@gmail.com`)
+- **Password:** `password123`
+
+### 8️⃣ Start the Development Server
+
+```bash
+pnpm run start:dev
+```
+
+The API will be available at: **http://localhost:3000**
+
+**You're ready to go! 🎉**
+
+---
+
+## Available Scripts
+
+```bash
+# Development mode with watch
+pnpm run start:dev
+
+# Production mode
+pnpm run start:prod
+
+# Unit tests
+pnpm run test
+
+# E2E tests
+pnpm run test:e2e
+
+# Test coverage
+pnpm run test:cov
+```
+
+---
 
 ## API Documentation
 
@@ -120,17 +189,22 @@ The API will be available at `http://localhost:3000`
 - ✅ Password Hashing (bcrypt)
 - ✅ Role-based Authentication (Job Seeker / Company)
 - ✅ Token Type Validation (prevents refresh token misuse)
+- ✅ Secure token storage and invalidation
+
+---
 
 ## Docker Services
 
 ### PostgreSQL
 - **Port:** 5432
-- **Database:** careerk_db
-- **User:** careerk (default)
+- **Database:** `careerk_db`
+- **User:** `careerk` (default)
+- **Container:** `careerk-postgres`
 
 ### Redis
 - **Port:** 6379
-- **Used for:** Refresh token rotation and caching
+- **Used for:** Refresh token rotation, caching, and session management
+- **Container:** `careerk-redis`
 
 ### Managing Docker Services
 
@@ -141,56 +215,94 @@ docker-compose up -d
 # Stop services
 docker-compose down
 
+# Stop services and remove volumes (⚠️ deletes all data)
+docker-compose down -v
+
 # View logs
 docker-compose logs -f
+
+# View logs for specific service
+docker-compose logs -f postgres
+docker-compose logs -f redis
 
 # Access PostgreSQL shell
 docker exec -it careerk-postgres psql -U careerk -d careerk_db
 
 # Access Redis CLI
 docker exec -it careerk-redis redis-cli -a "your_redis_password"
+
+# Test Redis connection
+docker exec -it careerk-redis redis-cli -a "your_redis_password" ping
 ```
 
-## Run Tests
-
-```bash
-# unit tests
-pnpm run test
-
-# e2e tests
-pnpm run test:e2e
-
-# test coverage
-pnpm run test:cov
-```
+---
 
 ## Project Architecture
 
 See [Architecture.md](./Architecture.md) for detailed information about the project structure and design patterns.
 
+Key architectural principles:
+- Clean Architecture with separation of concerns
+- Repository pattern for data access
+- Dependency injection for loose coupling
+- Infrastructure layer for external services (PostgreSQL, Redis)
+- Domain-specific services in modules
+
+---
+
 ## Troubleshooting
 
 ### Redis Connection Issues
 
-If you see `WRONGPASS invalid username-password pair`:
+**Error:** `WRONGPASS invalid username-password pair`
+
+**Solutions:**
 1. Check your `.env` file - wrap Redis password in quotes if it contains special characters
 2. Restart Docker: `docker-compose down && docker-compose up -d`
 3. Verify password: `docker exec -it careerk-redis redis-cli -a "your_password" ping`
+4. Ensure `.env` file is in the same directory as `docker-compose.yml`
 
 ### Database Connection Issues
 
-If Prisma can't connect:
+**Error:** Prisma can't connect to database
+
+**Solutions:**
 1. Verify Docker containers are running: `docker ps`
 2. Check `DATABASE_URL` in `.env` matches your PostgreSQL credentials
-3. Run migrations: `npx prisma migrate dev`
+3. Ensure PostgreSQL is healthy: `docker-compose ps`
+4. Check PostgreSQL logs: `docker-compose logs postgres`
 
 ### Tables Don't Exist
 
-If you see "table does not exist" errors:
+**Error:** `table does not exist in the current database`
+
+**Solutions:**
 ```bash
-npx prisma migrate reset  # Resets database and runs all migrations
-npx prisma migrate dev    # Runs pending migrations
+# Reset database and run all migrations
+npx prisma migrate reset
+
+# Run pending migrations
+npx prisma migrate dev
+
+# Deploy migrations (production)
+npx prisma migrate deploy
 ```
+
+### Port Already in Use
+
+**Error:** Port 5432 or 6379 already in use
+
+**Solutions:**
+1. Check if PostgreSQL/Redis is already running locally
+2. Stop local services or change ports in `docker-compose.yml`
+3. Kill processes using the ports:
+   ```bash
+   # Windows
+   netstat -ano | findstr :5432
+   taskkill /PID <PID> /F
+   ```
+
+---
 
 ## Resources
 
