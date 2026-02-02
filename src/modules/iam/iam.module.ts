@@ -12,7 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './authentication/guards/access-token.guard';
 import { AuthenticationGuard } from './authentication/guards/authentication.guard';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
-import { RefreshTokenStorageService } from './authentication/refresh-token-storage.service';
+import { refreshTokenStorageService } from './authentication/refresh-token-storage.service';
 
 @Module({
   imports: [
@@ -34,7 +34,7 @@ import { RefreshTokenStorageService } from './authentication/refresh-token-stora
       useClass: AuthenticationGuard,
     },
     AccessTokenGuard,
-    RefreshTokenStorageService,
+    refreshTokenStorageService,
   ],
 })
 export class IamModule {}

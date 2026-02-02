@@ -3,7 +3,7 @@ import { RedisService } from 'src/infrastructure/redis/redis.service';
 import { InvalidRefreshTokenException } from './exceptions/invalid-refresh-token.exception';
 
 @Injectable()
-export class RefreshTokenStorageService {
+export class refreshTokenStorageService {
   constructor(private readonly redis: RedisService) {}
 
   async insert(userId: string, tokenId: string): Promise<void> {
@@ -23,6 +23,6 @@ export class RefreshTokenStorageService {
   }
 
   private getKey(userId: string): string {
-    return `user-${userId}`;
+    return `refresh-token:${userId}`;
   }
 }

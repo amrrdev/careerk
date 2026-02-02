@@ -10,11 +10,11 @@ import { ConfigModule, type ConfigType } from '@nestjs/config';
   providers: [
     {
       provide: REDIS_CLIENT,
-      useFactory: (redisConfigrations: ConfigType<typeof redisConfig>) => {
+      useFactory: (redisConfigurations: ConfigType<typeof redisConfig>) => {
         return new Redis({
-          host: redisConfigrations.host,
-          port: redisConfigrations.port,
-          password: redisConfigrations.password,
+          host: redisConfigurations.host,
+          port: redisConfigurations.port,
+          password: redisConfigurations.password,
         });
       },
       inject: [redisConfig.KEY],

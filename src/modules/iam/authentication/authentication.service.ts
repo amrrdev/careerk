@@ -18,7 +18,7 @@ import { UserType } from '../enums/user-type.enum';
 import { ActiveUserData } from '../interfaces/active-user.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { TokenType } from '../enums/token-type.enum';
-import { RefreshTokenStorageService } from './refresh-token-storage.service';
+import { refreshTokenStorageService } from './refresh-token-storage.service';
 import { randomUUID } from 'node:crypto';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class AuthenticationService {
     private readonly jobSeekerRepository: JobSeekerRepository,
     private readonly companyRepository: CompanyRepository,
     private readonly hashingService: HashingService,
-    private readonly refreshTokenStroageService: RefreshTokenStorageService,
+    private readonly refreshTokenStroageService: refreshTokenStorageService,
     private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,
   ) {}
