@@ -18,6 +18,8 @@ import { UserType } from '../enums/user-type.enum';
 import { ActiveUserData } from '../interfaces/active-user.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { TokenType } from '../enums/token-type.enum';
+import { RefreshTokenStorageService } from './refresh-token-storage.service';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class AuthenticationService {
@@ -25,6 +27,7 @@ export class AuthenticationService {
     private readonly jobSeekerRepository: JobSeekerRepository,
     private readonly companyRepository: CompanyRepository,
     private readonly hashingService: HashingService,
+    private readonly refreshTokenStroageService: RefreshTokenStorageService,
     private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,
   ) {}
@@ -88,12 +91,15 @@ export class AuthenticationService {
     }
   }
 
+  // async registerCompany(registerCompanyDto: RegisterCompanyDto) {}
+
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
     try {
       const payload = await this.jwtService.verifyAsync<{
         sub: string;
         type: UserType;
         tokenType: TokenType;
+        refreshTokenId: string;
       }>(refreshTokenDto.refreshToken, {
         secret: this.jwtConfigurations.secret,
         issuer: this.jwtConfigurations.issuer,
@@ -113,6 +119,15 @@ export class AuthenticationService {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
+      const isValid = await this.refreshTokenStroageService.validate(
+        user.id,
+        payload.refreshTokenId,
+      );
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      await this.refreshTokenStroageService.invalidate(user.id);
       return await this.generateTokens({ email: user.email, sub: user.id, type: payload.type });
     } catch (err) {
       if (err instanceof HttpException) {
@@ -133,14 +148,13 @@ export class AuthenticationService {
     }
   }
 
-  // async registerCompany(registerCompanyDto: RegisterCompanyDto) {}
-
   private async generateTokens(user: ActiveUserData) {
+    const refreshTokenId = randomUUID();
     const [accessToken, refreshToken] = await Promise.all([
       this.signAccessToken(user.sub, user.email, user.type),
-      this.signRefreshToken(user.sub, user.type),
+      this.signRefreshToken(user.sub, user.type, refreshTokenId),
     ]);
-
+    await this.refreshTokenStroageService.insert(user.sub, refreshTokenId);
     return { accessToken, refreshToken };
   }
 
@@ -161,12 +175,13 @@ export class AuthenticationService {
     );
   }
 
-  private async signRefreshToken(userId: string, userType: UserType) {
+  private async signRefreshToken(userId: string, userType: UserType, refreshTokenId: string) {
     return await this.jwtService.signAsync(
       {
         sub: userId,
         type: userType,
         tokenType: TokenType.REFRESH,
+        refreshTokenId,
       },
       {
         issuer: this.jwtConfigurations.issuer,

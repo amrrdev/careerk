@@ -4,6 +4,7 @@ import { JobSeekerModule } from './modules/job-seeker/job-seeker.module';
 import { CompanyModule } from './modules/company/company.module';
 import { IamModule } from './modules/iam/iam.module';
 import { ConfigModule } from '@nestjs/config';
+import { RedisModule } from './infrastructure/redis/redis.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     JobSeekerModule,
     CompanyModule,
     IamModule,
+    RedisModule,
   ],
 })
 export class AppModule {}
