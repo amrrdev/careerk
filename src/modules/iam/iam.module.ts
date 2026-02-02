@@ -13,6 +13,7 @@ import { AccessTokenGuard } from './authentication/guards/access-token.guard';
 import { AuthenticationGuard } from './authentication/guards/authentication.guard';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { refreshTokenStorageService } from './authentication/refresh-token-storage.service';
+import { RolesGuard } from './authentication/guards/roles.guard';
 
 @Module({
   imports: [
@@ -32,6 +33,10 @@ import { refreshTokenStorageService } from './authentication/refresh-token-stora
     {
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
     AccessTokenGuard,
     refreshTokenStorageService,
