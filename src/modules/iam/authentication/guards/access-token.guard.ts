@@ -10,6 +10,7 @@ import { Request } from 'express';
 import jwtConfig from '../../config/jwt.config';
 import { type ConfigType } from '@nestjs/config';
 import { REQUEST_USER_KEY } from '../../iam.constants';
+import { TokenType } from '../../enums/token-type.enum';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
@@ -29,7 +30,12 @@ export class AccessTokenGuard implements CanActivate {
         sub: string;
         email: string;
         type: string;
+        tokenType: TokenType;
       }>(token, this.jwtConfiguration);
+
+      if (payload.tokenType !== TokenType.ACCESS) {
+        throw new UnauthorizedException('Invalid token type');
+      }
 
       request[REQUEST_USER_KEY] = payload;
       return true;

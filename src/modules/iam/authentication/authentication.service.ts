@@ -17,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserType } from '../enums/user-type.enum';
 import { ActiveUserData } from '../interfaces/active-user.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { TokenType } from '../enums/token-type.enum';
 
 @Injectable()
 export class AuthenticationService {
@@ -89,22 +90,31 @@ export class AuthenticationService {
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
     try {
-      const user = await this.jwtService.verifyAsync<ActiveUserData>(refreshTokenDto.refreshToken, {
-        secret: this.jwtConfigurations.secret,
-        issuer: this.jwtConfigurations.issuer,
-        audience: this.jwtConfigurations.audience,
-      });
+      const payload = await this.jwtService.verifyAsync<{ sub: string; tokenType: TokenType }>(
+        refreshTokenDto.refreshToken,
+        {
+          secret: this.jwtConfigurations.secret,
+          issuer: this.jwtConfigurations.issuer,
+          audience: this.jwtConfigurations.audience,
+        },
+      );
 
-      const exists =
-        user.type === UserType.JOB_SEEKER
-          ? await this.jobSeekerRepository.existsByEmail(user.email)
-          : await this.companyRepository.existsByEmail(user.email);
+      if (payload.tokenType !== TokenType.REFRESH) {
+        throw new UnauthorizedException('Invalid token type');
+      }
+      const [jobSeeker, company] = await Promise.all([
+        this.jobSeekerRepository.findById(payload.sub),
+        this.companyRepository.findById(payload.sub),
+      ]);
 
-      if (!exists) {
+      const user = jobSeeker || company;
+      if (!user) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      return await this.generateTokens(user);
+      const userType = jobSeeker ? UserType.JOB_SEEKER : UserType.COMPANY;
+
+      return await this.generateTokens({ email: user.email, sub: user.id, type: userType });
     } catch (err) {
       if (err instanceof HttpException) {
         throw err;
@@ -128,30 +138,41 @@ export class AuthenticationService {
 
   private async generateTokens(user: ActiveUserData) {
     const [accessToken, refreshToken] = await Promise.all([
-      this.signToken<Partial<ActiveUserData>>(user.sub, this.jwtConfigurations.accessTokenTtl, {
-        email: user.email,
-        type: user.type,
-      }),
-      this.signToken<Partial<ActiveUserData>>(user.sub, this.jwtConfigurations.refreshTokenTtl, {
-        email: user.email,
-        type: user.type,
-      }),
+      this.signAccessToken(user.sub, user.email, user.type),
+      this.signRefreshToken(user.sub),
     ]);
 
     return { accessToken, refreshToken };
   }
 
-  private async signToken<T>(userId: string, expiresIn: number, payload?: T) {
+  private async signAccessToken(userId: string, email: string, userType: UserType) {
     return await this.jwtService.signAsync(
       {
         sub: userId,
-        ...payload,
+        email: email,
+        type: userType,
+        tokenType: TokenType.ACCESS,
       },
       {
         issuer: this.jwtConfigurations.issuer,
         secret: this.jwtConfigurations.secret,
         audience: this.jwtConfigurations.audience,
-        expiresIn,
+        expiresIn: this.jwtConfigurations.accessTokenTtl,
+      },
+    );
+  }
+
+  private async signRefreshToken(userId: string) {
+    return await this.jwtService.signAsync(
+      {
+        sub: userId,
+        tokenType: TokenType.REFRESH,
+      },
+      {
+        issuer: this.jwtConfigurations.issuer,
+        secret: this.jwtConfigurations.secret,
+        audience: this.jwtConfigurations.audience,
+        expiresIn: this.jwtConfigurations.refreshTokenTtl,
       },
     );
   }
