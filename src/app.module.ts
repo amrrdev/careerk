@@ -8,6 +8,7 @@ import { RedisModule } from './infrastructure/redis/redis.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './core/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './core/filters/http-exception.filter';
+import { EmailModule } from './infrastructure/email/email.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { HttpExceptionFilter } from './core/filters/http-exception.filter';
     CompanyModule,
     IamModule,
     RedisModule,
+    EmailModule,
   ],
   providers: [
     {
