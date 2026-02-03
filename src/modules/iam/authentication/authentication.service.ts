@@ -20,6 +20,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { TokenType } from '../enums/token-type.enum';
 import { refreshTokenStorageService } from './refresh-token-storage.service';
 import { randomUUID } from 'node:crypto';
+import { EmailService } from 'src/infrastructure/email/email.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -29,6 +30,7 @@ export class AuthenticationService {
     private readonly hashingService: HashingService,
     private readonly refreshTokenStroageService: refreshTokenStorageService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
     @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,
   ) {}
 

@@ -14,6 +14,7 @@ import { AuthenticationGuard } from './authentication/guards/authentication.guar
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { refreshTokenStorageService } from './authentication/refresh-token-storage.service';
 import { RolesGuard } from './authentication/guards/roles.guard';
+import { EmailModule } from 'src/infrastructure/email/email.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RolesGuard } from './authentication/guards/roles.guard';
     JobSeekerModule,
     CompanyModule,
     RedisModule,
+    EmailModule,
   ],
   controllers: [AuthenticationController],
   providers: [
