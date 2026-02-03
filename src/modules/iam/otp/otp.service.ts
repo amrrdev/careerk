@@ -57,6 +57,10 @@ export class OtpService {
     if (otpData.code !== code) {
       otpData.attempts += 1;
       const remainingTtl = Math.floor((otpData.expiresAt.getTime() - Date.now()) / 1000);
+      if (remainingTtl <= 0) {
+        await this.redisService.del(key);
+        return false;
+      }
       await this.redisService.set(key, JSON.stringify(otpData), remainingTtl);
       return false;
     }
