@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
-import { CreateJobSeekerData, JobSeeker } from '../types/job-seeker.types';
+import { CreateJobSeekerData, JobSeeker, UpdateJobSeekerData } from '../types/job-seeker.types';
 import { JobSeekerRepository } from './job-seeker.repository';
 
 @Injectable()
 export class JobSeekerRepositoryImpl implements JobSeekerRepository {
   constructor(private readonly databaseService: DatabaseService) {}
+  async findByEmailAndUpdate(email: string, data: UpdateJobSeekerData): Promise<JobSeeker | null> {
+    return this.databaseService.jobSeeker.update({
+      where: { email },
+      data,
+    });
+  }
 
   async findByEmail(email: string): Promise<JobSeeker | null> {
     return this.databaseService.jobSeeker.findUnique({ where: { email } });

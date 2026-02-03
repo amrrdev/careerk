@@ -11,6 +11,7 @@ import {
 import { AuthenticationService } from './authentication.service';
 import { RegisterJobSeekerDto } from './dto/register-job-seeker.dto';
 import { LoginDto } from './dto/login.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Auth } from './decorators/auth.decorator';
 import { AuthType } from '../enums/auth-type.enum';
 import type { Request, Response } from 'express';
@@ -27,13 +28,22 @@ export class AuthenticationController {
   }
 
   @Post('register/job-seeker')
-  @ResponseMessage('Job Seeker created successfully')
-  async registerJobSeeker(
-    @Body() registerJobSeekerDto: RegisterJobSeekerDto,
+  @ResponseMessage('Registration successful. Please check your email to verify your account.')
+  async registerJobSeeker(@Body() registerJobSeekerDto: RegisterJobSeekerDto) {
+    return await this.authenticationService.registerJobSeeker(registerJobSeekerDto);
+  }
+
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage('Email verified successfully. You are now logged in.')
+  async verifyEmail(
+    @Body() verifyEmailDto: VerifyEmailDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { refreshToken, ...result } =
-      await this.authenticationService.registerJobSeeker(registerJobSeekerDto);
+    const { refreshToken, ...result } = await this.authenticationService.verifyEmail(
+      verifyEmailDto.email,
+      verifyEmailDto.code,
+    );
     this.setRefreshTokenCookie(response, refreshToken);
     return result;
   }

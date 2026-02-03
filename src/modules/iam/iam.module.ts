@@ -15,6 +15,7 @@ import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { refreshTokenStorageService } from './authentication/refresh-token-storage.service';
 import { RolesGuard } from './authentication/guards/roles.guard';
 import { EmailModule } from 'src/infrastructure/email/email.module';
+import { OtpService } from './otp/otp.service';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { EmailModule } from 'src/infrastructure/email/email.module';
     },
     AccessTokenGuard,
     refreshTokenStorageService,
+    OtpService,
   ],
 })
 export class IamModule {}

@@ -43,5 +43,5 @@ export type CreateCompanyData = Omit<
  * Company update data
  */
 export type UpdateCompanyData = Partial<
-  Omit<Company, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt' | 'isActive' | 'isVerified'>
+  Omit<Company, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt' | 'isActive'>
 >;

@@ -23,5 +23,5 @@ export type CreateJobSeekerData = Omit<
  * JobSeeker update data (all fields optional)
  */
 export type UpdateJobSeekerData = Partial<
-  Omit<JobSeeker, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt' | 'lastLoginAt'>
+  Omit<JobSeeker, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt'>
 >;

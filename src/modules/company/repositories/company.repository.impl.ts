@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CompanyRepository } from './company.repository';
-import { CreateCompanyData, Company } from '../types/company.types';
+import { CreateCompanyData, Company, UpdateCompanyData } from '../types/company.types';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
 
 @Injectable()
 export class CompanyRepositoryImpl implements CompanyRepository {
   constructor(private readonly databaseService: DatabaseService) {}
+
+  async findByEmailAndUpdate(email: string, data: UpdateCompanyData): Promise<Company | null> {
+    return this.databaseService.company.update({
+      where: { email },
+      data,
+    });
+  }
 
   async create(data: CreateCompanyData): Promise<Company> {
     return this.databaseService.company.create({ data });
