@@ -86,9 +86,8 @@ export class AuthenticationService {
         type: UserType.JOB_SEEKER,
       });
 
-      const { password, ...result } = jobSeeker;
       return {
-        ...result,
+        ...jobSeeker,
         accessToken,
         refreshToken,
       };
