@@ -21,6 +21,8 @@ import { TokenType } from '../enums/token-type.enum';
 import { refreshTokenStorageService } from './refresh-token-storage.service';
 import { randomUUID } from 'node:crypto';
 import { EmailService } from 'src/infrastructure/email/email.service';
+import { OtpService } from '../otp/otp.service';
+import { OtpPurpose } from '../enums/otp-purpose.enum';
 
 @Injectable()
 export class AuthenticationService {
@@ -31,6 +33,7 @@ export class AuthenticationService {
     private readonly refreshTokenStroageService: refreshTokenStorageService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    private readonly otpService: OtpService,
     @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,
   ) {}
 
@@ -46,6 +49,10 @@ export class AuthenticationService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
+      if (!user.isVerified) {
+        throw new UnauthorizedException('Please verify your email before logging in');
+      }
+
       const userType = jobSeeker ? UserType.JOB_SEEKER : UserType.COMPANY;
 
       const isPasswordValid = await this.hashingService.compare(loginDto.password, user.password);
@@ -53,6 +60,8 @@ export class AuthenticationService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
+      // NOTE: We can update the `lastLoginAt` column, but it’s probably not worth doing an extra query just for that.
+      // if not, we should remove `lastLoginAt` column
       const { accessToken, refreshToken } = await this.generateTokens({
         email: user.email,
         sub: user.id,
@@ -73,7 +82,7 @@ export class AuthenticationService {
 
   async registerJobSeeker(registerJobSeekerDto: RegisterJobSeekerDto) {
     try {
-      // TODO: hmmm, I think there’s a better way.
+      // TODO: hmmm, I think there's a better way.
       await this.checkEmailExists(registerJobSeekerDto.email);
 
       const hashedPassword = await this.hashingService.hash(registerJobSeekerDto.password);
@@ -82,16 +91,11 @@ export class AuthenticationService {
         password: hashedPassword,
       });
 
-      const { accessToken, refreshToken } = await this.generateTokens({
-        email: jobSeeker.email,
-        sub: jobSeeker.id,
-        type: UserType.JOB_SEEKER,
-      });
+      const otp = await this.otpService.createOtp(jobSeeker.email, OtpPurpose.EMAIL_VERIFICATION);
+      await this.emailService.sendVerificationEmail(jobSeeker.email, otp, jobSeeker.firstName);
 
       return {
-        ...jobSeeker,
-        accessToken,
-        refreshToken,
+        email: jobSeeker.email,
       };
     } catch (err) {
       if (err instanceof HttpException) {
@@ -144,6 +148,56 @@ export class AuthenticationService {
         throw err;
       }
       throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  async verifyEmail(email: string, code: string) {
+    try {
+      const isValid = await this.otpService.verifyOtp(email, code, OtpPurpose.EMAIL_VERIFICATION);
+
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid or expired OTP code');
+      }
+
+      // TODO: Optimize by storing userType with OTP in Redis
+      // This will reduce 2 parallel queries to 1 single query
+      const [jobSeeker, company] = await Promise.all([
+        this.jobSeekerRepository.findByEmail(email),
+        this.companyRepository.findByEmail(email),
+      ]);
+
+      const user = jobSeeker || company;
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      const userType = jobSeeker ? UserType.JOB_SEEKER : UserType.COMPANY;
+      const updatedUser =
+        userType === UserType.JOB_SEEKER
+          ? await this.jobSeekerRepository.findByEmailAndUpdate(user.email, {
+              isVerified: true,
+              lastLoginAt: new Date(Date.now()),
+            })
+          : await this.companyRepository.findByEmailAndUpdate(user.email, {
+              isVerified: true,
+            });
+
+      const { accessToken, refreshToken } = await this.generateTokens({
+        email: user.email,
+        sub: user.id,
+        type: userType,
+      });
+
+      return {
+        ...updatedUser,
+        accessToken,
+        refreshToken,
+      };
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new UnauthorizedException('Email verification failed');
     }
   }
 
