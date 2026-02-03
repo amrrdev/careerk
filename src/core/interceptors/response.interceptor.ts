@@ -8,6 +8,8 @@ import { ApiResponse } from '../interfaces/api-response.interface';
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>> {
+  private readonly sensitiveFields = ['password'];
+
   constructor(private readonly reflector: Reflector) {}
 
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<ApiResponse<T>> {
@@ -26,9 +28,11 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
           return data as unknown as ApiResponse<T>;
         }
 
+        const sanitizedData = this.removeSensitiveFields(data);
+
         return {
           success: true,
-          data,
+          data: sanitizedData,
           message,
           meta: {
             timestamp: new Date().toISOString(),
@@ -38,5 +42,24 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
         };
       }),
     );
+  }
+
+  private removeSensitiveFields<T>(data: T): T {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    if (Array.isArray(data)) {
+      return data.map((item: unknown) => this.removeSensitiveFields(item)) as T;
+    }
+
+    const cleaned = { ...data } as Record<string, unknown>;
+    this.sensitiveFields.forEach((field) => {
+      if (field in cleaned) {
+        delete cleaned[field];
+      }
+    });
+
+    return cleaned as T;
   }
 }
