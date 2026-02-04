@@ -78,9 +78,24 @@ JWT_REFRESH_TOKEN_TTL=86400
 REDIS_PASSWORD="your_secure_redis_password"
 REDIS_HOST=localhost
 REDIS_PORT=6379
+
+# BullMQ Queue (uses Redis)
+QUEUE_HOST=localhost
+QUEUE_PORT=6379
+QUEUE_PASSWORD="your_secure_redis_password"
+
+# Email (Gmail SMTP)
+GMAIL_USER=your_email@gmail.com
+GMAIL_PASSWORD=your_gmail_app_password
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=true
 ```
 
-⚠️ **Important:** If your Redis password contains special characters (`#`, `!`, `@`, etc.), you **must** wrap it in double quotes, otherwise the `.env` parser will treat `#` as a comment.
+⚠️ **Important Notes:**
+- If your Redis/Queue password contains special characters (`#`, `!`, `@`, etc.), you **must** wrap it in double quotes, otherwise the `.env` parser will treat `#` as a comment.
+- For Gmail SMTP, you need to generate an [App Password](https://support.google.com/accounts/answer/185833) (not your regular Gmail password)
+- BullMQ uses the same Redis instance as your application (you can use the same password)
 
 ### 4️⃣ Start Docker Services
 
@@ -190,6 +205,9 @@ pnpm run test:cov
 - ✅ Role-based Authorization (Job Seeker / Company)
 - ✅ Token Type Validation (prevents refresh token misuse)
 - ✅ Secure token storage and invalidation
+- ✅ Email verification with OTP (Redis-based)
+- ✅ BullMQ job queue for async email sending
+- ✅ Email templates with Nodemailer
 
 ---
 
@@ -203,7 +221,7 @@ pnpm run test:cov
 
 ### Redis
 - **Port:** 6379
-- **Used for:** Refresh token rotation, caching, and session management
+- **Used for:** Refresh token rotation, OTP storage, BullMQ job queue, and session management
 - **Container:** `careerk-redis`
 
 ### Managing Docker Services
