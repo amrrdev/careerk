@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { RegisterJobSeekerDto } from './dto/register-job-seeker.dto';
+import { RegisterCompanyDto } from './dto/register-company.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Auth } from './decorators/auth.decorator';
@@ -27,12 +28,23 @@ export class AuthenticationController {
     response.cookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
   }
 
+  // ===================== Job Seeker =====================
   @Post('register/job-seeker')
   @ResponseMessage('Registration successful. Please check your email to verify your account.')
   async registerJobSeeker(@Body() registerJobSeekerDto: RegisterJobSeekerDto) {
     return await this.authenticationService.registerJobSeeker(registerJobSeekerDto);
   }
 
+  // ===================== Company =====================
+  @Post('register/company')
+  @ResponseMessage(
+    'Company registration successful. Please check your email to verify your account.',
+  )
+  async registerCompany(@Body() registerCompanyDto: RegisterCompanyDto) {
+    return await this.authenticationService.registerCompany(registerCompanyDto);
+  }
+
+  // ===================== Verify Email =====================
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('Email verified successfully. You are now logged in.')
@@ -48,11 +60,7 @@ export class AuthenticationController {
     return result;
   }
 
-  // @Post('register/company')
-  // async registerCompany(@Body() registerCompanyDto: RegisterCompanyDto) {
-  //   return this.authenticationService.registerCompany(registerCompanyDto);
-  // }
-
+  // ===================== Login =====================
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('Login successfully')
@@ -62,6 +70,7 @@ export class AuthenticationController {
     return result;
   }
 
+  // ===================== Refresh Token =====================
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
