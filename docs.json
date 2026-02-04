@@ -3,11 +3,11 @@
   "name": "CareerK API Documentation",
   "theme": "mint",
   "logo": {
-    "dark": "/careerkLogo.png",
-    "light": "/careerkLogo.png",
+    "dark": "/docs/careerkLogo.png",
+    "light": "/docs/careerkLogo.png",
     "href": "https://careerk.com"
   },
-  "favicon": "/careerkLogo.png",
+  "favicon": "/docs/careerkLogo.png",
   "colors": {
     "primary": "#0D9373",
     "light": "#07C983",
@@ -30,7 +30,7 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["introduction", "authentication"]
+            "pages": ["docs/introduction", "docs/authentication"]
           }
         ]
       },
@@ -40,11 +40,11 @@
           {
             "group": "Authentication",
             "pages": [
-              "api-reference/auth/register-job-seeker",
-              "api-reference/auth/register-company",
-              "api-reference/auth/verify-email",
-              "api-reference/auth/login",
-              "api-reference/auth/refresh-token"
+              "docs/api-reference/auth/register-job-seeker",
+              "docs/api-reference/auth/register-company",
+              "docs/api-reference/auth/verify-email",
+              "docs/api-reference/auth/login",
+              "docs/api-reference/auth/refresh-token"
             ]
           }
         ]
