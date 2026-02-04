@@ -23,28 +23,34 @@
     "name": "Dashboard",
     "url": "https://careerk.com"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Getting Started",
-      "pages": ["introduction", "authentication"]
-    },
-    {
-      "group": "Authentication",
-      "pages": [
-        "api-reference/auth/register-job-seeker",
-        "api-reference/auth/register-company",
-        "api-reference/auth/verify-email",
-        "api-reference/auth/login",
-        "api-reference/auth/refresh-token"
-      ]
-    }
-  ],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": ["introduction", "authentication"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Authentication",
+            "pages": [
+              "api-reference/auth/register-job-seeker",
+              "api-reference/auth/register-company",
+              "api-reference/auth/verify-email",
+              "api-reference/auth/login",
+              "api-reference/auth/refresh-token"
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "footerSocials": {
     "github": "https://github.com/amrrdev/careerk",
     "linkedin": "https://www.linkedin.com/company/careerk"
