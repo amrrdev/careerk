@@ -1,16 +1,13 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "CareerK API",
-  "theme": "mint",
+  "name": "CareerK API Documentation",
+  "theme": "prism",
   "logo": {
     "dark": "/docs/careerkLogo.png",
     "light": "/docs/careerkLogo.png",
     "href": "https://careerk.com"
   },
-  "api": {
-    "maintainOrder": true
-  },
-  "favicon": "/favicon.svg",
+  "favicon": "/docs/careerkLogo.png",
   "colors": {
     "primary": "#0D9373",
     "light": "#07C983",
@@ -23,7 +20,7 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:careerkplatform.com"
+      "url": "mailto:support@careerkplatform.com"
     }
   ],
   "topbarCtaButton": {
@@ -33,12 +30,12 @@
   "tabs": [
     {
       "name": "API Reference",
-      "url": "api-reference"
+      "url": "docs/api-reference"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Getting Started",
       "pages": ["docs/introduction", "docs/authentication"]
     },
     {
@@ -46,15 +43,18 @@
       "pages": [
         "docs/api-reference/auth/register-job-seeker",
         "docs/api-reference/auth/register-company",
-        "docs/api-reference/auth/login",
         "docs/api-reference/auth/verify-email",
+        "docs/api-reference/auth/login",
         "docs/api-reference/auth/refresh-token"
       ]
     }
   ],
   "footerSocials": {
-    "github": "https://github.com/yourusername/careerk",
-    "linkedin": "https://www.linkedin.com/company/careerk",
-    "twitter": "https://twitter.com/careerk"
+    "github": "https://github.com/amrrdev/careerk",
+    "linkedin": "https://www.linkedin.com/company/careerk"
+  },
+  "api": {
+    "baseUrl": "http://localhost:3000/api/v1",
+    "maintainOrder": true
   }
 }
