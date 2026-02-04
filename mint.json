@@ -3,11 +3,11 @@
   "name": "CareerK API Documentation",
   "theme": "mint",
   "logo": {
-    "dark": "/docs/careerkLogo.png",
-    "light": "/docs/careerkLogo.png",
+    "dark": "/careerkLogo.png",
+    "light": "/careerkLogo.png",
     "href": "https://careerk.com"
   },
-  "favicon": "/docs/careerkLogo.png",
+  "favicon": "/careerkLogo.png",
   "colors": {
     "primary": "#0D9373",
     "light": "#07C983",
