@@ -61,7 +61,7 @@ export class OtpService {
       const remainingTtl = Math.floor((otpData.expiresAt.getTime() - Date.now()) / 1000);
       if (remainingTtl <= 0) {
         await this.redisService.del(key);
-        return false;
+        return null;
       }
       await this.redisService.set(key, JSON.stringify(otpData), remainingTtl);
       return null;
