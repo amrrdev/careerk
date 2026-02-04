@@ -9,6 +9,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseInterceptor } from './core/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './core/filters/http-exception.filter';
 import { EmailModule } from './infrastructure/email/email.module';
+import { QueueModule } from './infrastructure/queue/queue.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EmailModule } from './infrastructure/email/email.module';
     IamModule,
     RedisModule,
     EmailModule,
+    QueueModule,
   ],
   providers: [
     {
