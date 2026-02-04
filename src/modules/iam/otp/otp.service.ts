@@ -3,6 +3,7 @@ import { RedisService } from 'src/infrastructure/redis/redis.service';
 import { OtpPurpose } from '../enums/otp-purpose.enum';
 import * as crypto from 'crypto';
 import { OtpData } from '../interfaces/otp-data.interface';
+import { UserType } from '../enums/user-type.enum';
 
 @Injectable()
 export class OtpService {
@@ -12,7 +13,7 @@ export class OtpService {
 
   constructor(private readonly redisService: RedisService) {}
 
-  async createOtp(email: string, purpose: OtpPurpose) {
+  async createOtp(email: string, purpose: OtpPurpose, userType: UserType) {
     const code = this.generateOtpCode();
     const now = new Date();
     const expiresAt = new Date(now.getTime() + this.OTP_EXPIRY_MINUTES * 60 * 1000);
@@ -21,6 +22,7 @@ export class OtpService {
       code,
       email: email.toLowerCase(),
       purpose,
+      userType,
       expiresAt,
       attempts: 0,
       createdAt: now,
@@ -33,11 +35,11 @@ export class OtpService {
     return code;
   }
 
-  async verifyOtp(email: string, code: string, purpose: OtpPurpose) {
+  async verifyOtp(email: string, code: string, purpose: OtpPurpose): Promise<OtpData | null> {
     const key = this.getKey(email, purpose);
     const data = await this.redisService.get(key);
     if (!data) {
-      return false;
+      return null;
     }
 
     const otpData = JSON.parse(data) as OtpData;
@@ -46,12 +48,12 @@ export class OtpService {
 
     if (new Date() > otpData.expiresAt) {
       await this.redisService.del(key);
-      return false;
+      return null;
     }
 
     if (otpData.attempts >= this.MAX_ATTEMPTS) {
       await this.redisService.del(key);
-      return false;
+      return null;
     }
 
     if (otpData.code !== code) {
@@ -59,14 +61,14 @@ export class OtpService {
       const remainingTtl = Math.floor((otpData.expiresAt.getTime() - Date.now()) / 1000);
       if (remainingTtl <= 0) {
         await this.redisService.del(key);
-        return false;
+        return null;
       }
       await this.redisService.set(key, JSON.stringify(otpData), remainingTtl);
-      return false;
+      return null;
     }
 
     await this.redisService.del(key);
-    return true;
+    return otpData;
   }
 
   private getKey(email: string, purpose: OtpPurpose) {
