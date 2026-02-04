@@ -142,8 +142,27 @@ export class AuthenticationService {
         password: hashedPassword,
       });
 
-      const otp = await this.otpService.createOtp(company.email, OtpPurpose.EMAIL_VERIFICATION);
-      await this.emailService.sendVerificationEmail(company.email, otp, company.name);
+      const otp = await this.otpService.createOtp(
+        company.email,
+        OtpPurpose.EMAIL_VERIFICATION,
+        UserType.COMPANY,
+      );
+      await this.emailQueue.add(
+        SEND_VERIFICATION_EMAIL_JOB,
+        {
+          email: company.email,
+          code: otp,
+          userName: company.name,
+        } as SendVerificationEmailJob,
+        {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+          removeOnComplete: true,
+        },
+      );
 
       return {
         email: company.email,

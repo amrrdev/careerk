@@ -37,9 +37,7 @@ export class AuthenticationController {
 
   // ===================== Company =====================
   @Post('register/company')
-  @ResponseMessage(
-    'Company registration successful. Please check your email to verify your account.',
-  )
+  @ResponseMessage('Registration successful. Please check your email to verify your account.')
   async registerCompany(@Body() registerCompanyDto: RegisterCompanyDto) {
     return await this.authenticationService.registerCompany(registerCompanyDto);
   }
