@@ -8,10 +8,14 @@ export class CompanyRepositoryImpl implements CompanyRepository {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async findByEmailAndUpdate(email: string, data: UpdateCompanyData): Promise<Company | null> {
-    return this.databaseService.company.update({
-      where: { email },
-      data,
-    });
+    try {
+      return await this.databaseService.company.update({
+        where: { email },
+        data,
+      });
+    } catch {
+      return null;
+    }
   }
 
   async create(data: CreateCompanyData): Promise<Company> {

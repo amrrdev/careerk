@@ -91,7 +91,11 @@ export class AuthenticationService {
         password: hashedPassword,
       });
 
-      const otp = await this.otpService.createOtp(jobSeeker.email, OtpPurpose.EMAIL_VERIFICATION);
+      const otp = await this.otpService.createOtp(
+        jobSeeker.email,
+        OtpPurpose.EMAIL_VERIFICATION,
+        UserType.JOB_SEEKER,
+      );
       await this.emailService.sendVerificationEmail(jobSeeker.email, otp, jobSeeker.firstName);
 
       return {
@@ -153,39 +157,30 @@ export class AuthenticationService {
 
   async verifyEmail(email: string, code: string) {
     try {
-      const isValid = await this.otpService.verifyOtp(email, code, OtpPurpose.EMAIL_VERIFICATION);
+      const otpData = await this.otpService.verifyOtp(email, code, OtpPurpose.EMAIL_VERIFICATION);
 
-      if (!isValid) {
+      if (!otpData) {
         throw new UnauthorizedException('Invalid or expired OTP code');
       }
 
-      // TODO: Optimize by storing userType with OTP in Redis
-      // This will reduce 2 parallel queries to 1 single query
-      const [jobSeeker, company] = await Promise.all([
-        this.jobSeekerRepository.findByEmail(email),
-        this.companyRepository.findByEmail(email),
-      ]);
-
-      const user = jobSeeker || company;
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-
-      const userType = jobSeeker ? UserType.JOB_SEEKER : UserType.COMPANY;
       const updatedUser =
-        userType === UserType.JOB_SEEKER
-          ? await this.jobSeekerRepository.findByEmailAndUpdate(user.email, {
+        otpData.userType === UserType.JOB_SEEKER
+          ? await this.jobSeekerRepository.findByEmailAndUpdate(email, {
               isVerified: true,
-              lastLoginAt: new Date(Date.now()),
+              lastLoginAt: new Date(),
             })
-          : await this.companyRepository.findByEmailAndUpdate(user.email, {
+          : await this.companyRepository.findByEmailAndUpdate(email, {
               isVerified: true,
             });
 
+      if (!updatedUser) {
+        throw new UnauthorizedException('User not found');
+      }
+
       const { accessToken, refreshToken } = await this.generateTokens({
-        email: user.email,
-        sub: user.id,
-        type: userType,
+        email: updatedUser.email,
+        sub: updatedUser.id,
+        type: otpData.userType,
       });
 
       return {
