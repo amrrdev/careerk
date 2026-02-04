@@ -12,7 +12,7 @@ export class EmailProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<SendVerificationEmailJob>): Promise<any> {
+  async process(job: Job<SendVerificationEmailJob>): Promise<void> {
     try {
       this.logger.log(`Processing verification email for ${job.data.email}`);
       await this.emailService.sendVerificationEmail(
