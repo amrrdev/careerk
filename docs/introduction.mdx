@@ -1,0 +1,142 @@
+---
+title: Introduction
+description: 'CareerK API Documentation - Connect job seekers with employers'
+---
+
+# Welcome to CareerK API
+
+CareerK is a comprehensive job platform API that connects job seekers with employers. This documentation provides everything you need to integrate CareerK into your frontend application.
+
+## Base URL
+
+```
+http://localhost:3000
+```
+
+For production, replace with your actual API URL.
+
+## Authentication
+
+CareerK uses JWT (JSON Web Tokens) for authentication. After registration or login, you'll receive:
+
+- **Access Token**: Used to authenticate API requests (valid for 1 hour)
+- **Refresh Token**: Stored in HTTP-only cookie, used to get new access tokens (valid for 24 hours)
+
+### Using Access Tokens
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Quick Start
+
+### 1. Register a User
+
+```javascript
+const response = await fetch('http://localhost:3000/auth/register/job-seeker', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'john@example.com',
+    password: 'password123',
+    firstName: 'John',
+    lastName: 'Doe'
+  })
+});
+
+const data = await response.json();
+// Returns: { success: true, data: { email: 'john@example.com' }, message: '...' }
+```
+
+### 2. Verify Email
+
+Check your email for the 6-digit OTP code, then:
+
+```javascript
+const response = await fetch('http://localhost:3000/auth/verify-email', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include', // Important for cookies
+  body: JSON.stringify({
+    email: 'john@example.com',
+    code: '123456'
+  })
+});
+
+const data = await response.json();
+// Returns user data with accessToken
+const { accessToken } = data.data;
+```
+
+### 3. Make Authenticated Requests
+
+```javascript
+const response = await fetch('http://localhost:3000/job-seekers/profile', {
+  headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  },
+  credentials: 'include'
+});
+```
+
+## Response Format
+
+All API responses follow this structure:
+
+### Success Response
+
+```json
+{
+  "success": true,
+  "data": { 
+    // Response data here
+  },
+  "message": "Operation successful"
+}
+```
+
+### Error Response
+
+```json
+{
+  "statusCode": 400,
+  "message": "Error message or array of validation errors",
+  "error": "Bad Request"
+}
+```
+
+## Common HTTP Status Codes
+
+| Code | Description |
+|------|-------------|
+| 200 | Success - Request completed successfully |
+| 201 | Created - Resource created successfully |
+| 400 | Bad Request - Invalid input or validation error |
+| 401 | Unauthorized - Missing or invalid authentication |
+| 403 | Forbidden - Authenticated but not authorized |
+| 404 | Not Found - Resource doesn't exist |
+| 409 | Conflict - Resource already exists (e.g., email taken) |
+| 500 | Internal Server Error - Something went wrong |
+
+## User Types
+
+CareerK supports two types of users:
+
+### Job Seeker
+Individual users looking for job opportunities
+- Register at `/auth/register/job-seeker`
+- Access job seeker endpoints
+
+### Company
+Employers posting job opportunities
+- Register at `/auth/register/company`
+- Access company endpoints
+
+## Need Help?
+
+- Check the [Authentication Guide](/authentication) for detailed auth flow
+- Browse the [API Reference](/api-reference/auth/register-job-seeker) for all endpoints
+- Contact support at support@careerk.com
