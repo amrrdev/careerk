@@ -26,22 +26,22 @@
   "tabs": [
     {
       "name": "API Reference",
-      "url": "docs/api-reference"
+      "url": "api-reference"
     }
   ],
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["docs/introduction", "docs/authentication"]
+      "pages": ["introduction", "authentication"]
     },
     {
       "group": "Authentication",
       "pages": [
-        "docs/api-reference/auth/register-job-seeker",
-        "docs/api-reference/auth/register-company",
-        "docs/api-reference/auth/verify-email",
-        "docs/api-reference/auth/login",
-        "docs/api-reference/auth/refresh-token"
+        "api-reference/auth/register-job-seeker",
+        "api-reference/auth/register-company",
+        "api-reference/auth/verify-email",
+        "api-reference/auth/login",
+        "api-reference/auth/refresh-token"
       ]
     }
   ],
