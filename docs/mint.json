@@ -1,0 +1,59 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "CareerK API",
+  "logo": {
+    "dark": "/careerkLogo.png",
+    "light": "/careerkLogo.png",
+    "href": "https://careerk.com"
+  },
+  "api": {
+    "maintainOrder": true
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373",
+    "anchors": {
+      "from": "#0D9373",
+      "to": "#07C983"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@careerk.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://careerk.com"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": ["introduction", "authentication"]
+    },
+    {
+      "group": "Authentication",
+      "pages": [
+        "api-reference/auth/register-job-seeker",
+        "api-reference/auth/register-company",
+        "api-reference/auth/login",
+        "api-reference/auth/verify-email",
+        "api-reference/auth/refresh-token"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/yourusername/careerk",
+    "linkedin": "https://www.linkedin.com/company/careerk",
+    "twitter": "https://twitter.com/careerk"
+  }
+}

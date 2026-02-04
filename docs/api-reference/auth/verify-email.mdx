@@ -1,0 +1,419 @@
+---
+title: 'Verify Email'
+api: 'POST /api/v1/auth/verify-email'
+description: 'Verify email address with OTP code'
+---
+
+## Endpoint
+
+```
+POST /api/v1/auth/verify-email
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint is **public** and does not require authentication.</Note>
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  The email address to verify (must match the registered email).
+</ParamField>
+
+<ParamField body="code" type="string" required>
+  The 6-digit OTP code sent to the email. Must be exactly 6 numeric digits.
+</ParamField>
+
+## Request Example
+
+<CodeGroup>
+
+```typescript TypeScript
+const response = await fetch('http://localhost:3000/api/v1/auth/verify-email', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include', // REQUIRED for refresh token cookie
+  body: JSON.stringify({
+    email: 'john.doe@example.com',
+    code: '123456'
+  })
+});
+
+const result = await response.json();
+console.log(result);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'http://localhost:3000/api/v1/auth/verify-email',
+    json={
+        'email': 'john.doe@example.com',
+        'code': '123456'
+    }
+)
+
+result = response.json()
+print(result)
+```
+
+</CodeGroup>
+
+## Response
+
+### Success Response (200 OK)
+
+#### For Job Seeker
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "john.doe@example.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "profileImageUrl": null,
+    "isActive": true,
+    "isVerified": true,
+    "lastLoginAt": "2024-01-15T10:30:00.000Z",
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "message": "Email verified successfully. You are now logged in."
+}
+```
+
+#### For Company
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "660f9500-f39c-52e5-b827-557766551111",
+    "email": "hr@techcorp.com",
+    "name": "TechCorp Inc.",
+    "description": null,
+    "logoUrl": null,
+    "coverUrl": null,
+    "industry": "Technology",
+    "size": "SIZE_51_200",
+    "type": "STARTUP",
+    "headquartersLocation": null,
+    "foundedYear": null,
+    "websiteUrl": null,
+    "benefits": null,
+    "linkedIn": null,
+    "facebook": null,
+    "twitter": null,
+    "isActive": true,
+    "isVerified": true,
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "message": "Email verified successfully. You are now logged in."
+}
+```
+
+<ResponseField name="success" type="boolean">
+  Indicates if the verification was successful.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Contains the complete user/company data and access token.
+  
+  <Expandable title="Job Seeker Fields">
+    <ResponseField name="id" type="string">
+      Unique user identifier (UUID format).
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      User's email address.
+    </ResponseField>
+    
+    <ResponseField name="firstName" type="string">
+      User's first name.
+    </ResponseField>
+    
+    <ResponseField name="lastName" type="string">
+      User's last name.
+    </ResponseField>
+    
+    <ResponseField name="profileImageUrl" type="string | null">
+      URL to user's profile image. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="isActive" type="boolean">
+      Whether the account is active. Always `true` after verification.
+    </ResponseField>
+    
+    <ResponseField name="isVerified" type="boolean">
+      Whether the email is verified. Always `true` after successful verification.
+    </ResponseField>
+    
+    <ResponseField name="lastLoginAt" type="string">
+      ISO 8601 timestamp of this verification/login.
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of account creation.
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="string">
+      ISO 8601 timestamp of last update.
+    </ResponseField>
+    
+    <ResponseField name="accessToken" type="string">
+      JWT access token for authenticating API requests. Valid for 1 hour (3600 seconds).
+    </ResponseField>
+  </Expandable>
+  
+  <Expandable title="Company Fields">
+    <ResponseField name="id" type="string">
+      Unique company identifier (UUID format).
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      Company's email address.
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Company name.
+    </ResponseField>
+    
+    <ResponseField name="description" type="string | null">
+      Company description. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="logoUrl" type="string | null">
+      URL to company logo. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="coverUrl" type="string | null">
+      URL to company cover image. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="industry" type="string">
+      Company industry.
+    </ResponseField>
+    
+    <ResponseField name="size" type="string">
+      Company size: `SIZE_1_50`, `SIZE_51_200`, `SIZE_201_1000`, or `SIZE_1000_PLUS`.
+    </ResponseField>
+    
+    <ResponseField name="type" type="string">
+      Company type: `STARTUP`, `SCALE_UP`, `ENTERPRISE`, `NON_PROFIT`, or `GOVERNMENT`.
+    </ResponseField>
+    
+    <ResponseField name="headquartersLocation" type="string | null">
+      Company headquarters location. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="foundedYear" type="number | null">
+      Year the company was founded. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="websiteUrl" type="string | null">
+      Company website URL. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="benefits" type="string | null">
+      Company benefits description. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="linkedIn" type="string | null">
+      LinkedIn profile URL. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="facebook" type="string | null">
+      Facebook page URL. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="twitter" type="string | null">
+      Twitter profile URL. `null` if not set.
+    </ResponseField>
+    
+    <ResponseField name="isActive" type="boolean">
+      Whether the account is active. Always `true` after verification.
+    </ResponseField>
+    
+    <ResponseField name="isVerified" type="boolean">
+      Whether the email is verified. Always `true` after successful verification.
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of account creation.
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="string">
+      ISO 8601 timestamp of last update.
+    </ResponseField>
+    
+    <ResponseField name="accessToken" type="string">
+      JWT access token for authenticating API requests. Valid for 1 hour (3600 seconds).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message: "Email verified successfully. You are now logged in."
+</ResponseField>
+
+## Important: Refresh Token Cookie
+
+<Warning>
+  The refresh token is **automatically set as an HTTP-only cookie** named `refreshToken`. You **MUST** use `credentials: 'include'` in your fetch requests to enable cookie handling.
+</Warning>
+
+The server sets a cookie with these properties:
+- **Name**: `refreshToken`
+- **HttpOnly**: `true` (cannot be accessed via JavaScript)
+- **Secure**: `true` (in production, requires HTTPS)
+- **SameSite**: `Strict`
+- **Max-Age**: 86400 seconds (24 hours)
+
+This cookie is sent automatically with subsequent requests when you use `credentials: 'include'`.
+
+## What Happens on Verification
+
+<Steps>
+  <Step title="OTP Validation">
+    System verifies the OTP code against the stored value in Redis.
+  </Step>
+  
+  <Step title="User Type Detection">
+    System determines if the user is a Job Seeker or Company based on stored OTP data.
+  </Step>
+  
+  <Step title="Email Status Update">
+    User's `isVerified` field is set to `true` in the database.
+  </Step>
+  
+  <Step title="Login Timestamp Update">
+    For job seekers, `lastLoginAt` is updated to current timestamp.
+  </Step>
+  
+  <Step title="OTP Deletion">
+    Used OTP is immediately deleted from Redis.
+  </Step>
+  
+  <Step title="Token Generation">
+    New JWT access and refresh tokens are generated.
+  </Step>
+  
+  <Step title="Refresh Token Storage">
+    Refresh token is stored in Redis with 24-hour expiration and set as HTTP-only cookie.
+  </Step>
+  
+  <Step title="User Logged In">
+    User is now authenticated and can access protected endpoints.
+  </Step>
+</Steps>
+
+## Error Responses
+
+### 400 Bad Request - Validation Error
+
+Returned when request validation fails.
+
+```json
+{
+  "statusCode": 400,
+  "message": [
+    "Invalid email format",
+    "OTP must be exactly 6 digits"
+  ],
+  "error": "Bad Request"
+}
+```
+
+**Common validation errors**:
+- `Invalid email format` - Email is not in valid format
+- `OTP must be exactly 6 digits` - Code is not exactly 6 characters
+- `OTP must contain only numbers` - Code contains non-numeric characters
+
+### 401 Unauthorized - Invalid OTP
+
+Returned when OTP is incorrect or expired.
+
+```json
+{
+  "statusCode": 401,
+  "message": "Invalid or expired OTP code",
+  "error": "Unauthorized"
+}
+```
+
+**Possible causes**:
+- OTP code is incorrect
+- OTP has expired (10 minutes validity)
+- OTP was already used
+- Email doesn't match registration email
+- OTP was never generated for this email
+
+### 401 Unauthorized - User Not Found
+
+Returned when no user exists with the provided email.
+
+```json
+{
+  "statusCode": 401,
+  "message": "User not found",
+  "error": "Unauthorized"
+}
+```
+
+### 401 Unauthorized - Verification Failed
+
+Generic error for other verification issues.
+
+```json
+{
+  "statusCode": 401,
+  "message": "Email verification failed",
+  "error": "Unauthorized"
+}
+```
+
+## Validation Rules
+
+| Field | Type | Required | Rules |
+|-------|------|----------|-------|
+| email | string | Yes | Must be valid email format |
+| code | string | Yes | Must be exactly 6 digits, numeric only (0-9) |
+
+## OTP Behavior
+
+<Info>
+  **OTP Validity**: Each OTP is valid for 10 minutes from generation. After expiration, users need to request a new code (feature in development).
+</Info>
+
+<Warning>
+  **Single Use**: Each OTP can only be used once. After successful verification, the OTP is immediately deleted from Redis.
+</Warning>
+
+<Tip>
+  **Case Insensitive Email**: Email comparison is case-insensitive, so `john@example.com` and `JOHN@example.com` are treated as the same.
+</Tip>
+
+## After Verification
+
+Once email is verified, the user:
+1. ✅ Is automatically logged in
+2. ✅ Receives access token (1 hour validity)
+3. ✅ Has refresh token stored in HTTP-only cookie (24 hours validity)
+4. ✅ Can access all protected endpoints
+5. ✅ Can login normally without re-verification
+6. ✅ Has `isVerified: true` in their account
+
+## Related Endpoints
+
+- [Register Job Seeker](/api-reference/auth/register-job-seeker) - Create job seeker account
+- [Register Company](/api-reference/auth/register-company) - Create company account
+- [Login](/api-reference/auth/login) - Login after verification
+- [Refresh Token](/api-reference/auth/refresh-token) - Get new access token

@@ -1,0 +1,303 @@
+---
+title: 'Refresh Token'
+api: 'POST /api/v1/auth/refresh-token'
+description: 'Get a new access token using refresh token'
+---
+
+## Endpoint
+
+```
+POST /api/v1/auth/refresh-token
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint is **public** but requires a valid refresh token cookie.</Note>
+
+## Request
+
+No request body is required. The refresh token is automatically sent via HTTP-only cookie.
+
+<Warning>
+  **Important**: You must include `credentials: 'include'` in your fetch request to send the refresh token cookie.
+</Warning>
+
+## Request Example
+
+<CodeGroup>
+
+```typescript TypeScript
+const response = await fetch('http://localhost:3000/api/v1/auth/refresh-token', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include' // Required! Sends the refresh token cookie
+});
+
+const result = await response.json();
+console.log(result);
+```
+
+```python Python
+import requests
+
+# Use session to maintain cookies
+session = requests.Session()
+
+response = session.post('http://localhost:3000/api/v1/auth/refresh-token')
+
+result = response.json()
+print(result)
+```
+
+</CodeGroup>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwidHlwZSI6IkpPQl9TRUVLRVIiLCJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MDUzMTk0MDAsImV4cCI6MTcwNTMyMzAwMCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.signature"
+}
+```
+
+<ResponseField name="accessToken" type="string">
+  New JWT access token for authenticating API requests. Valid for 1 hour.
+</ResponseField>
+
+## Important: Refresh Token Cookie
+
+<Warning>
+  The refresh token is sent via HTTP-only cookie and is **not** included in the response body. A new refresh token cookie is automatically set with each refresh.
+</Warning>
+
+The server sets a new cookie with these properties:
+- **Name**: `refreshToken`
+- **HttpOnly**: true (cannot be accessed via JavaScript)
+- **Secure**: true (in production, requires HTTPS)
+- **SameSite**: Strict
+- **Max-Age**: 24 hours (86400 seconds)
+
+## What Happens on Token Refresh
+
+<Steps>
+  <Step title="Cookie Validation">
+    System reads refresh token from HTTP-only cookie
+  </Step>
+  
+  <Step title="Token Verification">
+    Validates refresh token signature and expiration
+  </Step>
+  
+  <Step title="Token Type Check">
+    Ensures token type is REFRESH (not ACCESS)
+  </Step>
+  
+  <Step title="User Lookup">
+    Retrieves user from database based on token payload (JobSeeker or Company)
+  </Step>
+  
+  <Step title="Redis Validation">
+    Checks if refresh token ID exists in Redis (not blacklisted/invalidated)
+  </Step>
+  
+  <Step title="Invalidate Old Token">
+    Removes old refresh token from Redis (token rotation security)
+  </Step>
+  
+  <Step title="Generate New Tokens">
+    Creates new access token and refresh token
+  </Step>
+  
+  <Step title="Store New Refresh Token">
+    Stores new refresh token ID in Redis and updates cookie
+  </Step>
+  
+  <Step title="Return Access Token">
+    Returns new access token in response body
+  </Step>
+</Steps>
+
+## Important: Refresh Token Rotation
+
+<Info>
+  **Security Feature**: Each time you refresh, the old refresh token is invalidated and a new one is issued. This prevents refresh token reuse attacks.
+</Info>
+
+**What this means:**
+- After calling this endpoint, your old refresh token becomes invalid
+- A new refresh token is automatically set as a cookie
+- You must use the new refresh token for subsequent refreshes
+- Attempting to reuse an old refresh token will fail
+
+## Error Responses
+
+### 401 Unauthorized - Refresh Token Not Found
+
+Returned when refresh token cookie is missing.
+
+```json
+{
+  "statusCode": 401,
+  "message": "Refresh token not found",
+  "error": "Unauthorized"
+}
+```
+
+**Possible causes:**
+- User never logged in
+- Cookie was cleared/expired
+- Request doesn't include `credentials: 'include'`
+- CORS not configured to allow credentials
+
+**Solution**: User needs to login again.
+
+### 401 Unauthorized - Invalid Refresh Token
+
+Returned when refresh token is invalid, expired, or already used.
+
+```json
+{
+  "statusCode": 401,
+  "message": "Invalid refresh token",
+  "error": "Unauthorized"
+}
+```
+
+**Possible causes:**
+- Token has expired (24 hours passed)
+- Token signature is invalid
+- Token has been used already (due to rotation)
+- Token was manually invalidated/revoked
+- User no longer exists in database
+- Token not found in Redis (invalidated)
+
+**Solution**: Redirect user to login page.
+
+### 401 Unauthorized - Invalid Token Type
+
+Returned when using access token instead of refresh token.
+
+```json
+{
+  "statusCode": 401,
+  "message": "Invalid token type",
+  "error": "Unauthorized"
+}
+```
+
+**Cause**: Trying to use an access token with this endpoint. This endpoint requires a refresh token.
+
+**Solution**: Ensure you're sending the refresh token cookie, not the access token.
+
+## Token Lifecycle
+
+| Event | Access Token | Refresh Token |
+|-------|--------------|---------------|
+| Login/Verify | New token issued (1h) | New token issued (24h) |
+| API Request | Sent in Authorization header | Sent as cookie |
+| Access Token Expires | Becomes invalid | Still valid |
+| Refresh Token Used | New token issued (1h) | Old invalidated, new issued (24h) |
+| Refresh Token Expires | Can't be refreshed | User must login |
+| Logout | Cleared from client | Invalidated in Redis |
+
+## When to Refresh Tokens
+
+<AccordionGroup>
+  <Accordion title="On 401 Response (Reactive) - Recommended">
+    Wait until you get a 401 error, then refresh the token and retry the request.
+    
+    **Pros**: 
+    - Simple implementation
+    - No unnecessary refreshes
+    - Works with the examples above
+    
+    **Cons**: 
+    - Brief disruption when token expires
+  </Accordion>
+
+  <Accordion title="Before Expiration (Proactive)">
+    Decode the JWT and refresh before it expires (e.g., 5 minutes before).
+    
+    **Pros**: 
+    - Seamless user experience
+    - No failed requests
+    
+    **Cons**: 
+    - Requires JWT decoding library
+    - Timer management complexity
+    - May refresh unnecessarily
+  </Accordion>
+
+  <Accordion title="On App Load (Conservative)">
+    Always attempt to refresh on app initialization or page refresh.
+    
+    **Pros**: 
+    - Ensures fresh token
+    - Simple to implement
+    
+    **Cons**: 
+    - Extra request on every page load
+    - May refresh valid tokens
+  </Accordion>
+</AccordionGroup>
+
+## Common Issues
+
+### CORS / Cookie Issues
+
+**Problem**: Refresh token cookie not being sent
+
+**Solutions**:
+- Ensure `credentials: 'include'` is set in fetch
+- Check CORS settings allow credentials (`Access-Control-Allow-Credentials: true`)
+- Verify cookie domain matches API domain (localhost for local dev)
+- Check browser allows third-party cookies (if frontend/backend on different domains)
+- In production, ensure frontend and backend are on same domain or properly configured
+
+### Token Rotation Confusion
+
+**Problem**: Old refresh token doesn't work after refresh
+
+**This is expected behavior!** Token rotation invalidates old tokens after use for security.
+
+**Solution**: Always use the latest refresh token cookie (browser handles this automatically)
+
+### Infinite Refresh Loop
+
+**Problem**: App keeps refreshing tokens in a loop
+
+**Cause**: Multiple requests triggering refresh simultaneously without queueing
+
+**Solution**: Implement refresh lock/queue (see TypeScript example above)
+
+### Lost Cookie After Refresh
+
+**Problem**: Refresh token cookie disappears after some time
+
+**Cause**: Cookie has 24-hour expiration
+
+**Solution**: This is normal - user needs to login again after 24 hours
+
+## Security Best Practices
+
+<Warning>
+  **Never store refresh tokens in localStorage or sessionStorage**. They're automatically handled via HTTP-only cookies which cannot be accessed by JavaScript (protecting against XSS attacks).
+</Warning>
+
+<Info>
+  **Token Rotation**: Old refresh tokens are automatically invalidated when new ones are issued, preventing replay attacks if a token is intercepted.
+</Info>
+
+<Tip>
+  **Silent Refresh**: Implement automatic token refresh in the background for seamless user experience without interrupting their workflow.
+</Tip>
+
+## Related Endpoints
+
+- [Login](/api-reference/auth/login) - Get initial tokens
+- [Verify Email](/api-reference/auth/verify-email) - Get tokens after email verification
+- [Register Job Seeker](/api-reference/auth/register-job-seeker) - Create job seeker account
+- [Register Company](/api-reference/auth/register-company) - Create company account
