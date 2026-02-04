@@ -7,10 +7,14 @@ import { JobSeekerRepository } from './job-seeker.repository';
 export class JobSeekerRepositoryImpl implements JobSeekerRepository {
   constructor(private readonly databaseService: DatabaseService) {}
   async findByEmailAndUpdate(email: string, data: UpdateJobSeekerData): Promise<JobSeeker | null> {
-    return this.databaseService.jobSeeker.update({
-      where: { email },
-      data,
-    });
+    try {
+      return await this.databaseService.jobSeeker.update({
+        where: { email },
+        data,
+      });
+    } catch {
+      return null;
+    }
   }
 
   async findByEmail(email: string): Promise<JobSeeker | null> {
