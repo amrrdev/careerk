@@ -10,6 +10,7 @@ import { HashingService } from '../hashing/hashing.service';
 import { JobSeekerRepository } from 'src/modules/job-seeker/repositories/job-seeker.repository';
 import { CompanyRepository } from 'src/modules/company/repositories/company.repository';
 import { RegisterJobSeekerDto } from './dto/register-job-seeker.dto';
+import { RegisterCompanyDto } from './dto/register-company.dto';
 import { LoginDto } from './dto/login.dto';
 import jwtConfig from '../config/jwt.config';
 import { type ConfigType } from '@nestjs/config';
@@ -42,6 +43,7 @@ export class AuthenticationService {
     @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,
   ) {}
 
+  // ===================== Login =====================
   async login(loginDto: LoginDto) {
     try {
       const [jobSeeker, company] = await Promise.all([
@@ -65,13 +67,12 @@ export class AuthenticationService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
-      // NOTE: We can update the `lastLoginAt` column, but it’s probably not worth doing an extra query just for that.
-      // if not, we should remove `lastLoginAt` column
       const { accessToken, refreshToken } = await this.generateTokens({
         email: user.email,
         sub: user.id,
         type: userType,
       });
+
       return {
         ...user,
         accessToken,
@@ -85,9 +86,9 @@ export class AuthenticationService {
     }
   }
 
+  // ===================== Register Job Seeker =====================
   async registerJobSeeker(registerJobSeekerDto: RegisterJobSeekerDto) {
     try {
-      // TODO: hmmm, I think there's a better way.
       await this.checkEmailExists(registerJobSeekerDto.email);
 
       const hashedPassword = await this.hashingService.hash(registerJobSeekerDto.password);
@@ -130,8 +131,32 @@ export class AuthenticationService {
     }
   }
 
-  // async registerCompany(registerCompanyDto: RegisterCompanyDto) {}
+  // ===================== Register Company =====================
+  async registerCompany(registerCompanyDto: RegisterCompanyDto) {
+    try {
+      await this.checkEmailExists(registerCompanyDto.email);
 
+      const hashedPassword = await this.hashingService.hash(registerCompanyDto.password);
+      const company = await this.companyRepository.create({
+        ...registerCompanyDto,
+        password: hashedPassword,
+      });
+
+      const otp = await this.otpService.createOtp(company.email, OtpPurpose.EMAIL_VERIFICATION);
+      await this.emailService.sendVerificationEmail(company.email, otp, company.name);
+
+      return {
+        email: company.email,
+      };
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Failed to create company');
+    }
+  }
+
+  // ===================== Refresh Token =====================
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
     try {
       const payload = await this.jwtService.verifyAsync<{
@@ -176,6 +201,7 @@ export class AuthenticationService {
     }
   }
 
+  // ===================== Verify Email =====================
   async verifyEmail(email: string, code: string) {
     try {
       const otpData = await this.otpService.verifyOtp(email, code, OtpPurpose.EMAIL_VERIFICATION);
@@ -217,6 +243,7 @@ export class AuthenticationService {
     }
   }
 
+  // ===================== Private Helpers =====================
   private async checkEmailExists(email: string): Promise<void> {
     const [isJobSeekerExists, isCompanyExists] = await Promise.all([
       this.jobSeekerRepository.existsByEmail(email),
