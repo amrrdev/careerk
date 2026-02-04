@@ -16,15 +16,23 @@ import { refreshTokenStorageService } from './authentication/refresh-token-stora
 import { RolesGuard } from './authentication/guards/roles.guard';
 import { EmailModule } from 'src/infrastructure/email/email.module';
 import { OtpService } from './otp/otp.service';
+import { QueueModule } from 'src/infrastructure/queue/queue.module';
+import { BullModule } from '@nestjs/bullmq';
+import { EMAIL_QUEUE } from './jobs/queue.constants';
+import { EmailProcessor } from './processors/email.processor';
 
 @Module({
   imports: [
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
+    BullModule.registerQueue({
+      name: EMAIL_QUEUE,
+    }),
     JobSeekerModule,
     CompanyModule,
     RedisModule,
     EmailModule,
+    QueueModule,
   ],
   controllers: [AuthenticationController],
   providers: [
@@ -44,6 +52,7 @@ import { OtpService } from './otp/otp.service';
     AccessTokenGuard,
     refreshTokenStorageService,
     OtpService,
+    EmailProcessor,
   ],
 })
 export class IamModule {}

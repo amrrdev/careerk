@@ -23,6 +23,10 @@ import { randomUUID } from 'node:crypto';
 import { EmailService } from 'src/infrastructure/email/email.service';
 import { OtpService } from '../otp/otp.service';
 import { OtpPurpose } from '../enums/otp-purpose.enum';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { EMAIL_QUEUE, SEND_VERIFICATION_EMAIL_JOB } from '../jobs/queue.constants';
+import { SendVerificationEmailJob } from '../jobs/send-verification-email.job';
 
 @Injectable()
 export class AuthenticationService {
@@ -34,6 +38,7 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
     private readonly otpService: OtpService,
+    @InjectQueue(EMAIL_QUEUE) private readonly emailQueue: Queue,
     @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,
   ) {}
 
@@ -96,7 +101,23 @@ export class AuthenticationService {
         OtpPurpose.EMAIL_VERIFICATION,
         UserType.JOB_SEEKER,
       );
-      await this.emailService.sendVerificationEmail(jobSeeker.email, otp, jobSeeker.firstName);
+
+      await this.emailQueue.add(
+        SEND_VERIFICATION_EMAIL_JOB,
+        {
+          email: jobSeeker.email,
+          code: otp,
+          userName: jobSeeker.firstName,
+        } as SendVerificationEmailJob,
+        {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+          removeOnComplete: true,
+        },
+      );
 
       return {
         email: jobSeeker.email,
