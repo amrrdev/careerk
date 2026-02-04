@@ -43,7 +43,6 @@ export class AuthenticationService {
     @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,
   ) {}
 
-  // ===================== Login =====================
   async login(loginDto: LoginDto) {
     try {
       const [jobSeeker, company] = await Promise.all([
@@ -86,7 +85,6 @@ export class AuthenticationService {
     }
   }
 
-  // ===================== Register Job Seeker =====================
   async registerJobSeeker(registerJobSeekerDto: RegisterJobSeekerDto) {
     try {
       await this.checkEmailExists(registerJobSeekerDto.email);
@@ -131,7 +129,6 @@ export class AuthenticationService {
     }
   }
 
-  // ===================== Register Company =====================
   async registerCompany(registerCompanyDto: RegisterCompanyDto) {
     try {
       await this.checkEmailExists(registerCompanyDto.email);
@@ -142,8 +139,28 @@ export class AuthenticationService {
         password: hashedPassword,
       });
 
-      const otp = await this.otpService.createOtp(company.email, OtpPurpose.EMAIL_VERIFICATION);
-      await this.emailService.sendVerificationEmail(company.email, otp, company.name);
+      const otp = await this.otpService.createOtp(
+        company.email,
+        OtpPurpose.EMAIL_VERIFICATION,
+        UserType.COMPANY,
+      );
+
+      await this.emailQueue.add(
+        SEND_VERIFICATION_EMAIL_JOB,
+        {
+          email: company.email,
+          code: otp,
+          userName: company.name,
+        } as SendVerificationEmailJob,
+        {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+          removeOnComplete: true,
+        },
+      );
 
       return {
         email: company.email,
@@ -156,7 +173,6 @@ export class AuthenticationService {
     }
   }
 
-  // ===================== Refresh Token =====================
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
     try {
       const payload = await this.jwtService.verifyAsync<{
@@ -201,7 +217,6 @@ export class AuthenticationService {
     }
   }
 
-  // ===================== Verify Email =====================
   async verifyEmail(email: string, code: string) {
     try {
       const otpData = await this.otpService.verifyOtp(email, code, OtpPurpose.EMAIL_VERIFICATION);
@@ -243,7 +258,6 @@ export class AuthenticationService {
     }
   }
 
-  // ===================== Private Helpers =====================
   private async checkEmailExists(email: string): Promise<void> {
     const [isJobSeekerExists, isCompanyExists] = await Promise.all([
       this.jobSeekerRepository.existsByEmail(email),
