@@ -7,6 +7,17 @@ import { DatabaseService } from 'src/infrastructure/database/database.service';
 export class CompanyRepositoryImpl implements CompanyRepository {
   constructor(private readonly databaseService: DatabaseService) {}
 
+  async findByEmailAndUpdatePassword(email: string, password: string): Promise<Company | null> {
+    try {
+      return await this.databaseService.company.update({
+        where: { email },
+        data: { password },
+      });
+    } catch {
+      return null;
+    }
+  }
+
   async findByEmailAndUpdate(email: string, data: UpdateCompanyData): Promise<Company | null> {
     try {
       return await this.databaseService.company.update({

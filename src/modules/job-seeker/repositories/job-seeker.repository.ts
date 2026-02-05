@@ -11,4 +11,8 @@ export abstract class JobSeekerRepository {
     email: string,
     data: UpdateJobSeekerData,
   ): Promise<JobSeeker | null>;
+  abstract findByEmailAndUpdatePassword(
+    email: string,
+    password: string,
+  ): Promise<{ id: string } | null>;
 }

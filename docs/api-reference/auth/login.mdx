@@ -1,6 +1,6 @@
 ---
 title: 'Login'
-api: 'POST /auth/login'
+api: 'POST /api/v1/auth/login'
 description: 'Authenticate existing users and receive tokens'
 ---
 
@@ -82,7 +82,12 @@ print(result)
     "lastLoginAt": "2024-01-15T10:30:00.000Z",
     "createdAt": "2024-01-15T10:00:00.000Z",
     "updatedAt": "2024-01-15T10:30:00.000Z",
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwidHlwZSI6IkpPQl9TRUVLRVIiLCJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MDUzMTU4MDAsImV4cCI6MTcwNTMxOTQwMCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.signature"
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwidHlwZSI6IkpPQl9TRUVLRVIiLCJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MDUzMTU4MDAsImV4cCI6MTcwNTMxOTQwMCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.signature",
+    "meta": {
+      "timestamp": "2024-01-15T10:30:00.000Z",
+      "path": "/auth/login",
+      "method": "POST"
+    }
   },
   "message": "Login successfully"
 }
@@ -114,7 +119,12 @@ print(result)
     "isVerified": true,
     "createdAt": "2024-01-15T10:00:00.000Z",
     "updatedAt": "2024-01-15T10:30:00.000Z",
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjBmOTUwMC1mMzljLTUyZTUtYjgyNy01NTc3NjY1NTExMTEiLCJlbWFpbCI6ImhyQHRlY2hjb3JwLmNvbSIsInR5cGUiOiJDT01QQU5ZIiwidG9rZW5UeXBlIjoiQUNDRVNTIiwiaWF0IjoxNzA1MzE1ODAwLCJleHAiOjE3MDUzMTk0MDAsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.signature"
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjBmOTUwMC1mMzljLTUyZTUtYjgyNy01NTc3NjY1NTExMTEiLCJlbWFpbCI6ImhyQHRlY2hjb3JwLmNvbSIsInR5cGUiOiJDT01QQU5ZIiwidG9rZW5UeXBlIjoiQUNDRVNTIiwiaWF0IjoxNzA1MzE1ODAwLCJleHAiOjE3MDUzMTk0MDAsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.signature",
+    "meta": {
+      "timestamp": "2024-01-15T10:30:00.000Z",
+      "path": "/auth/login",
+      "method": "POST"
+    }
   },
   "message": "Login successfully"
 }
@@ -410,6 +420,11 @@ interface JobSeekerLoginResponse {
     createdAt: string;
     updatedAt: string;
     accessToken: string;
+    meta: {
+      timestamp: string;
+      path: string;
+      method: string;
+    };
   };
   message: string;
 }
@@ -439,6 +454,11 @@ interface CompanyLoginResponse {
     createdAt: string;
     updatedAt: string;
     accessToken: string;
+    meta: {
+      timestamp: string;
+      path: string;
+      method: string;
+    };
   };
   message: string;
 }

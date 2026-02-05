@@ -25,6 +25,9 @@ CareerK uses JWT (JSON Web Tokens) for secure authentication. This guide explain
   <Step title="Token Refresh">
     Automatically refresh expired access tokens
   </Step>
+  <Step title="Password Recovery">
+    Reset forgotten passwords using OTP verification
+  </Step>
 </Steps>
 
 ## Token Types
@@ -53,7 +56,7 @@ CareerK uses JWT (JSON Web Tokens) for secure authentication. This guide explain
 
 ```javascript
 async function registerJobSeeker(userData) {
-  const response = await fetch('http://localhost:3000/auth/register/job-seeker', {
+  const response = await fetch('http://localhost:3000/api/v1/auth/register/job-seeker', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -81,7 +84,7 @@ async function registerJobSeeker(userData) {
 
 ```javascript
 async function registerCompany(companyData) {
-  const response = await fetch('http://localhost:3000/auth/register/company', {
+  const response = await fetch('http://localhost:3000/api/v1/auth/register/company', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -112,7 +115,7 @@ After registration, users receive a 6-digit OTP code via email:
 
 ```javascript
 async function verifyEmail(email, code) {
-  const response = await fetch('http://localhost:3000/auth/verify-email', {
+  const response = await fetch('http://localhost:3000/api/v1/auth/verify-email', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -144,11 +147,73 @@ async function verifyEmail(email, code) {
   The `credentials: 'include'` option is **required** to allow the browser to store and send the HTTP-only refresh token cookie.
 </Note>
 
-### 3. Login (Returning Users)
+### 3. Password Reset (Forgot Password)
+
+If a user forgets their password, they can reset it using a two-step process:
+
+#### Step 1: Request Password Reset Code
+
+```javascript
+async function forgotPassword(email) {
+  const response = await fetch('http://localhost:3000/api/v1/auth/forgot-password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: email
+    })
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(result.message);
+  }
+
+  return result;
+  // Returns: { success: true, data: { email: 'user@example.com' }, message: '...' }
+  // User receives 6-digit OTP via email (if account exists)
+}
+```
+
+#### Step 2: Reset Password with OTP
+
+```javascript
+async function resetPassword(email, code, newPassword) {
+  const response = await fetch('http://localhost:3000/api/v1/auth/reset-password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: email,
+      code: code, // 6-digit OTP from email
+      newPassword: newPassword
+    })
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(result.message);
+  }
+
+  return result;
+  // Returns: { success: true, data: { message: 'Password has been reset successfully' }, ... }
+  // All active sessions are logged out - user must login again
+}
+```
+
+<Warning>
+  **All Sessions Logged Out**: After a successful password reset, all active sessions are automatically terminated for security. The user must login again with the new password.
+</Warning>
+
+### 4. Login (Returning Users)
 
 ```javascript
 async function login(email, password) {
-  const response = await fetch('http://localhost:3000/auth/login', {
+  const response = await fetch('http://localhost:3000/api/v1/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -175,13 +240,13 @@ async function login(email, password) {
 }
 ```
 
-### 4. Making Authenticated Requests
+### 5. Making Authenticated Requests
 
 Include the access token in the Authorization header:
 
 ```javascript
 async function fetchUserProfile(accessToken) {
-  const response = await fetch('http://localhost:3000/job-seekers/profile', {
+  const response = await fetch('http://localhost:3000/api/v1/job-seekers/profile', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
@@ -198,13 +263,13 @@ async function fetchUserProfile(accessToken) {
 }
 ```
 
-### 5. Refresh Access Token
+### 6. Refresh Access Token
 
 When the access token expires (after 1 hour), get a new one:
 
 ```javascript
 async function refreshAccessToken() {
-  const response = await fetch('http://localhost:3000/auth/refresh-token', {
+  const response = await fetch('http://localhost:3000/api/v1/auth/refresh-token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -334,6 +399,27 @@ class ApiClient {
     
     throw new Error((await response.json()).message);
   }
+
+  async forgotPassword(email) {
+    const response = await this.request('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+    return await response.json();
+  }
+
+  async resetPassword(email, code, newPassword) {
+    const response = await this.request('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, code, newPassword }),
+    });
+    
+    if (response.ok) {
+      return await response.json();
+    }
+    
+    throw new Error((await response.json()).message);
+  }
 }
 
 export const apiClient = new ApiClient();
@@ -448,10 +534,35 @@ function LoginForm() {
 - Verify refresh token hasn't expired (24 hours)
 - Check browser console for cookie-related warnings
 
+## Password Reset Flow
+
+<Steps>
+  <Step title="User Requests Reset">
+    User clicks "Forgot Password" and submits their email
+  </Step>
+  <Step title="OTP Sent">
+    If account exists, 6-digit OTP is sent via email (valid for 10 minutes)
+  </Step>
+  <Step title="User Enters Code">
+    User enters email, OTP code, and new password
+  </Step>
+  <Step title="Password Updated">
+    System validates OTP and updates password
+  </Step>
+  <Step title="Sessions Invalidated">
+    All active sessions are logged out for security
+  </Step>
+  <Step title="User Logs In">
+    User logs in with new password
+  </Step>
+</Steps>
+
 ## Next Steps
 
 - [Register Job Seeker API](/api-reference/auth/register-job-seeker)
 - [Register Company API](/api-reference/auth/register-company)
 - [Login API](/api-reference/auth/login)
 - [Verify Email API](/api-reference/auth/verify-email)
+- [Forgot Password API](/api-reference/auth/forgot-password)
+- [Reset Password API](/api-reference/auth/reset-password)
 - [Refresh Token API](/api-reference/auth/refresh-token)

@@ -43,6 +43,21 @@ export class EmailService {
     }
   }
 
+  async sendPasswordResetEmail(
+    to: string,
+    otp: string,
+    userName?: string,
+    expiryMinutes: number = 10,
+  ) {
+    const html = this.emailTemplatesService.getPasswordResetTemplate(otp, userName, expiryMinutes);
+
+    return this.sendEmail({
+      to,
+      subject: 'Reset Your Password - CareerK',
+      html,
+    });
+  }
+
   async sendVerificationEmail(
     to: string,
     otp: string,

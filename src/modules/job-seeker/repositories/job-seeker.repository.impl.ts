@@ -6,6 +6,22 @@ import { JobSeekerRepository } from './job-seeker.repository';
 @Injectable()
 export class JobSeekerRepositoryImpl implements JobSeekerRepository {
   constructor(private readonly databaseService: DatabaseService) {}
+
+  async findByEmailAndUpdatePassword(
+    email: string,
+    password: string,
+  ): Promise<{ id: string } | null> {
+    try {
+      return await this.databaseService.jobSeeker.update({
+        where: { email },
+        data: { password },
+        select: { id: true },
+      });
+    } catch {
+      return null;
+    }
+  }
+
   async findByEmailAndUpdate(email: string, data: UpdateJobSeekerData): Promise<JobSeeker | null> {
     try {
       return await this.databaseService.jobSeeker.update({
