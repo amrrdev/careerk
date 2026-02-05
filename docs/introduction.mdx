@@ -10,8 +10,10 @@ CareerK is a comprehensive job platform API that connects job seekers with emplo
 ## Base URL
 
 ```
-http://localhost:3000
+http://localhost:3000/auth
 ```
+
+**Note**: There is no `/api/v1` prefix. All authentication endpoints are directly under the base URL.
 
 For production, replace with your actual API URL.
 
@@ -47,7 +49,12 @@ const response = await fetch('http://localhost:3000/auth/register/job-seeker', {
 });
 
 const data = await response.json();
-// Returns: { success: true, data: { email: 'john@example.com' }, message: '...' }
+// Returns: { 
+//   success: true, 
+//   data: { email: 'john@example.com' }, 
+//   message: 'Registration successful. Please check your email to verify your account.' 
+// }
+// Check your email for a 6-digit OTP code
 ```
 
 ### 2. Verify Email
@@ -78,8 +85,10 @@ const response = await fetch('http://localhost:3000/job-seekers/profile', {
     'Authorization': `Bearer ${accessToken}`,
     'Content-Type': 'application/json'
   },
-  credentials: 'include'
+  credentials: 'include' // Important for refresh token cookies
 });
+
+const data = await response.json();
 ```
 
 ## Response Format
@@ -108,6 +117,17 @@ All API responses follow this structure:
 }
 ```
 
+## Available Endpoints
+
+### Authentication
+- `POST /auth/register/job-seeker` - Register as job seeker
+- `POST /auth/register/company` - Register as company
+- `POST /auth/verify-email` - Verify email with OTP code
+- `POST /auth/login` - Login to existing account
+- `POST /auth/refresh-token` - Refresh access token
+- `POST /auth/forgot-password` - Request password reset code
+- `POST /auth/reset-password` - Reset password with OTP code
+
 ## Common HTTP Status Codes
 
 | Code | Description |
@@ -135,8 +155,74 @@ Employers posting job opportunities
 - Register at `/auth/register/company`
 - Access company endpoints
 
+## Password Reset Flow
+
+If you forget your password, you can reset it using a two-step process:
+
+### 1. Request Password Reset
+
+```javascript
+const response = await fetch('http://localhost:3000/auth/forgot-password', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'john@example.com'
+  })
+});
+
+const data = await response.json();
+// Returns success message regardless of email existence (security feature)
+// If email exists, user receives 6-digit OTP code via email
+```
+
+### 2. Reset Password with OTP
+
+```javascript
+const response = await fetch('http://localhost:3000/auth/reset-password', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'john@example.com',
+    code: '123456', // OTP from email
+    newPassword: 'newSecurePassword123'
+  })
+});
+
+const data = await response.json();
+// Password reset successful
+// All active sessions are logged out - must login again
+```
+
+## Important Security Notes
+
+<Warning>
+  **Refresh Token Cookies**: Always use `credentials: 'include'` in your fetch requests to enable cookie handling. The refresh token is stored as an HTTP-only cookie and cannot be accessed via JavaScript.
+</Warning>
+
+<Info>
+  **Password Security**: All passwords are hashed using bcrypt before storage. Passwords are never stored in plain text.
+</Info>
+
+<Tip>
+  **OTP Codes**: All OTP codes (email verification and password reset) are valid for 10 minutes and can be attempted a maximum of 3 times.
+</Tip>
+
+## Token Lifetimes
+
+| Token Type | Lifetime | Storage |
+|------------|----------|---------|
+| Access Token | 1 hour | Memory/State (client-side) |
+| Refresh Token | 24 hours | HTTP-only cookie (automatic) |
+| OTP Code | 10 minutes | Redis (server-side) |
+
 ## Need Help?
 
 - Check the [Authentication Guide](/authentication) for detailed auth flow
-- Browse the [API Reference](/api-reference/auth/register-job-seeker) for all endpoints
-- Contact support at support@careerk.com
+- Browse the API Reference for all endpoints:
+  - [Register Job Seeker](/api-reference/auth/register-job-seeker)
+  - [Register Company](/api-reference/auth/register-company)
+  - [Verify Email](/api-reference/auth/verify-email)
+  - [Login](/api-reference/auth/login)
+  - [Forgot Password](/api-reference/auth/forgot-password)
+  - [Reset Password](/api-reference/auth/reset-password)
+  - [Refresh Token](/api-reference/auth/refresh-token)

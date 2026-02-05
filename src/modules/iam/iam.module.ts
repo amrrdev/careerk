@@ -12,13 +12,14 @@ import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './authentication/guards/access-token.guard';
 import { AuthenticationGuard } from './authentication/guards/authentication.guard';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
-import { refreshTokenStorageService } from './authentication/refresh-token-storage.service';
+import { RefreshTokenStorageService } from './authentication/refresh-token-storage.service';
 import { RolesGuard } from './authentication/guards/roles.guard';
 import { EmailModule } from 'src/infrastructure/email/email.module';
 import { OtpService } from './otp/otp.service';
 import { BullModule } from '@nestjs/bullmq';
 import { EMAIL_QUEUE } from './jobs/queue.constants';
 import { EmailProcessor } from './processors/email.processor';
+import { PasswordResetService } from './authentication/password-reset.service';
 
 @Module({
   imports: [
@@ -48,9 +49,10 @@ import { EmailProcessor } from './processors/email.processor';
       useClass: RolesGuard,
     },
     AccessTokenGuard,
-    refreshTokenStorageService,
+    RefreshTokenStorageService,
     OtpService,
     EmailProcessor,
+    PasswordResetService,
   ],
 })
 export class IamModule {}

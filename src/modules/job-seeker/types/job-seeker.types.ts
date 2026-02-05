@@ -25,3 +25,8 @@ export type CreateJobSeekerData = Omit<
 export type UpdateJobSeekerData = Partial<
   Omit<JobSeeker, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt'>
 >;
+
+/**
+ * JobSeeker update password
+ */
+export type UpdateJobSeekerPassword = Pick<JobSeeker, 'password'>;

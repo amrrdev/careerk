@@ -19,9 +19,8 @@ import { UserType } from '../enums/user-type.enum';
 import { ActiveUserData } from '../interfaces/active-user.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { TokenType } from '../enums/token-type.enum';
-import { refreshTokenStorageService } from './refresh-token-storage.service';
+import { RefreshTokenStorageService } from './refresh-token-storage.service';
 import { randomUUID } from 'node:crypto';
-import { EmailService } from 'src/infrastructure/email/email.service';
 import { OtpService } from '../otp/otp.service';
 import { OtpPurpose } from '../enums/otp-purpose.enum';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -35,9 +34,8 @@ export class AuthenticationService {
     private readonly jobSeekerRepository: JobSeekerRepository,
     private readonly companyRepository: CompanyRepository,
     private readonly hashingService: HashingService,
-    private readonly refreshTokenStroageService: refreshTokenStorageService,
+    private readonly refreshTokenStroageService: RefreshTokenStorageService,
     private readonly jwtService: JwtService,
-    private readonly emailService: EmailService,
     private readonly otpService: OtpService,
     @InjectQueue(EMAIL_QUEUE) private readonly emailQueue: Queue,
     @Inject(jwtConfig.KEY) private readonly jwtConfigurations: ConfigType<typeof jwtConfig>,

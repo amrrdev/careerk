@@ -8,4 +8,5 @@ export abstract class CompanyRepository {
   abstract findById(id: string): Promise<Company | null>;
   abstract existsByEmail(email: string): Promise<boolean>;
   abstract findByEmailAndUpdate(email: string, data: UpdateCompanyData): Promise<Company | null>;
+  abstract findByEmailAndUpdatePassword(email: string, password: string): Promise<Company | null>;
 }

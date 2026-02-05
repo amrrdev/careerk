@@ -18,11 +18,17 @@ import { AuthType } from '../enums/auth-type.enum';
 import type { Request, Response } from 'express';
 import { REFRESH_TOKEN_COOKIE_KEY, REFRESH_TOKEN_COOKIE_OPTIONS } from '../iam.constants';
 import { ResponseMessage } from 'src/core/decorators/response-message.decorator';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { PasswordResetService } from './password-reset.service';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 @Auth(AuthType.None)
 export class AuthenticationController {
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  constructor(
+    private readonly authenticationService: AuthenticationService,
+    private readonly passwordResetService: PasswordResetService,
+  ) {}
 
   private setRefreshTokenCookie(response: Response, refreshToken: string): void {
     response.cookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
@@ -80,5 +86,20 @@ export class AuthenticationController {
     this.setRefreshTokenCookie(response, result.refreshToken);
 
     return { accessToken: result.accessToken };
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage(
+    "If an account exists with that email, you'll receive a password reset link shortly.",
+  )
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.passwordResetService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return await this.passwordResetService.resetPassword(resetPasswordDto);
   }
 }
