@@ -19,43 +19,19 @@ POST /api/v1/auth/refresh-token
 No request body is required. The refresh token is automatically sent via HTTP-only cookie.
 
 <Warning>
-  **Important**: You must include `credentials: 'include'` in your fetch request to send the refresh token cookie.
+  **Important**: You must include `credentials: 'include'` in your fetch request to send the refresh
+  token cookie.
 </Warning>
-
-## Request Example
-
-<CodeGroup>
-
-```typescript TypeScript
-const response = await fetch('http://localhost:3000/api/v1/auth/refresh-token', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include' // Required! Sends the refresh token cookie
-});
-
-const result = await response.json();
-console.log(result);
-```
-
-```python Python
-import requests
-
-# Use session to maintain cookies
-session = requests.Session()
-
-response = session.post('http://localhost:3000/api/v1/auth/refresh-token')
-
-result = response.json()
-print(result)
-```
-
-</CodeGroup>
 
 ## Response
 
 ### Success Response (200 OK)
+
+```typescript
+interface RefreshTokenResponse {
+  accessToken: string;
+}
+```
 
 ```json
 {
@@ -70,10 +46,12 @@ print(result)
 ## Important: Refresh Token Cookie
 
 <Warning>
-  The refresh token is sent via HTTP-only cookie and is **not** included in the response body. A new refresh token cookie is automatically set with each refresh.
+  The refresh token is sent via HTTP-only cookie and is **not** included in the response body. A new
+  refresh token cookie is automatically set with each refresh.
 </Warning>
 
 The server sets a new cookie with these properties:
+
 - **Name**: `refreshToken`
 - **HttpOnly**: true (cannot be accessed via JavaScript)
 - **Secure**: true (in production, requires HTTPS)
@@ -83,50 +61,40 @@ The server sets a new cookie with these properties:
 ## What Happens on Token Refresh
 
 <Steps>
-  <Step title="Cookie Validation">
-    System reads refresh token from HTTP-only cookie
-  </Step>
-  
-  <Step title="Token Verification">
-    Validates refresh token signature and expiration
-  </Step>
-  
-  <Step title="Token Type Check">
-    Ensures token type is REFRESH (not ACCESS)
-  </Step>
-  
-  <Step title="User Lookup">
-    Retrieves user from database based on token payload (JobSeeker or Company)
-  </Step>
-  
-  <Step title="Redis Validation">
-    Checks if refresh token ID exists in Redis (not blacklisted/invalidated)
-  </Step>
-  
-  <Step title="Invalidate Old Token">
-    Removes old refresh token from Redis (token rotation security)
-  </Step>
-  
-  <Step title="Generate New Tokens">
-    Creates new access token and refresh token
-  </Step>
-  
-  <Step title="Store New Refresh Token">
-    Stores new refresh token ID in Redis and updates cookie
-  </Step>
-  
-  <Step title="Return Access Token">
-    Returns new access token in response body
-  </Step>
+  <Step title="Cookie Validation">System reads refresh token from HTTP-only cookie</Step>
+
+<Step title="Token Verification">Validates refresh token signature and expiration</Step>
+
+<Step title="Token Type Check">Ensures token type is REFRESH (not ACCESS)</Step>
+
+<Step title="User Lookup">
+  Retrieves user from database based on token payload (JobSeeker or Company)
+</Step>
+
+<Step title="Redis Validation">
+  Checks if refresh token ID exists in Redis (not blacklisted/invalidated)
+</Step>
+
+<Step title="Invalidate Old Token">
+  Removes old refresh token from Redis (token rotation security)
+</Step>
+
+<Step title="Generate New Tokens">Creates new access token and refresh token</Step>
+
+<Step title="Store New Refresh Token">Stores new refresh token ID in Redis and updates cookie</Step>
+
+  <Step title="Return Access Token">Returns new access token in response body</Step>
 </Steps>
 
 ## Important: Refresh Token Rotation
 
 <Info>
-  **Security Feature**: Each time you refresh, the old refresh token is invalidated and a new one is issued. This prevents refresh token reuse attacks.
+  **Security Feature**: Each time you refresh, the old refresh token is invalidated and a new one is
+  issued. This prevents refresh token reuse attacks.
 </Info>
 
 **What this means:**
+
 - After calling this endpoint, your old refresh token becomes invalid
 - A new refresh token is automatically set as a cookie
 - You must use the new refresh token for subsequent refreshes
@@ -147,6 +115,7 @@ Returned when refresh token cookie is missing.
 ```
 
 **Possible causes:**
+
 - User never logged in
 - Cookie was cleared/expired
 - Request doesn't include `credentials: 'include'`
@@ -167,6 +136,7 @@ Returned when refresh token is invalid, expired, or already used.
 ```
 
 **Possible causes:**
+
 - Token has expired (24 hours passed)
 - Token signature is invalid
 - Token has been used already (due to rotation)
@@ -194,14 +164,14 @@ Returned when using access token instead of refresh token.
 
 ## Token Lifecycle
 
-| Event | Access Token | Refresh Token |
-|-------|--------------|---------------|
-| Login/Verify | New token issued (1h) | New token issued (24h) |
-| API Request | Sent in Authorization header | Sent as cookie |
-| Access Token Expires | Becomes invalid | Still valid |
-| Refresh Token Used | New token issued (1h) | Old invalidated, new issued (24h) |
-| Refresh Token Expires | Can't be refreshed | User must login |
-| Logout | Cleared from client | Invalidated in Redis |
+| Event                 | Access Token                 | Refresh Token                     |
+| --------------------- | ---------------------------- | --------------------------------- |
+| Login/Verify          | New token issued (1h)        | New token issued (24h)            |
+| API Request           | Sent in Authorization header | Sent as cookie                    |
+| Access Token Expires  | Becomes invalid              | Still valid                       |
+| Refresh Token Used    | New token issued (1h)        | Old invalidated, new issued (24h) |
+| Refresh Token Expires | Can't be refreshed           | User must login                   |
+| Logout                | Cleared from client          | Invalidated in Redis              |
 
 ## When to Refresh Tokens
 
@@ -218,18 +188,11 @@ Returned when using access token instead of refresh token.
     - Brief disruption when token expires
   </Accordion>
 
-  <Accordion title="Before Expiration (Proactive)">
-    Decode the JWT and refresh before it expires (e.g., 5 minutes before).
-    
-    **Pros**: 
-    - Seamless user experience
-    - No failed requests
-    
-    **Cons**: 
-    - Requires JWT decoding library
-    - Timer management complexity
-    - May refresh unnecessarily
-  </Accordion>
+<Accordion title="Before Expiration (Proactive)">
+  Decode the JWT and refresh before it expires (e.g., 5 minutes before). **Pros**: - Seamless user
+  experience - No failed requests **Cons**: - Requires JWT decoding library - Timer management
+  complexity - May refresh unnecessarily
+</Accordion>
 
   <Accordion title="On App Load (Conservative)">
     Always attempt to refresh on app initialization or page refresh.
@@ -251,6 +214,7 @@ Returned when using access token instead of refresh token.
 **Problem**: Refresh token cookie not being sent
 
 **Solutions**:
+
 - Ensure `credentials: 'include'` is set in fetch
 - Check CORS settings allow credentials (`Access-Control-Allow-Credentials: true`)
 - Verify cookie domain matches API domain (localhost for local dev)
@@ -284,15 +248,18 @@ Returned when using access token instead of refresh token.
 ## Security Best Practices
 
 <Warning>
-  **Never store refresh tokens in localStorage or sessionStorage**. They're automatically handled via HTTP-only cookies which cannot be accessed by JavaScript (protecting against XSS attacks).
+  **Never store refresh tokens in localStorage or sessionStorage**. They're automatically handled
+  via HTTP-only cookies which cannot be accessed by JavaScript (protecting against XSS attacks).
 </Warning>
 
 <Info>
-  **Token Rotation**: Old refresh tokens are automatically invalidated when new ones are issued, preventing replay attacks if a token is intercepted.
+  **Token Rotation**: Old refresh tokens are automatically invalidated when new ones are issued,
+  preventing replay attacks if a token is intercepted.
 </Info>
 
 <Tip>
-  **Silent Refresh**: Implement automatic token refresh in the background for seamless user experience without interrupting their workflow.
+  **Silent Refresh**: Implement automatic token refresh in the background for seamless user
+  experience without interrupting their workflow.
 </Tip>
 
 ## Related Endpoints

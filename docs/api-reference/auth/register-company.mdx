@@ -33,70 +33,41 @@ POST /api/v1/auth/register/company
 </ParamField>
 
 <ParamField body="size" type="string" required>
-  Company size. Must be one of:
-  - `SIZE_1_50` - 1-50 employees
-  - `SIZE_51_200` - 51-200 employees
-  - `SIZE_201_1000` - 201-1,000 employees
-  - `SIZE_1000_PLUS` - 1,000+ employees
+  Company size. Must be one of: - `SIZE_1_50` - 1-50 employees - `SIZE_51_200` - 51-200 employees -
+  `SIZE_201_1000` - 201-1,000 employees - `SIZE_1000_PLUS` - 1,000+ employees
 </ParamField>
 
 <ParamField body="type" type="string" required>
-  Company type. Must be one of:
-  - `STARTUP`
-  - `SCALE_UP`
-  - `ENTERPRISE`
-  - `NON_PROFIT`
-  - `GOVERNMENT`
+  Company type. Must be one of: - `STARTUP` - `SCALE_UP` - `ENTERPRISE` - `NON_PROFIT` -
+  `GOVERNMENT`
 </ParamField>
 
-## Request Example
+## Request Shape
 
-<CodeGroup>
-
-```typescript TypeScript
-const response = await fetch('http://localhost:3000/api/v1/auth/register/company', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    email: 'hr@techcorp.com',
-    password: 'securePass123',
-    name: 'TechCorp Inc.',
-    industry: 'Technology',
-    size: 'SIZE_51_200',
-    type: 'STARTUP'
-  })
-});
-
-const result = await response.json();
-console.log(result);
+```typescript
+interface RegisterCompanyDto {
+  email: string;
+  password: string;
+  name: string;
+  industry: string;
+  size: CompanySize;
+  type: CompanyType;
+}
 ```
-
-```python Python
-import requests
-
-response = requests.post(
-    'http://localhost:3000/api/v1/auth/register/company',
-    json={
-        'email': 'hr@techcorp.com',
-        'password': 'securePass123',
-        'name': 'TechCorp Inc.',
-        'industry': 'Technology',
-        'size': 'SIZE_51_200',
-        'type': 'STARTUP'
-    }
-)
-
-result = response.json()
-print(result)
-```
-
-</CodeGroup>
 
 ## Response
 
 ### Success Response (201 Created)
+
+```typescript
+interface RegisterCompanyResponse {
+  success: boolean;
+  data: {
+    email: string;
+  };
+  message: string;
+}
+```
 
 ```json
 {
@@ -114,7 +85,6 @@ print(result)
 
 <ResponseField name="data" type="object">
   Contains the registered company's email.
-  
   <Expandable title="properties">
     <ResponseField name="email" type="string">
       The email address of the newly registered company.
@@ -123,31 +93,28 @@ print(result)
 </ResponseField>
 
 <ResponseField name="message" type="string">
-  Success message: "Company registration successful. Please check your email to verify your account."
+  Success message: "Company registration successful. Please check your email to verify your
+  account."
 </ResponseField>
 
 ## What Happens After Registration
 
 <Steps>
   <Step title="Company Account Created">
-    Company account is created in database with:
-    - `isVerified: false`
-    - `isActive: true`
-    - All optional fields set to `null` (description, logoUrl, coverUrl, etc.)
+    Company account is created in database with: - `isVerified: false` - `isActive: true` - All
+    optional fields set to `null` (description, logoUrl, coverUrl, etc.)
   </Step>
-  
-  <Step title="Password Hashed">
-    Password is securely hashed using bcrypt before storage
-  </Step>
-  
-  <Step title="OTP Generated">
-    A 6-digit OTP code is generated and stored in Redis (valid for 10 minutes)
-  </Step>
-  
-  <Step title="Email Queued">
-    Verification email with OTP is queued via BullMQ for async delivery
-  </Step>
-  
+
+<Step title="Password Hashed">Password is securely hashed using bcrypt before storage</Step>
+
+<Step title="OTP Generated">
+  A 6-digit OTP code is generated and stored in Redis (valid for 10 minutes)
+</Step>
+
+<Step title="Email Queued">
+  Verification email with OTP is queued via BullMQ for async delivery
+</Step>
+
   <Step title="Next Step">
     Company must verify email using the [Verify Email](/api-reference/auth/verify-email) endpoint
   </Step>
@@ -171,6 +138,7 @@ Returned when request validation fails.
 ```
 
 **Common validation errors**:
+
 - `email must be an email` - Invalid email format
 - `password must be longer than or equal to 6 characters` - Password too short
 - `name should not be empty` - Missing company name
@@ -206,216 +174,35 @@ Returned when an unexpected error occurs.
 
 ## Validation Rules
 
-| Field | Type | Required | Rules |
-|-------|------|----------|-------|
-| email | string | Yes | Must be valid email format, must be unique |
-| password | string | Yes | Minimum 6 characters |
-| name | string | Yes | Must be non-empty string |
-| industry | string | Yes | Must be non-empty string |
-| size | CompanySize enum | Yes | Must be one of: `SIZE_1_50`, `SIZE_51_200`, `SIZE_201_1000`, `SIZE_1000_PLUS` |
-| type | CompanyType enum | Yes | Must be one of: `STARTUP`, `SCALE_UP`, `ENTERPRISE`, `NON_PROFIT`, `GOVERNMENT` |
+| Field    | Type             | Required | Rules                                                                           |
+| -------- | ---------------- | -------- | ------------------------------------------------------------------------------- |
+| email    | string           | Yes      | Must be valid email format, must be unique                                      |
+| password | string           | Yes      | Minimum 6 characters                                                            |
+| name     | string           | Yes      | Must be non-empty string                                                        |
+| industry | string           | Yes      | Must be non-empty string                                                        |
+| size     | CompanySize enum | Yes      | Must be one of: `SIZE_1_50`, `SIZE_51_200`, `SIZE_201_1000`, `SIZE_1000_PLUS`   |
+| type     | CompanyType enum | Yes      | Must be one of: `STARTUP`, `SCALE_UP`, `ENTERPRISE`, `NON_PROFIT`, `GOVERNMENT` |
 
 ## Enums Reference
 
 ### Company Size
 
-| Value | Description |
-|-------|-------------|
-| `SIZE_1_50` | 1-50 employees |
-| `SIZE_51_200` | 51-200 employees |
-| `SIZE_201_1000` | 201-1,000 employees |
-| `SIZE_1000_PLUS` | 1,000+ employees |
+| Value            | Description         |
+| ---------------- | ------------------- |
+| `SIZE_1_50`      | 1-50 employees      |
+| `SIZE_51_200`    | 51-200 employees    |
+| `SIZE_201_1000`  | 201-1,000 employees |
+| `SIZE_1000_PLUS` | 1,000+ employees    |
 
 ### Company Type
 
-| Value | Description |
-|-------|-------------|
-| `STARTUP` | Early-stage startup company |
-| `SCALE_UP` | Growing company scaling operations |
-| `ENTERPRISE` | Large established corporation |
-| `NON_PROFIT` | Non-profit organization |
+| Value        | Description                        |
+| ------------ | ---------------------------------- |
+| `STARTUP`    | Early-stage startup company        |
+| `SCALE_UP`   | Growing company scaling operations |
+| `ENTERPRISE` | Large established corporation      |
+| `NON_PROFIT` | Non-profit organization            |
 | `GOVERNMENT` | Government agency or public sector |
-
-## Complete Flow Example
-
-<CodeGroup>
-
-```typescript TypeScript
-// Step 1: Register company
-interface VerifyEmailResponse {
-  success: boolean;
-  data: {
-    id: string;
-    email: string;
-    name: string;
-    accessToken: string;
-    [key: string]: any;
-  };
-  message: string;
-}
-
-const registerAndVerify = async () => {
-  try {
-    // Register
-    const registerResult = await fetch('http://localhost:3000/auth/register/company', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: 'hr@techcorp.com',
-        password: 'securepass123',
-        name: 'TechCorp Inc.',
-        industry: 'Technology',
-        size: 'SIZE_51_200',
-        type: 'STARTUP'
-      })
-    });
-
-    if (!registerResult.ok) {
-      const error = await registerResult.json();
-      throw new Error(error.message);
-    }
-
-    const { data } = await registerResult.json();
-    console.log('Registration successful! Check email:', data.email);
-    
-    // Return email for verification step
-    return data.email;
-    
-  } catch (error) {
-    console.error('Registration failed:', error);
-    throw error;
-  }
-};
-
-// Step 2: Verify email (after user enters OTP)
-const verifyEmail = async (email: string, otp: string): Promise<VerifyEmailResponse> => {
-  const response = await fetch('http://localhost:3000/auth/verify-email', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ email, code: otp })
-  });
-
-  if (!response.ok) {
-    throw new Error('Invalid OTP');
-  }
-
-  return await response.json();
-};
-
-// Usage
-(async () => {
-  try {
-    const email = await registerAndVerify();
-    
-    // Get OTP from user
-    const otp = '123456'; // From user input
-    
-    // Verify
-    const result = await verifyEmail(email, otp);
-    console.log('Access Token:', result.data.accessToken);
-    console.log('Company:', result.data.name);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-})();
-```
-
-```python Python
-from typing import Dict
-import requests
-
-class CompanyAuthClient:
-    def __init__(self, base_url: str = 'http://localhost:3000'):
-        self.base_url = base_url
-    
-    def register_company(
-        self, 
-        email: str, 
-        password: str,
-        name: str, 
-        industry: str, 
-        size: str, 
-        company_type: str
-    ) -> str:
-        """
-        Register company and return email for verification.
-        
-        Args:
-            email: Company email
-            password: Account password (min 6 chars)
-            name: Company name
-            industry: Industry sector
-            size: Company size (SIZE_1_50, SIZE_51_200, SIZE_201_1000, SIZE_1000_PLUS)
-            company_type: Company type (STARTUP, SCALE_UP, ENTERPRISE, NON_PROFIT, GOVERNMENT)
-        
-        Returns:
-            str: Registered email address
-        """
-        try:
-            response = requests.post(
-                f'{self.base_url}/auth/register/company',
-                json={
-                    'email': email,
-                    'password': password,
-                    'name': name,
-                    'industry': industry,
-                    'size': size,
-                    'type': company_type
-                }
-            )
-            response.raise_for_status()
-            
-            result = response.json()
-            print(result['message'])
-            
-            return result['data']['email']
-            
-        except requests.exceptions.HTTPError as e:
-            error_msg = e.response.json().get('message', 'Registration failed')
-            raise Exception(error_msg)
-    
-    def verify_email(self, email: str, otp: str) -> Dict:
-        """Verify email and return company data with access token"""
-        response = requests.post(
-            f'{self.base_url}/auth/verify-email',
-            json={'email': email, 'code': otp}
-        )
-        response.raise_for_status()
-        
-        result = response.json()
-        return result['data']
-
-# Usage
-client = CompanyAuthClient()
-
-try:
-    # Register
-    email = client.register_company(
-        email='hr@techcorp.com',
-        password='securepass123',
-        name='TechCorp Inc.',
-        industry='Technology',
-        size='SIZE_51_200',
-        company_type='STARTUP'
-    )
-    
-    print(f'Registration successful! Check email: {email}')
-    
-    # Get OTP from user
-    otp = input('Enter OTP from email: ')
-    
-    # Verify
-    data = client.verify_email(email, otp)
-    print('Access Token:', data['accessToken'])
-    print('Company ID:', data['id'])
-    print('Company Name:', data['name'])
-    
-except Exception as e:
-    print(f'Error: {e}')
-```
-
-</CodeGroup>
 
 ## TypeScript Types
 
@@ -425,7 +212,7 @@ export enum CompanySize {
   SIZE_1_50 = 'SIZE_1_50',
   SIZE_51_200 = 'SIZE_51_200',
   SIZE_201_1000 = 'SIZE_201_1000',
-  SIZE_1000_PLUS = 'SIZE_1000_PLUS'
+  SIZE_1000_PLUS = 'SIZE_1000_PLUS',
 }
 
 export enum CompanyType {
@@ -433,7 +220,7 @@ export enum CompanyType {
   SCALE_UP = 'SCALE_UP',
   ENTERPRISE = 'ENTERPRISE',
   NON_PROFIT = 'NON_PROFIT',
-  GOVERNMENT = 'GOVERNMENT'
+  GOVERNMENT = 'GOVERNMENT',
 }
 
 // Registration DTO
@@ -459,15 +246,18 @@ export interface RegisterCompanyResponse {
 ## Notes
 
 <Warning>
-  **Email Verification Required**: Companies cannot login until they verify their email using the OTP sent to their inbox.
+  **Email Verification Required**: Companies cannot login until they verify their email using the
+  OTP sent to their inbox.
 </Warning>
 
 <Info>
-  **OTP Expiration**: The verification OTP expires after 10 minutes. If expired, companies will need to request a new OTP.
+  **OTP Expiration**: The verification OTP expires after 10 minutes. If expired, companies will need
+  to request a new OTP.
 </Info>
 
 <Tip>
-  **Use Company Email**: It's recommended to use an official company email address (e.g., hr@company.com) rather than personal email addresses.
+  **Use Company Email**: It's recommended to use an official company email address (e.g.,
+  hr@company.com) rather than personal email addresses.
 </Tip>
 
 ## Related Endpoints
