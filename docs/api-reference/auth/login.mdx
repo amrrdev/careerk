@@ -24,47 +24,78 @@ POST /api/v1/auth/login
   User's password. Minimum 6 characters.
 </ParamField>
 
-## Request Example
+## Request Shape
 
-<CodeGroup>
-
-```typescript TypeScript
-const response = await fetch('http://localhost:3000/api/v1/auth/login', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include', // Important! Required for refresh token cookie
-  body: JSON.stringify({
-    email: 'john.doe@example.com',
-    password: 'password123'
-  })
-});
-
-const result = await response.json();
-console.log(result);
+```typescript
+interface LoginDto {
+  email: string;
+  password: string;
+}
 ```
-
-```python Python
-import requests
-
-response = requests.post(
-    'http://localhost:3000/api/v1/auth/login',
-    json={
-        'email': 'john.doe@example.com',
-        'password': 'password123'
-    }
-)
-
-result = response.json()
-print(result)
-```
-
-</CodeGroup>
 
 ## Response
 
 ### Success Response (200 OK)
+
+#### TypeScript Types
+
+```typescript
+interface JobSeekerLoginResponse {
+  success: boolean;
+  data: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    profileImageUrl: string | null;
+    isActive: boolean;
+    isVerified: boolean;
+    lastLoginAt: string;
+    createdAt: string;
+    updatedAt: string;
+    accessToken: string;
+    meta: {
+      timestamp: string;
+      path: string;
+      method: string;
+    };
+  };
+  message: string;
+}
+
+interface CompanyLoginResponse {
+  success: boolean;
+  data: {
+    id: string;
+    email: string;
+    name: string;
+    description: string | null;
+    logoUrl: string | null;
+    coverUrl: string | null;
+    industry: string;
+    size: 'SIZE_1_50' | 'SIZE_51_200' | 'SIZE_201_1000' | 'SIZE_1000_PLUS';
+    type: 'STARTUP' | 'SCALE_UP' | 'ENTERPRISE' | 'NON_PROFIT' | 'GOVERNMENT';
+    headquartersLocation: string | null;
+    foundedYear: number | null;
+    websiteUrl: string | null;
+    benefits: string | null;
+    linkedIn: string | null;
+    facebook: string | null;
+    twitter: string | null;
+    isActive: boolean;
+    isVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+    accessToken: string;
+    meta: {
+      timestamp: string;
+      path: string;
+      method: string;
+    };
+  };
+  message: string;
+}
+```
 
 #### For Job Seeker
 
@@ -136,137 +167,137 @@ print(result)
 
 <ResponseField name="data" type="object">
   Contains the user/company data and access token.
-  
   <Expandable title="Job Seeker Properties">
     <ResponseField name="id" type="string">
       Unique user identifier (UUID).
     </ResponseField>
-    
+
     <ResponseField name="email" type="string">
       User's email address.
     </ResponseField>
-    
+
     <ResponseField name="firstName" type="string">
       User's first name.
     </ResponseField>
-    
+
     <ResponseField name="lastName" type="string">
       User's last name.
     </ResponseField>
-    
+
     <ResponseField name="profileImageUrl" type="string | null">
       URL to user's profile image.
     </ResponseField>
-    
+
     <ResponseField name="isActive" type="boolean">
       Whether the account is active.
     </ResponseField>
-    
+
     <ResponseField name="isVerified" type="boolean">
       Whether the email is verified.
     </ResponseField>
-    
+
     <ResponseField name="lastLoginAt" type="string">
       ISO 8601 timestamp of last login.
     </ResponseField>
-    
+
     <ResponseField name="createdAt" type="string">
       ISO 8601 timestamp of account creation.
     </ResponseField>
-    
+
     <ResponseField name="updatedAt" type="string">
       ISO 8601 timestamp of last update.
     </ResponseField>
-    
+
     <ResponseField name="accessToken" type="string">
       JWT access token for authenticating API requests. Valid for 1 hour.
     </ResponseField>
+
   </Expandable>
-  
   <Expandable title="Company Properties">
     <ResponseField name="id" type="string">
       Unique company identifier (UUID).
     </ResponseField>
-    
+
     <ResponseField name="email" type="string">
       Company's email address.
     </ResponseField>
-    
+
     <ResponseField name="name" type="string">
       Company name.
     </ResponseField>
-    
+
     <ResponseField name="description" type="string | null">
       Company description.
     </ResponseField>
-    
+
     <ResponseField name="logoUrl" type="string | null">
       URL to company logo.
     </ResponseField>
-    
+
     <ResponseField name="coverUrl" type="string | null">
       URL to company cover image.
     </ResponseField>
-    
+
     <ResponseField name="industry" type="string">
       Company industry.
     </ResponseField>
-    
+
     <ResponseField name="size" type="string">
       Company size (SIZE_1_50, SIZE_51_200, SIZE_201_1000, SIZE_1000_PLUS).
     </ResponseField>
-    
+
     <ResponseField name="type" type="string">
       Company type (STARTUP, SCALE_UP, ENTERPRISE, NON_PROFIT, GOVERNMENT).
     </ResponseField>
-    
+
     <ResponseField name="headquartersLocation" type="string | null">
       Company headquarters location.
     </ResponseField>
-    
+
     <ResponseField name="foundedYear" type="number | null">
       Year the company was founded.
     </ResponseField>
-    
+
     <ResponseField name="websiteUrl" type="string | null">
       Company website URL.
     </ResponseField>
-    
+
     <ResponseField name="benefits" type="string | null">
       Company benefits description.
     </ResponseField>
-    
+
     <ResponseField name="linkedIn" type="string | null">
       LinkedIn profile URL.
     </ResponseField>
-    
+
     <ResponseField name="facebook" type="string | null">
       Facebook page URL.
     </ResponseField>
-    
+
     <ResponseField name="twitter" type="string | null">
       Twitter profile URL.
     </ResponseField>
-    
+
     <ResponseField name="isActive" type="boolean">
       Whether the account is active.
     </ResponseField>
-    
+
     <ResponseField name="isVerified" type="boolean">
       Whether the email is verified.
     </ResponseField>
-    
+
     <ResponseField name="createdAt" type="string">
       ISO 8601 timestamp of account creation.
     </ResponseField>
-    
+
     <ResponseField name="updatedAt" type="string">
       ISO 8601 timestamp of last update.
     </ResponseField>
-    
+
     <ResponseField name="accessToken" type="string">
       JWT access token for authenticating API requests. Valid for 1 hour.
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -277,10 +308,12 @@ print(result)
 ## Important: Refresh Token Cookie
 
 <Warning>
-  The refresh token is automatically set as an HTTP-only cookie named `refreshToken`. You must use `credentials: 'include'` in your fetch requests to enable cookie handling.
+  The refresh token is automatically set as an HTTP-only cookie named `refreshToken`. You must use
+  `credentials: 'include'` in your fetch requests to enable cookie handling.
 </Warning>
 
 The server sets a cookie with these properties:
+
 - **Name**: `refreshToken`
 - **HttpOnly**: true (cannot be accessed via JavaScript)
 - **Secure**: true (in production, requires HTTPS)
@@ -290,33 +323,21 @@ The server sets a cookie with these properties:
 ## What Happens on Login
 
 <Steps>
-  <Step title="User Lookup">
-    System searches for user in both JobSeeker and Company tables
-  </Step>
-  
-  <Step title="Email Verification Check">
-    Verifies that the user's email has been verified
-  </Step>
-  
-  <Step title="Password Validation">
-    Compares provided password with hashed password using bcrypt
-  </Step>
-  
-  <Step title="Token Generation">
-    Generates new JWT access and refresh tokens
-  </Step>
-  
-  <Step title="Refresh Token Storage">
-    Stores refresh token in Redis and sets HTTP-only cookie
-  </Step>
-  
-  <Step title="Last Login Update">
-    Updates lastLoginAt timestamp (Job Seekers only)
-  </Step>
-  
-  <Step title="Response">
-    Returns user data with access token
-  </Step>
+  <Step title="User Lookup">System searches for user in both JobSeeker and Company tables</Step>
+
+<Step title="Email Verification Check">Verifies that the user's email has been verified</Step>
+
+<Step title="Password Validation">
+  Compares provided password with hashed password using bcrypt
+</Step>
+
+<Step title="Token Generation">Generates new JWT access and refresh tokens</Step>
+
+<Step title="Refresh Token Storage">Stores refresh token in Redis and sets HTTP-only cookie</Step>
+
+<Step title="Last Login Update">Updates lastLoginAt timestamp (Job Seekers only)</Step>
+
+  <Step title="Response">Returns user data with access token</Step>
 </Steps>
 
 ## Error Responses
@@ -328,10 +349,7 @@ Returned when request validation fails.
 ```json
 {
   "statusCode": 400,
-  "message": [
-    "email must be an email",
-    "password must be longer than or equal to 6 characters"
-  ],
+  "message": ["email must be an email", "password must be longer than or equal to 6 characters"],
   "error": "Bad Request"
 }
 ```
@@ -349,6 +367,7 @@ Returned when email or password is incorrect.
 ```
 
 **Possible causes**:
+
 - Email doesn't exist
 - Password is incorrect
 - Typo in email or password
@@ -381,19 +400,21 @@ Returned when an unexpected error occurs.
 
 ## Validation Rules
 
-| Field | Rules |
-|-------|-------|
-| email | Must be valid email format |
-| password | Minimum 6 characters |
+| Field    | Rules                      |
+| -------- | -------------------------- |
+| email    | Must be valid email format |
+| password | Minimum 6 characters       |
 
 ## Security Notes
 
 <Info>
-  **Automatic User Type Detection**: The API automatically detects whether you're logging in as a job seeker or company based on the email. You don't need to specify the user type.
+  **Automatic User Type Detection**: The API automatically detects whether you're logging in as a
+  job seeker or company based on the email. You don't need to specify the user type.
 </Info>
 
 <Tip>
-  **Cookie Credentials**: Always use `credentials: 'include'` in your fetch requests to enable cookie handling for the refresh token.
+  **Cookie Credentials**: Always use `credentials: 'include'` in your fetch requests to enable
+  cookie handling for the refresh token.
 </Tip>
 
 ## Response Types

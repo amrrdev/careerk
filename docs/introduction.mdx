@@ -36,59 +36,69 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ### 1. Register a User
 
-```javascript
-const response = await fetch('http://localhost:3000/api/v1/auth/register/job-seeker', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    email: 'john@example.com',
-    password: 'password123',
-    firstName: 'John',
-    lastName: 'Doe'
-  })
-});
+**Endpoint**: `POST /api/v1/auth/register/job-seeker`
 
-const data = await response.json();
-// Returns: { 
-//   success: true, 
-//   data: { email: 'john@example.com' }, 
-//   message: 'Registration successful. Please check your email to verify your account.' 
-// }
-// Check your email for a 6-digit OTP code
+**Request Shape**:
+
+```typescript
+interface RegisterJobSeekerDto {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+```
+
+**Response Shape**:
+
+```typescript
+interface RegisterJobSeekerResponse {
+  success: boolean;
+  data: {
+    email: string;
+  };
+  message: string;
+}
 ```
 
 ### 2. Verify Email
 
-Check your email for the 6-digit OTP code, then:
+Check your email for the 6-digit OTP code.
 
-```javascript
-const response = await fetch('http://localhost:3000/api/v1/auth/verify-email', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  credentials: 'include', // Important for cookies
-  body: JSON.stringify({
-    email: 'john@example.com',
-    code: '123456'
-  })
-});
+**Endpoint**: `POST /api/v1/auth/verify-email`
 
-const data = await response.json();
-// Returns user data with accessToken
-const { accessToken } = data.data;
+**Request Shape**:
+
+```typescript
+interface VerifyEmailDto {
+  email: string;
+  code: string;
+}
+```
+
+**Response Shape**:
+
+```typescript
+interface VerifyEmailResponse {
+  success: boolean;
+  data: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    accessToken: string;
+    // ... other fields
+  };
+  message: string;
+}
 ```
 
 ### 3. Make Authenticated Requests
 
-```javascript
-const response = await fetch('http://localhost:3000/api/v1/job-seekers/profile', {
-  headers: {
-    'Authorization': `Bearer ${accessToken}`,
-    'Content-Type': 'application/json'
-  },
-  credentials: 'include' // Important for refresh token cookies
-});
+Include the access token in the Authorization header:
 
-const data = await response.json();
+```typescript
+Authorization: Bearer<accessToken>;
 ```
 
 ## Response Format
@@ -100,7 +110,7 @@ All API responses follow this structure:
 ```json
 {
   "success": true,
-  "data": { 
+  "data": {
     // Response data here
   },
   "message": "Operation successful"
@@ -120,6 +130,7 @@ All API responses follow this structure:
 ## Available Endpoints
 
 ### Authentication
+
 - `POST /auth/register/job-seeker` - Register as job seeker
 - `POST /auth/register/company` - Register as company
 - `POST /auth/verify-email` - Verify email with OTP code
@@ -130,28 +141,32 @@ All API responses follow this structure:
 
 ## Common HTTP Status Codes
 
-| Code | Description |
-|------|-------------|
-| 200 | Success - Request completed successfully |
-| 201 | Created - Resource created successfully |
-| 400 | Bad Request - Invalid input or validation error |
-| 401 | Unauthorized - Missing or invalid authentication |
-| 403 | Forbidden - Authenticated but not authorized |
-| 404 | Not Found - Resource doesn't exist |
-| 409 | Conflict - Resource already exists (e.g., email taken) |
-| 500 | Internal Server Error - Something went wrong |
+| Code | Description                                            |
+| ---- | ------------------------------------------------------ |
+| 200  | Success - Request completed successfully               |
+| 201  | Created - Resource created successfully                |
+| 400  | Bad Request - Invalid input or validation error        |
+| 401  | Unauthorized - Missing or invalid authentication       |
+| 403  | Forbidden - Authenticated but not authorized           |
+| 404  | Not Found - Resource doesn't exist                     |
+| 409  | Conflict - Resource already exists (e.g., email taken) |
+| 500  | Internal Server Error - Something went wrong           |
 
 ## User Types
 
 CareerK supports two types of users:
 
 ### Job Seeker
+
 Individual users looking for job opportunities
+
 - Register at `/auth/register/job-seeker`
 - Access job seeker endpoints
 
 ### Company
+
 Employers posting job opportunities
+
 - Register at `/auth/register/company`
 - Access company endpoints
 
@@ -161,18 +176,52 @@ If you forget your password, you can reset it using a two-step process:
 
 ### 1. Request Password Reset
 
-```javascript
-const response = await fetch('http://localhost:3000/api/v1/auth/forgot-password', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    email: 'john@example.com'
-  })
-});
+**Endpoint**: `POST /api/v1/auth/forgot-password`
 
-const data = await response.json();
-// Returns success message regardless of email existence (security feature)
-// If email exists, user receives 6-digit OTP code via email
+**Request Shape**:
+
+```typescript
+interface ForgotPasswordDto {
+  email: string;
+}
+```
+
+**Response Shape**:
+
+```typescript
+interface ForgotPasswordResponse {
+  success: boolean;
+  data: {
+    email: string;
+  };
+  message: string;
+}
+```
+
+### 2. Reset Password with OTP
+
+**Endpoint**: `POST /api/v1/auth/reset-password`
+
+**Request Shape**:
+
+```typescript
+interface ResetPasswordDto {
+  email: string;
+  code: string; // OTP from email
+  newPassword: string;
+}
+```
+
+**Response Shape**:
+
+```typescript
+interface ResetPasswordResponse {
+  success: boolean;
+  data: {
+    message: string;
+  };
+  message: string;
+}
 ```
 
 ### 2. Reset Password with OTP
@@ -184,8 +233,8 @@ const response = await fetch('http://localhost:3000/api/v1/auth/reset-password',
   body: JSON.stringify({
     email: 'john@example.com',
     code: '123456', // OTP from email
-    newPassword: 'newSecurePassword123'
-  })
+    newPassword: 'newSecurePassword123',
+  }),
 });
 
 const data = await response.json();
@@ -196,24 +245,28 @@ const data = await response.json();
 ## Important Security Notes
 
 <Warning>
-  **Refresh Token Cookies**: Always use `credentials: 'include'` in your fetch requests to enable cookie handling. The refresh token is stored as an HTTP-only cookie and cannot be accessed via JavaScript.
+  **Refresh Token Cookies**: Always use `credentials: 'include'` in your fetch requests to enable
+  cookie handling. The refresh token is stored as an HTTP-only cookie and cannot be accessed via
+  JavaScript.
 </Warning>
 
 <Info>
-  **Password Security**: All passwords are hashed using bcrypt before storage. Passwords are never stored in plain text.
+  **Password Security**: All passwords are hashed using bcrypt before storage. Passwords are never
+  stored in plain text.
 </Info>
 
 <Tip>
-  **OTP Codes**: All OTP codes (email verification and password reset) are valid for 10 minutes and can be attempted a maximum of 3 times.
+  **OTP Codes**: All OTP codes (email verification and password reset) are valid for 10 minutes and
+  can be attempted a maximum of 3 times.
 </Tip>
 
 ## Token Lifetimes
 
-| Token Type | Lifetime | Storage |
-|------------|----------|---------|
-| Access Token | 1 hour | Memory/State (client-side) |
-| Refresh Token | 24 hours | HTTP-only cookie (automatic) |
-| OTP Code | 10 minutes | Redis (server-side) |
+| Token Type    | Lifetime   | Storage                      |
+| ------------- | ---------- | ---------------------------- |
+| Access Token  | 1 hour     | Memory/State (client-side)   |
+| Refresh Token | 24 hours   | HTTP-only cookie (automatic) |
+| OTP Code      | 10 minutes | Redis (server-side)          |
 
 ## Need Help?
 

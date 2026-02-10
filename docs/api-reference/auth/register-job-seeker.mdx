@@ -32,50 +32,30 @@ POST /api/v1/auth/register/job-seeker
   User's last name.
 </ParamField>
 
-## Request Example
+## Request Shape
 
-<CodeGroup>
-
-```typescript TypeScript
-const response = await fetch('http://localhost:3000/api/v1/auth/register/job-seeker', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    email: 'john.doe@example.com',
-    password: 'password123',
-    firstName: 'John',
-    lastName: 'Doe'
-  })
-});
-
-const result = await response.json();
-console.log(result);
+```typescript
+interface RegisterJobSeekerDto {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
 ```
-
-```python Python
-import requests
-
-response = requests.post(
-    'http://localhost:3000/api/v1/auth/register/job-seeker',
-    json={
-        'email': 'john.doe@example.com',
-        'password': 'password123',
-        'firstName': 'John',
-        'lastName': 'Doe'
-    }
-)
-
-result = response.json()
-print(result)
-```
-
-</CodeGroup>
 
 ## Response
 
 ### Success Response (201 Created)
+
+```typescript
+interface RegisterJobSeekerResponse {
+  success: boolean;
+  data: {
+    email: string;
+  };
+  message: string;
+}
+```
 
 ```json
 {
@@ -93,7 +73,6 @@ print(result)
 
 <ResponseField name="data" type="object">
   Contains the registered user's email.
-  
   <Expandable title="properties">
     <ResponseField name="email" type="string">
       The email address of the newly registered user.
@@ -109,25 +88,20 @@ print(result)
 
 <Steps>
   <Step title="Account Created">
-    User account is created in database with:
-    - `isVerified: false`
-    - `isActive: true`
-    - `profileImageUrl: null`
-    - `lastLoginAt: null`
+    User account is created in database with: - `isVerified: false` - `isActive: true` -
+    `profileImageUrl: null` - `lastLoginAt: null`
   </Step>
-  
-  <Step title="Password Hashed">
-    Password is securely hashed using bcrypt before storage
-  </Step>
-  
-  <Step title="OTP Generated">
-    A 6-digit OTP code is generated and stored in Redis (valid for 10 minutes)
-  </Step>
-  
-  <Step title="Email Queued">
-    Verification email with OTP is queued via BullMQ for async delivery
-  </Step>
-  
+
+<Step title="Password Hashed">Password is securely hashed using bcrypt before storage</Step>
+
+<Step title="OTP Generated">
+  A 6-digit OTP code is generated and stored in Redis (valid for 10 minutes)
+</Step>
+
+<Step title="Email Queued">
+  Verification email with OTP is queued via BullMQ for async delivery
+</Step>
+
   <Step title="Next Step">
     User must verify email using the [Verify Email](/api-reference/auth/verify-email) endpoint
   </Step>
@@ -142,15 +116,13 @@ Returned when request validation fails.
 ```json
 {
   "statusCode": 400,
-  "message": [
-    "email must be an email",
-    "password must be longer than or equal to 6 characters"
-  ],
+  "message": ["email must be an email", "password must be longer than or equal to 6 characters"],
   "error": "Bad Request"
 }
 ```
 
 **Common validation errors**:
+
 - `email must be an email` - Invalid email format
 - `password must be longer than or equal to 6 characters` - Password too short
 - `firstName should not be empty` - Missing first name
@@ -184,171 +156,28 @@ Returned when an unexpected error occurs.
 
 ## Validation Rules
 
-| Field | Type | Required | Rules |
-|-------|------|----------|-------|
-| email | string | Yes | Must be valid email format, must be unique |
-| password | string | Yes | Minimum 6 characters |
-| firstName | string | Yes | Must be non-empty string |
-| lastName | string | Yes | Must be non-empty string |
-
-## Complete Flow Example
-
-<CodeGroup>
-
-```typescript TypeScript
-// Step 1: Register
-interface RegisterResponse {
-  success: boolean;
-  data: {
-    email: string;
-  };
-  message: string;
-}
-
-const register = async (): Promise<string> => {
-  try {
-    const response = await fetch('http://localhost:3000/auth/register/job-seeker', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: 'john.doe@example.com',
-        password: 'securePassword123',
-        firstName: 'John',
-        lastName: 'Doe'
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message);
-    }
-
-    const result: RegisterResponse = await response.json();
-    console.log(result.message);
-    
-    // Return email for verification step
-    return result.data.email;
-    
-  } catch (error) {
-    console.error('Registration failed:', error);
-    throw error;
-  }
-};
-
-// Step 2: Verify email (see verify-email endpoint)
-const verifyEmail = async (email: string, otp: string) => {
-  const response = await fetch('http://localhost:3000/auth/verify-email', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ email, code: otp })
-  });
-
-  if (!response.ok) {
-    throw new Error('Invalid OTP');
-  }
-
-  const result = await response.json();
-  const { accessToken, ...userData } = result.data;
-  
-  return { accessToken, user: userData };
-};
-
-// Usage
-try {
-  const email = await register();
-  // Show OTP input form to user
-  const otp = '123456'; // From user input
-  const { accessToken, user } = await verifyEmail(email, otp);
-  
-  console.log('Access Token:', accessToken);
-  console.log('User:', user);
-} catch (error) {
-  console.error('Error:', error);
-}
-```
-
-```python Python
-from typing import Dict, Optional
-import requests
-
-class AuthClient:
-    def __init__(self, base_url: str = 'http://localhost:3000'):
-        self.base_url = base_url
-    
-    def register_job_seeker(self, email: str, password: str, 
-                           first_name: str, last_name: str) -> str:
-        """Register job seeker and return email"""
-        try:
-            response = requests.post(
-                f'{self.base_url}/auth/register/job-seeker',
-                json={
-                    'email': email,
-                    'password': password,
-                    'firstName': first_name,
-                    'lastName': last_name
-                }
-            )
-            response.raise_for_status()
-            
-            result = response.json()
-            print(result['message'])
-            
-            return result['data']['email']
-            
-        except requests.exceptions.HTTPError as e:
-            error_msg = e.response.json().get('message', 'Registration failed')
-            raise Exception(error_msg)
-    
-    def verify_email(self, email: str, otp: str) -> Dict:
-        """Verify email and return user data with access token"""
-        response = requests.post(
-            f'{self.base_url}/auth/verify-email',
-            json={'email': email, 'code': otp}
-        )
-        response.raise_for_status()
-        
-        result = response.json()
-        return result['data']
-
-# Usage
-client = AuthClient()
-
-try:
-    # Register
-    email = client.register_job_seeker(
-        email='john.doe@example.com',
-        password='securePassword123',
-        first_name='John',
-        last_name='Doe'
-    )
-    
-    # Show OTP input to user
-    otp = input('Enter OTP: ')
-    
-    # Verify
-    data = client.verify_email(email, otp)
-    print('Access Token:', data['accessToken'])
-    print('User ID:', data['id'])
-    
-except Exception as e:
-    print(f'Error: {e}')
-```
-
-</CodeGroup>
+| Field     | Type   | Required | Rules                                      |
+| --------- | ------ | -------- | ------------------------------------------ |
+| email     | string | Yes      | Must be valid email format, must be unique |
+| password  | string | Yes      | Minimum 6 characters                       |
+| firstName | string | Yes      | Must be non-empty string                   |
+| lastName  | string | Yes      | Must be non-empty string                   |
 
 ## Notes
 
 <Warning>
-  **Email Verification Required**: Users cannot login until they verify their email using the OTP sent to their inbox.
+  **Email Verification Required**: Users cannot login until they verify their email using the OTP
+  sent to their inbox.
 </Warning>
 
 <Info>
-  **OTP Expiration**: The verification OTP expires after 10 minutes. If expired, users will need to request a new OTP.
+  **OTP Expiration**: The verification OTP expires after 10 minutes. If expired, users will need to
+  request a new OTP.
 </Info>
 
 <Tip>
-  **Password Security**: While the minimum is 6 characters, encourage users to create strong passwords with a mix of uppercase, lowercase, numbers, and special characters.
+  **Password Security**: While the minimum is 6 characters, encourage users to create strong
+  passwords with a mix of uppercase, lowercase, numbers, and special characters.
 </Tip>
 
 ## Related Endpoints
