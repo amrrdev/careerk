@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateJobSeekerData, JobSeeker, UpdateJobSeekerData } from '../types/job-seeker.types';
+import {
+  JobSeekerProfileFilters,
+  PaginatedResult,
+  PublicJobSeekerProfile,
+  PublicJobSeekerProfileDetails,
+} from '../types/job-seeker-profile.types';
 
 @Injectable()
 export abstract class JobSeekerRepository {
@@ -7,12 +13,22 @@ export abstract class JobSeekerRepository {
   abstract findByEmail(email: string): Promise<JobSeeker | null>;
   abstract findById(id: string): Promise<JobSeeker | null>;
   abstract existsByEmail(email: string): Promise<boolean>;
+
   abstract findByEmailAndUpdate(
     email: string,
     data: UpdateJobSeekerData,
   ): Promise<JobSeeker | null>;
+
   abstract findByEmailAndUpdatePassword(
     email: string,
     password: string,
   ): Promise<{ id: string } | null>;
+
+  abstract findAllProfiles(
+    filters: JobSeekerProfileFilters,
+  ): Promise<PaginatedResult<PublicJobSeekerProfile>>;
+
+  abstract findProfileById(jobSeekerId: string): Promise<PublicJobSeekerProfileDetails | null>;
+
+  abstract deactivateByEmail(email: string): Promise<{ id: string } | null>;
 }

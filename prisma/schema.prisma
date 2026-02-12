@@ -30,6 +30,8 @@ model JobSeeker {
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
+  profile JobSeekerProfile?
+
   @@index([isActive])
   @@map("job_seekers")
 }
@@ -65,6 +67,51 @@ model Company {
 
   @@index([isActive])
   @@map("companies")
+}
+
+model JobSeekerProfile {
+  id                 String                  @id @default(uuid()) @db.Uuid
+  jobSeekerId        String                  @unique @db.Uuid              @map("job_seeker_id")
+  title              String
+  cvEmail            String                  @unique                       @map("cv_email")
+  phone              String
+  summary            String?                 @db.Text
+  location           String?
+  availabilityStatus AvailabilityStatusEnum  @map("availability_status")
+  expectedSalary     Int?                    @map("expected_salary")
+  workPreference     WorkPreferenceEnum      @map("work_preference")
+  preferredJobTypes  JobTypeEnum[]           @map("preferred_job_types")
+  yearsOfExperience  Float?                  @map("years_of_experience")
+  noticePeriod       Int?                    @map("notice_period")
+  linkedinUrl        String?                 @db.VarChar(500)              @map("linkedin_url")
+  portfolioUrl       String?                 @db.VarChar(500)              @map("portfolio_url")
+  githubUrl          String?                 @db.VarChar(500)              @map("github_url")
+  createdAt          DateTime                @default(now())               @map("created_at")
+  updatedAt          DateTime                @updatedAt                    @map("updated_at")
+  jobSeeker          JobSeeker               @relation(fields: [jobSeekerId], references: [id])
+
+  @@map("job_seeker_profiles")
+}
+
+enum JobTypeEnum {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  INTERNSHIP
+}
+
+enum AvailabilityStatusEnum {
+  OPEN_TO_WORK
+  NOT_LOOKING
+  PASSIVELY_LOOKING
+}
+
+enum WorkPreferenceEnum {
+  ONSITE
+  REMOTE
+  HYBRID
+  ANY
 }
 
 enum CompanyType {
