@@ -22,6 +22,12 @@ export class JobSeekerQueryDto {
   minYearsOfExperience?: number;
 
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  maxYearsOfExperience?: number;
+
+  @IsOptional()
   @IsEnum(JobTypeEnum, { each: true })
   @Transform(({ value }: { value: string | string[] }) => {
     const arr = Array.isArray(value) ? value : [value];

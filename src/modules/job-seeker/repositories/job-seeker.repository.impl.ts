@@ -37,7 +37,9 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
       limit = 20,
     } = filters;
 
-    const where: Prisma.JobSeekerProfileWhereInput = {};
+    const where: Prisma.JobSeekerProfileWhereInput = {
+      jobSeeker: { isActive: true, isVerified: true },
+    };
     if (availabilityStatus) where.availabilityStatus = availabilityStatus;
     if (workPreference) where.workPreference = workPreference;
     if (location) where.location = location;
