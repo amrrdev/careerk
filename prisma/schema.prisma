@@ -30,6 +30,11 @@ model JobSeeker {
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
+  profile JobSeekerProfile?
+  educations Education[]
+  workExperiences WorkExperience[]
+  jobSeekerSkills JobSeekerSkill[]
+
   @@index([isActive])
   @@map("job_seekers")
 }
@@ -65,6 +70,140 @@ model Company {
 
   @@index([isActive])
   @@map("companies")
+}
+
+model JobSeekerProfile {
+  id                 String                  @id @default(uuid()) @db.Uuid
+  jobSeekerId        String                  @unique @db.Uuid              @map("job_seeker_id")
+  title              String
+  cvEmail            String                  @unique                       @map("cv_email")
+  phone              String
+  summary            String?                 @db.Text
+  location           String?
+  availabilityStatus AvailabilityStatusEnum  @map("availability_status")
+  expectedSalary     Int?                    @map("expected_salary")
+  workPreference     WorkPreferenceEnum      @map("work_preference")
+  preferredJobTypes  JobTypeEnum[]           @map("preferred_job_types")
+  yearsOfExperience  Float?                  @map("years_of_experience")
+  noticePeriod       Int?                    @map("notice_period")
+  linkedinUrl        String?                 @db.VarChar(500)              @map("linkedin_url")
+  portfolioUrl       String?                 @db.VarChar(500)              @map("portfolio_url")
+  githubUrl          String?                 @db.VarChar(500)              @map("github_url")
+  createdAt          DateTime                @default(now())               @map("created_at")
+  updatedAt          DateTime                @updatedAt                    @map("updated_at")
+  jobSeeker          JobSeeker               @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@index([availabilityStatus])
+  @@index([workPreference])
+  @@index([location])
+  @@index([yearsOfExperience])
+  @@index([noticePeriod])
+  @@map("job_seeker_profiles")
+}
+
+model Education {
+  id              String          @id @default(uuid()) @db.Uuid
+  jobSeekerId     String          @db.Uuid @map("job_seeker_id")
+  institutionName String          @map("institution_name") @db.VarChar(255)
+  degreeType      DegreeTypeEnum @map("degree_type")
+  fieldOfStudy    String          @map("field_of_study") @db.VarChar(255)
+  startDate       DateTime        @map("start_date") @db.Date
+  endDate         DateTime?       @map("end_date") @db.Date
+  gpa             Float?
+  isCurrent       Boolean         @default(false) @map("is_current")
+  description     String?         @db.Text
+
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  jobSeeker       JobSeeker       @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@index([jobSeekerId])
+  @@unique([jobSeekerId, institutionName, degreeType, fieldOfStudy])
+  @@map("educations")
+}
+
+model WorkExperience {
+  id              String        @id @default(uuid()) @db.Uuid
+  jobSeekerId     String        @db.Uuid @map("job_seeker_id")
+  companyName     String        @map("company_name") @db.VarChar(255)
+  jobTitle        String        @map("job_title") @db.VarChar(255)
+  location        String?       @db.VarChar(255)
+  startDate       DateTime      @map("start_date") @db.Date
+  endDate         DateTime?     @map("end_date") @db.Date
+  isCurrent       Boolean       @default(false) @map("is_current")
+  description     String?       @db.Text
+
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  jobSeeker       JobSeeker     @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@index([jobSeekerId])
+  @@unique([jobSeekerId, companyName, jobTitle, startDate])
+  @@map("work_experiences")
+}
+
+model Skill {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique @db.VarChar(255)
+  aliases     Json?
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  jobSeekerSkills JobSeekerSkill[]
+
+  @@map("skills")
+}
+
+model JobSeekerSkill {
+  id            String   @id @default(uuid()) @db.Uuid
+  jobSeekerId   String   @db.Uuid @map("job_seeker_id")
+  skillId       String   @db.Uuid @map("skill_id")
+  verified      Boolean  @default(true)
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  jobSeeker     JobSeeker @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  skill         Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([jobSeekerId, skillId])
+  @@index([jobSeekerId])
+  @@map("job_seeker_skills")
+}
+
+enum DegreeTypeEnum {
+  HIGH_SCHOOL
+  ASSOCIATE
+  BACHELOR
+  MASTER
+  PHD
+  BOOTCAMP
+  CERTIFICATION
+  OTHER
+}
+
+
+enum JobTypeEnum {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  INTERNSHIP
+}
+
+enum AvailabilityStatusEnum {
+  OPEN_TO_WORK
+  NOT_LOOKING
+  PASSIVELY_LOOKING
+}
+
+enum WorkPreferenceEnum {
+  ONSITE
+  REMOTE
+  HYBRID
+  ANY
 }
 
 enum CompanyType {
