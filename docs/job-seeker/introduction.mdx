@@ -1,0 +1,138 @@
+---
+title: Introduction
+description: 'Job Seeker API - Manage job seeker profiles and search candidates'
+---
+
+# Job Seeker API
+
+The Job Seeker API provides endpoints for managing job seeker profiles and searching for candidates.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Endpoints Overview
+
+| Method | Endpoint           | Description                               | Auth Required    |
+| ------ | ------------------ | ----------------------------------------- | ---------------- |
+| GET    | `/job-seekers`     | Get all job seeker profiles (public list) | No               |
+| GET    | `/job-seekers/me`  | Get current user's profile                | Yes (Job Seeker) |
+| GET    | `/job-seekers/:id` | Get job seeker profile by ID              | No               |
+| PATCH  | `/job-seekers/me`  | Update current user's profile             | Yes (Job Seeker) |
+| DELETE | `/job-seekers/me`  | Deactivate current user's account         | Yes (Job Seeker) |
+
+## Common Enums
+
+### Availability Status
+
+| Value          | Description                               |
+| -------------- | ----------------------------------------- |
+| `OPEN_TO_WORK` | Actively looking for job opportunities    |
+| `NOT_LOOKING`  | Not currently looking for jobs            |
+| `EMPLOYED`     | Currently employed, open to opportunities |
+| `UNAVAILABLE`  | Not available for work                    |
+
+### Work Preference
+
+| Value    | Description                     |
+| -------- | ------------------------------- |
+| `REMOTE` | Prefers remote work             |
+| `ONSITE` | Prefers on-site work            |
+| `HYBRID` | Prefers hybrid work arrangement |
+| `ANY`    | No specific preference          |
+
+### Job Type
+
+| Value        | Description                 |
+| ------------ | --------------------------- |
+| `FULL_TIME`  | Full-time position          |
+| `PART_TIME`  | Part-time position          |
+| `CONTRACT`   | Contract/Temporary position |
+| `INTERNSHIP` | Internship position         |
+| `FREELANCE`  | Freelance work              |
+
+## Quick Start
+
+### 1. Search for Job Seekers
+
+```bash
+GET /api/v1/job-seekers?location=Cairo&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK
+```
+
+### 2. Get Your Profile
+
+```bash
+GET /api/v1/job-seekers/me
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+### 3. Update Your Profile
+
+```bash
+PATCH /api/v1/job-seekers/me
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "title": "Senior Software Engineer",
+  "location": "Cairo, Egypt",
+  "summary": "Experienced developer..."
+}
+```
+
+## Response Format
+
+All API responses follow this structure:
+
+```typescript
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message: string;
+  meta: {
+    timestamp: string;
+    path: string;
+    method: string;
+  };
+}
+```
+
+## Pagination
+
+List endpoints support pagination:
+
+| Parameter | Type   | Default | Description    |
+| --------- | ------ | ------- | -------------- |
+| `page`    | number | 1       | Page number    |
+| `limit`   | number | 20      | Items per page |
+
+Response includes:
+
+- `total`: Total number of items
+- `page`: Current page
+- `limit`: Items per page
+- `totalPages`: Total number of pages
+
+## Filtering
+
+The `/job-seekers` endpoint supports filters:
+
+| Parameter              | Type   | Description                        |
+| ---------------------- | ------ | ---------------------------------- |
+| `availabilityStatus`   | enum   | Filter by availability status      |
+| `location`             | string | Filter by location (partial match) |
+| `workPreference`       | enum   | Filter by work preference          |
+| `minYearsOfExperience` | number | Minimum years of experience        |
+| `maxYearsOfExperience` | number | Maximum years of experience        |
+| `preferredJobTypes`    | enum[] | Filter by job types                |
+| `maxNoticePeriod`      | number | Maximum notice period (days)       |
+
+## Related Endpoints
+
+- [Get All Profiles](/api-reference/job-seeker/get-all-profiles) - Search and filter job seekers
+- [Get My Profile](/api-reference/job-seeker/get-my-profile) - View your own profile
+- [Get Profile By ID](/api-reference/job-seeker/get-profile-by-id) - View a specific profile
+- [Update Profile](/api-reference/job-seeker/update-profile) - Update your profile
+- [Deactivate Account](/api-reference/job-seeker/deactivate-account) - Deactivate your account

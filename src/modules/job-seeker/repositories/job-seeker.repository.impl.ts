@@ -4,15 +4,94 @@ import { CreateJobSeekerData, JobSeeker, UpdateJobSeekerData } from '../types/jo
 import { JobSeekerRepository } from './job-seeker.repository';
 import {
   JobSeekerProfileFilters,
-  PaginatedResult,
-  PublicJobSeekerProfile,
-  PublicJobSeekerProfileDetails,
+  MyJobSeekerProfileDetails,
+  UpdateMyProfileData,
 } from '../types/job-seeker-profile.types';
 import { Prisma } from 'generated/prisma/client';
 
 @Injectable()
 export class JobSeekerRepositoryImpl implements JobSeekerRepository {
   constructor(private readonly databaseService: DatabaseService) {}
+
+  async updateMyProfile(jobSeekerId: string, data: UpdateMyProfileData): Promise<void> {
+    const { firstName, lastName, ...profileData } = data;
+
+    return this.databaseService.$transaction(async (tx) => {
+      if (firstName || lastName) {
+        await tx.jobSeeker.update({
+          where: { id: jobSeekerId },
+          data: { firstName, lastName },
+        });
+      }
+
+      if (Object.keys(profileData).length > 0) {
+        await tx.jobSeekerProfile.update({
+          where: { jobSeekerId },
+          data: profileData,
+        });
+      }
+    });
+  }
+
+  // It should contains the cv
+  findMyProfile(jobSeekerId: string): Promise<MyJobSeekerProfileDetails | null> {
+    return this.databaseService.jobSeeker.findUnique({
+      where: { id: jobSeekerId },
+      select: {
+        firstName: true,
+        lastName: true,
+        profileImageUrl: true,
+        profile: {
+          select: {
+            jobSeekerId: true,
+            title: true,
+            location: true,
+            availabilityStatus: true,
+            workPreference: true,
+            preferredJobTypes: true,
+            yearsOfExperience: true,
+            linkedinUrl: true,
+            portfolioUrl: true,
+            githubUrl: true,
+            cvEmail: true,
+            noticePeriod: true,
+            phone: true,
+            expectedSalary: true,
+            summary: true,
+          },
+        },
+        educations: {
+          select: {
+            degreeType: true,
+            description: true,
+            institutionName: true,
+            isCurrent: true,
+            fieldOfStudy: true,
+            endDate: true,
+            gpa: true,
+            startDate: true,
+          },
+        },
+        workExperiences: {
+          select: {
+            companyName: true,
+            description: true,
+            isCurrent: true,
+            startDate: true,
+            jobTitle: true,
+            location: true,
+            endDate: true,
+          },
+        },
+        jobSeekerSkills: {
+          select: {
+            skill: true,
+            verified: true,
+          },
+        },
+      },
+    });
+  }
 
   async deactivateByEmail(email: string): Promise<{ id: string } | null> {
     return await this.databaseService.jobSeeker.update({
@@ -22,9 +101,7 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
     });
   }
 
-  async findAllProfiles(
-    filters: JobSeekerProfileFilters,
-  ): Promise<PaginatedResult<PublicJobSeekerProfile>> {
+  async findAllProfiles(filters: JobSeekerProfileFilters) {
     const {
       availabilityStatus,
       location,
@@ -52,24 +129,31 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
     }
 
     const [jobSeekers, total] = await this.databaseService.$transaction([
-      this.databaseService.jobSeekerProfile.findMany({
-        where,
-        omit: {
-          id: true,
-          expectedSalary: true,
-          cvEmail: true,
-          phone: true,
-          createdAt: true,
-          updatedAt: true,
-          summary: true,
-          noticePeriod: true,
-          linkedinUrl: true,
-          portfolioUrl: true,
-          githubUrl: true,
+      this.databaseService.jobSeeker.findMany({
+        where: {
+          profile: where,
+        },
+        select: {
+          firstName: true,
+          lastName: true,
+          profile: {
+            select: {
+              jobSeekerId: true,
+              title: true,
+              location: true,
+              availabilityStatus: true,
+              workPreference: true,
+              preferredJobTypes: true,
+              yearsOfExperience: true,
+              linkedinUrl: true,
+              portfolioUrl: true,
+              githubUrl: true,
+            },
+          },
         },
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { yearsOfExperience: 'desc' },
+        orderBy: { profile: { yearsOfExperience: 'desc' } },
       }),
 
       this.databaseService.jobSeekerProfile.count({ where }),
@@ -84,13 +168,61 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
     };
   }
 
-  async findProfileById(jobSeekerId: string): Promise<PublicJobSeekerProfileDetails | null> {
-    return this.databaseService.jobSeekerProfile.findUnique({
-      where: { jobSeekerId },
-      omit: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
+  async findProfileById(jobSeekerId: string) {
+    return this.databaseService.jobSeeker.findUnique({
+      where: { id: jobSeekerId },
+      select: {
+        firstName: true,
+        lastName: true,
+        profileImageUrl: true,
+        profile: {
+          select: {
+            jobSeekerId: true,
+            title: true,
+            location: true,
+            availabilityStatus: true,
+            workPreference: true,
+            preferredJobTypes: true,
+            yearsOfExperience: true,
+            linkedinUrl: true,
+            portfolioUrl: true,
+            githubUrl: true,
+            cvEmail: true,
+            noticePeriod: true,
+            phone: true,
+            expectedSalary: true,
+            summary: true,
+          },
+        },
+        educations: {
+          select: {
+            degreeType: true,
+            description: true,
+            institutionName: true,
+            isCurrent: true,
+            fieldOfStudy: true,
+            endDate: true,
+            gpa: true,
+            startDate: true,
+          },
+        },
+        workExperiences: {
+          select: {
+            companyName: true,
+            description: true,
+            isCurrent: true,
+            startDate: true,
+            jobTitle: true,
+            location: true,
+            endDate: true,
+          },
+        },
+        jobSeekerSkills: {
+          select: {
+            skill: true,
+            verified: true,
+          },
+        },
       },
     });
   }

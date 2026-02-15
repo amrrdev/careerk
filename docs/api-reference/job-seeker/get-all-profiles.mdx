@@ -1,0 +1,247 @@
+---
+title: 'Get All Job Seeker Profiles'
+api: 'GET /api/v1/job-seekers'
+description: 'Retrieve a paginated list of job seeker profiles with optional filters'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint is **public** and does not require authentication.</Note>
+
+## Query Parameters
+
+<ParamField query="availabilityStatus" type="enum">
+  Filter by availability status. - `OPEN_TO_WORK` - Actively looking - `NOT_LOOKING` - Not looking -
+  `EMPLOYED` - Currently employed - `UNAVAILABLE` - Not available
+</ParamField>
+
+<ParamField query="location" type="string">
+  Filter by location (partial string match, case-insensitive).
+</ParamField>
+
+<ParamField query="workPreference" type="enum">
+  Filter by work preference. - `REMOTE` - Remote work - `ONSITE` - On-site work - `HYBRID` - Hybrid
+  work - `ANY` - No preference
+</ParamField>
+
+<ParamField query="minYearsOfExperience" type="number">
+  Minimum years of experience (inclusive).
+</ParamField>
+
+<ParamField query="maxYearsOfExperience" type="number">
+  Maximum years of experience (inclusive).
+</ParamField>
+
+<ParamField query="preferredJobTypes" type="enum[]">
+  Filter by preferred job types. Can be repeated for multiple types. - `FULL_TIME` - `PART_TIME` -
+  `CONTRACT` - `INTERNSHIP` - `FREELANCE`
+</ParamField>
+
+<ParamField query="maxNoticePeriod" type="number">
+  Maximum notice period in days.
+</ParamField>
+
+<ParamField query="page" type="number">
+  Page number (default: 1).
+</ParamField>
+
+<ParamField query="limit" type="number">
+  Items per page (default: 20).
+</ParamField>
+
+## Request Example
+
+```bash
+GET /api/v1/job-seekers?location=Cairo&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=2&page=1&limit=10
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "jobSeekers": [
+      {
+        "firstName": "Ahmed",
+        "lastName": "Hassan",
+        "profile": {
+          "jobSeekerId": "a0000000-0000-0000-0000-000000000001",
+          "title": "Senior Backend Engineer",
+          "location": "Cairo, Egypt",
+          "availabilityStatus": "OPEN_TO_WORK",
+          "workPreference": "REMOTE",
+          "preferredJobTypes": ["FULL_TIME", "CONTRACT"],
+          "yearsOfExperience": 6.5,
+          "linkedinUrl": "https://linkedin.com/in/ahmed-hassan",
+          "portfolioUrl": null,
+          "githubUrl": "https://github.com/ahmed-hassan"
+        }
+      },
+      {
+        "firstName": "Sara",
+        "lastName": "Ali",
+        "profile": {
+          "jobSeekerId": "a0000000-0000-0000-0000-000000000002",
+          "title": "Frontend Developer",
+          "location": "Alexandria, Egypt",
+          "availabilityStatus": "OPEN_TO_WORK",
+          "workPreference": "HYBRID",
+          "preferredJobTypes": ["FULL_TIME"],
+          "yearsOfExperience": 3,
+          "linkedinUrl": "https://linkedin.com/in/sara-ali",
+          "portfolioUrl": "https://sara-ali.dev",
+          "githubUrl": null
+        }
+      }
+    ],
+    "total": 4,
+    "page": 1,
+    "limit": 20,
+    "totalPages": 1
+  },
+  "message": "Job seeker profiles retrieved successfully",
+  "meta": {
+    "timestamp": "2026-02-15T12:00:00.062Z",
+    "path": "/job-seekers",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="jobSeekers" type="array">
+  Array of job seeker profile summaries.
+  <Expandable title="Job Seeker Profile Properties">
+    <ResponseField name="firstName" type="string">
+      Job seeker's first name.
+    </ResponseField>
+    <ResponseField name="lastName" type="string">
+      Job seeker's last name.
+    </ResponseField>
+    <ResponseField name="profile" type="object">
+      Public profile information.
+      <ResponseField name="jobSeekerId" type="string">
+        Unique profile identifier (UUID).
+      </ResponseField>
+      <ResponseField name="title" type="string">
+        Current job title.
+      </ResponseField>
+      <ResponseField name="location" type="string">
+        Location.
+      </ResponseField>
+      <ResponseField name="availabilityStatus" type="enum">
+        Current availability status.
+      </ResponseField>
+      <ResponseField name="workPreference" type="enum">
+        Work preference.
+      </ResponseField>
+      <ResponseField name="preferredJobTypes" type="enum[]">
+        Preferred job types.
+      </ResponseField>
+      <ResponseField name="yearsOfExperience" type="number">
+        Years of experience.
+      </ResponseField>
+      <ResponseField name="linkedinUrl" type="string | null">
+        LinkedIn profile URL.
+      </ResponseField>
+      <ResponseField name="portfolioUrl" type="string | null">
+        Portfolio website URL.
+      </ResponseField>
+      <ResponseField name="githubUrl" type="string | null">
+        GitHub profile URL.
+      </ResponseField>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Total number of job seekers matching the filters.
+</ResponseField>
+
+<ResponseField name="page" type="number">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="limit" type="number">
+  Items per page.
+</ResponseField>
+
+<ResponseField name="totalPages" type="number">
+  Total number of pages.
+</ResponseField>
+
+## Filtering Examples
+
+### Filter by Location
+
+```bash
+GET /api/v1/job-seekers?location=Cairo
+```
+
+### Filter by Work Preference
+
+```bash
+GET /api/v1/job-seekers?workPreference=REMOTE
+```
+
+### Filter by Experience Range
+
+```bash
+GET /api/v1/job-seekers?minYearsOfExperience=2&maxYearsOfExperience=5
+```
+
+### Filter by Job Types
+
+```bash
+GET /api/v1/job-seekers?preferredJobTypes=FULL_TIME&preferredJobTypes=CONTRACT
+```
+
+### Combine Multiple Filters
+
+```bash
+GET /api/v1/job-seekers?location=Egypt&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=3
+```
+
+## Error Responses
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "statusCode": 400,
+  "message": ["Invalid query parameters"],
+  "error": "Bad Request"
+}
+```
+
+### 500 Internal Server Error
+
+```json
+{
+  "statusCode": 500,
+  "message": "Failed to retrieve job seekers",
+  "error": "Internal Server Error"
+}
+```
+
+## Notes
+
+<Info>
+  **Public Profiles Only**: This endpoint returns only public profile information. Sensitive data
+  like email, phone, and expected salary are only available in the detailed profile endpoint.
+</Info>
+
+<Tip>
+  **Optimize Queries**: Use specific filters to reduce the number of results and improve response
+  time.
+</Tip>

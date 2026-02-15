@@ -1,0 +1,295 @@
+---
+title: 'Update My Profile'
+api: 'PATCH /api/v1/job-seekers/me'
+description: 'Update the current job seeker\'s profile information'
+---
+
+## Endpoint
+
+```
+PATCH /api/v1/job-seekers/me
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Request Body
+
+All fields are optional. Only provide fields you want to update.
+
+<ParamField body="firstName" type="string">
+  User's first name.
+</ParamField>
+
+<ParamField body="lastName" type="string">
+  User's last name.
+</ParamField>
+
+<ParamField body="title" type="string">
+  Current job title.
+</ParamField>
+
+<ParamField body="location" type="string">
+  Current location.
+</ParamField>
+
+<ParamField body="availabilityStatus" type="enum">
+  Current availability status. - `OPEN_TO_WORK` - Actively looking - `NOT_LOOKING` - Not looking -
+  `EMPLOYED` - Currently employed - `UNAVAILABLE` - Not available
+</ParamField>
+
+<ParamField body="workPreference" type="enum">
+  Work preference. - `REMOTE` - Remote work - `ONSITE` - On-site work - `HYBRID` - Hybrid work -
+  `ANY` - No preference
+</ParamField>
+
+<ParamField body="preferredJobTypes" type="enum[]">
+  Preferred job types. - `FULL_TIME` - `PART_TIME` - `CONTRACT` - `INTERNSHIP` - `FREELANCE`
+</ParamField>
+
+<ParamField body="yearsOfExperience" type="number">
+  Total years of professional experience.
+</ParamField>
+
+<ParamField body="summary" type="string">
+  Professional summary/bio.
+</ParamField>
+
+<ParamField body="expectedSalary" type="number">
+  Expected monthly salary in USD.
+</ParamField>
+
+<ParamField body="linkedinUrl" type="string">
+  LinkedIn profile URL.
+</ParamField>
+
+<ParamField body="portfolioUrl" type="string">
+  Portfolio website URL.
+</ParamField>
+
+<ParamField body="githubUrl" type="string">
+  GitHub profile URL.
+</ParamField>
+
+## Request Shape
+
+```typescript
+interface UpdateJobSeekerProfileDto {
+  firstName?: string;
+  lastName?: string;
+  title?: string;
+  location?: string;
+  availabilityStatus?: 'OPEN_TO_WORK' | 'NOT_LOOKING' | 'EMPLOYED' | 'UNAVAILABLE';
+  workPreference?: 'REMOTE' | 'ONSITE' | 'HYBRID' | 'ANY';
+  preferredJobTypes?: ('FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP' | 'FREELANCE')[];
+  yearsOfExperience?: number;
+  summary?: string;
+  expectedSalary?: number;
+  linkedinUrl?: string;
+  portfolioUrl?: string;
+  githubUrl?: string;
+}
+```
+
+## Request Examples
+
+### Update Basic Information
+
+```bash
+PATCH /api/v1/job-seekers/me
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "firstName": "Amr",
+  "lastName": "Mubarak",
+  "title": "Senior Software Engineer"
+}
+```
+
+### Update Availability and Preferences
+
+```bash
+PATCH /api/v1/job-seekers/me
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "availabilityStatus": "OPEN_TO_WORK",
+  "workPreference": "REMOTE",
+  "preferredJobTypes": ["FULL_TIME", "CONTRACT"],
+  "yearsOfExperience": 6,
+  "expectedSalary": 6000,
+  "noticePeriod": 30
+}
+```
+
+### Update Profile Links
+
+```bash
+PATCH /api/v1/job-seekers/me
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "linkedinUrl": "https://linkedin.com/in/amr-mubarak",
+  "portfolioUrl": "https://amr-mubarak.dev",
+  "githubUrl": "https://github.com/amr-mubarak"
+}
+```
+
+### Update Summary
+
+```bash
+PATCH /api/v1/job-seekers/me
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "summary": "Experienced software engineer with 5+ years in backend development. Specialized in Node.js, TypeScript, and cloud technologies. Looking for remote opportunities."
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "firstName": "Amr",
+    "lastName": "Mubarak",
+    "profileImageUrl": null,
+    "profile": {
+      "jobSeekerId": "a0000000-0000-0000-0000-000000000001",
+      "title": "Senior Software Engineer",
+      "location": "Cairo, Egypt",
+      "availabilityStatus": "OPEN_TO_WORK",
+      "workPreference": "REMOTE",
+      "preferredJobTypes": ["FULL_TIME", "CONTRACT"],
+      "yearsOfExperience": 6,
+      "linkedinUrl": "https://linkedin.com/in/amr-mubarak",
+      "portfolioUrl": "https://amr-mubarak.dev",
+      "githubUrl": "https://github.com/amr-mubarak",
+      "cvEmail": "amr.cv@example.com",
+      "noticePeriod": 30,
+      "phone": "+20 100 123 4567",
+      "expectedSalary": 6000,
+      "summary": "Experienced software engineer with 5+ years in backend development..."
+    },
+    "educations": [],
+    "workExperiences": [],
+    "jobSeekerSkills": []
+  },
+  "message": "Job seeker profile updated successfully",
+  "meta": {
+    "timestamp": "2026-02-15T12:05:00.000Z",
+    "path": "/job-seekers/me",
+    "method": "PATCH"
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "statusCode": 400,
+  "message": ["availabilityStatus must be a valid enum value"],
+  "error": "Bad Request"
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized",
+  "error": "Unauthorized"
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "statusCode": 401,
+  "message": "Insufficient permissions",
+  "error": "Unauthorized"
+}
+```
+
+### 404 Not Found - Profile Not Found
+
+Returned when the job seeker hasn't completed onboarding yet.
+
+```json
+{
+  "statusCode": 404,
+  "message": "Profile not found, please complete your onboarding first",
+  "error": "Not Found"
+}
+```
+
+### 500 Internal Server Error
+
+```json
+{
+  "statusCode": 500,
+  "message": "Failed to update profile",
+  "error": "Internal Server Error"
+}
+```
+
+## Validation Rules
+
+| Field              | Rules                       |
+| ------------------ | --------------------------- |
+| firstName          | String, max 100 characters  |
+| lastName           | String, max 100 characters  |
+| title              | String, max 200 characters  |
+| location           | String, max 200 characters  |
+| availabilityStatus | Must be valid enum value    |
+| workPreference     | Must be valid enum value    |
+| preferredJobTypes  | Array of valid enum values  |
+| yearsOfExperience  | Number, min 0, max 50       |
+| summary            | String, max 2000 characters |
+| expectedSalary     | Number, min 0               |
+| linkedinUrl        | Valid URL format            |
+| portfolioUrl       | Valid URL format            |
+| githubUrl          | Valid URL format            |
+
+## Notes
+
+<Info>
+  **Partial Updates**: This endpoint supports partial updates. You only need to include the fields
+  you want to change.
+</Info>
+
+<Info>
+  **Profile Must Exist**: You must complete your onboarding before you can update your profile. If
+  you haven't created a profile yet, you'll receive a 404 error.
+</Info>
+
+<Tip>
+  **Keep Profile Updated**: Regularly update your availability status and expected salary to attract
+  relevant job opportunities.
+</Tip>
+
+<Tip>
+  **Add Links**: Including LinkedIn, portfolio, and GitHub links increases your visibility and helps
+  companies learn more about you.
+</Tip>
