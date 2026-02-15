@@ -16,17 +16,41 @@ export type PublicJobSeeker = Omit<JobSeeker, 'password' | 'isActive' | 'lastLog
  */
 export type CreateJobSeekerData = Omit<
   JobSeeker,
-  'id' | 'createdAt' | 'updatedAt' | 'lastLoginAt' | 'isActive' | 'isVerified' | 'profileImageUrl'
+  'id' | 'createdAt' | 'updatedAt' | 'lastLoginAt' | 'profileImageUrl' | 'isActive' | 'isVerified'
 >;
 
 /**
  * JobSeeker update data (all fields optional)
  */
 export type UpdateJobSeekerData = Partial<
-  Omit<JobSeeker, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt'>
+  Pick<JobSeeker, 'firstName' | 'lastName' | 'profileImageUrl' | 'isVerified' | 'lastLoginAt'>
 >;
 
 /**
  * JobSeeker update password
  */
 export type UpdateJobSeekerPassword = Pick<JobSeeker, 'password'>;
+
+const jobSeekerProfileSelect = {
+  omit: {
+    id: true,
+    phone: true,
+    createdAt: true,
+    updatedAt: true,
+    noticePeriod: true,
+  },
+  include: {
+    jobSeeker: {
+      select: {
+        firstName: true,
+        lastName: true,
+      },
+    },
+  },
+} satisfies Prisma.JobSeekerProfileDefaultArgs;
+
+export { jobSeekerProfileSelect };
+
+export type PublicJobSeekerProfile = Prisma.JobSeekerProfileGetPayload<
+  typeof jobSeekerProfileSelect
+>;

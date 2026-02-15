@@ -1,15 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JobSeekerRepository } from './repositories/job-seeker.repository';
 import { JobSeekerQueryDto } from './dto/job-seeker-query.dto';
-import { PaginatedResult, PublicJobSeekerProfile } from './types/job-seeker-profile.types';
+import { UpdateJobSeekerProfileDto } from './dto/update-job-seeker-profile.dto';
 
 @Injectable()
 export class JobSeekerService {
   constructor(private readonly jobSeekerRepository: JobSeekerRepository) {}
 
-  async findAllProfiles(
-    query: JobSeekerQueryDto,
-  ): Promise<PaginatedResult<PublicJobSeekerProfile>> {
+  async findAllProfiles(query: JobSeekerQueryDto) {
     const { page = 1, limit = 20 } = query;
     const { jobSeekers, total } = await this.jobSeekerRepository.findAllProfiles(query);
 
@@ -22,14 +20,32 @@ export class JobSeekerService {
     };
   }
 
-  async findOne(seekerId: string): Promise<PublicJobSeekerProfile | null> {
-    const profile = await this.jobSeekerRepository.findProfileById(seekerId);
+  async findMyProfile(jobSeekerId: string) {
+    const profile = await this.jobSeekerRepository.findProfileById(jobSeekerId);
 
     if (!profile) {
       throw new NotFoundException(`Job seeker profile not found`);
     }
 
     return { ...profile };
+  }
+
+  async findProfileById(jobSeekerId: string) {
+    const profile = await this.jobSeekerRepository.findProfileById(jobSeekerId);
+
+    if (!profile) {
+      throw new NotFoundException(`Job seeker profile not found`);
+    }
+
+    return { ...profile };
+  }
+
+  async updateMyProfile(jobSeekerId: string, updateJobSeekerProfileDto: UpdateJobSeekerProfileDto) {
+    try {
+      await this.jobSeekerRepository.updateMyProfile(jobSeekerId, updateJobSeekerProfileDto);
+    } catch {
+      throw new NotFoundException('Profile not found, please complete your onboarding first');
+    }
   }
 
   async deactivate(email: string) {

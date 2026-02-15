@@ -1,0 +1,119 @@
+---
+title: 'Deactivate My Account'
+api: 'DELETE /api/v1/job-seekers/me'
+description: 'Deactivate the current job seeker\'s account'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/job-seekers/me
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+This endpoint deactivates (soft delete) the current job seeker's account. The account data is not permanently deleted but marked as inactive. Users can contact support to reactivate their account if needed.
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "caf3315e-56ef-431c-8ee9-db7ef935c801"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-12T17:30:50.144Z",
+    "path": "/job-seekers/me",
+    "method": "DELETE"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  The unique identifier of the deactivated job seeker account.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized",
+  "error": "Unauthorized"
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "statusCode": 401,
+  "message": "Insufficient permissions",
+  "error": "Unauthorized"
+}
+```
+
+### 500 Internal Server Error
+
+```json
+{
+  "statusCode": 500,
+  "message": "Failed to deactivate account",
+  "error": "Internal Server Error"
+}
+```
+
+## What Happens When Account is Deactivated
+
+<Steps>
+  <Step title="Account Status Changed">The account is marked as inactive (isActive = false)</Step>
+  <Step title="Profile Hidden">The profile will no longer appear in job seeker searches</Step>
+  <Step title="Login Disabled">The user can no longer log in with their credentials</Step>
+  <Step title="Data Preserved">All profile data is preserved for potential reactivation</Step>
+</Steps>
+
+## Reactivation
+
+<Info>
+  **Account Reactivation**: If you want to reactivate your account in the future, please contact
+  support. Your profile data is preserved after deactivation.
+</Info>
+
+## Request Example
+
+```bash
+DELETE /api/v1/job-seekers/me
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Security Notes
+
+<Warning>
+  **Permanent Action**: Once deactivated, you won't be able to access your account or appear in
+  employer searches until reactivated.
+</Warning>
+
+<Tip>
+  **Consider Before Deactivating**: If you're just taking a break from job hunting, consider
+  updating your availability status to "NOT_LOOKING" instead of deactivating your account.
+</Tip>

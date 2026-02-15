@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateJobSeekerData, JobSeeker, UpdateJobSeekerData } from '../types/job-seeker.types';
 import {
   JobSeekerProfileFilters,
+  MyJobSeekerProfileDetails,
   PaginatedResult,
   PublicJobSeekerProfile,
   PublicJobSeekerProfileDetails,
+  UpdateMyProfileData,
 } from '../types/job-seeker-profile.types';
 
 @Injectable()
@@ -31,4 +33,8 @@ export abstract class JobSeekerRepository {
   abstract findProfileById(jobSeekerId: string): Promise<PublicJobSeekerProfileDetails | null>;
 
   abstract deactivateByEmail(email: string): Promise<{ id: string } | null>;
+
+  abstract findMyProfile(jobSeekerId: string): Promise<MyJobSeekerProfileDetails | null>;
+
+  abstract updateMyProfile(jobSeekerId: string, data: UpdateMyProfileData): Promise<void>;
 }

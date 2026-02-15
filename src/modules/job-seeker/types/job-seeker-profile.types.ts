@@ -1,4 +1,5 @@
 import { Prisma } from 'generated/prisma/client';
+import { UpdateJobSeekerData } from './job-seeker.types';
 
 /**
  * Base JobSeekerProfile type from Prisma
@@ -8,24 +9,146 @@ export type JobSeekerProfile = Prisma.JobSeekerProfileGetPayload<object>;
 /**
  * JobSeekerProfile without sensitive fields (for public list)
  */
-export type PublicJobSeekerProfile = Omit<
-  JobSeekerProfile,
-  | 'cvEmail'
-  | 'expectedSalary'
-  | 'createdAt'
-  | 'updatedAt'
-  | 'phone'
-  | 'id'
-  | 'summary'
-  | 'noticePeriod'
-  | 'githubUrl'
-  | 'portfolioUrl'
-  | 'linkedinUrl'
+export const publicProfileSelect = {
+  select: {
+    firstName: true,
+    lastName: true,
+    profile: {
+      select: {
+        jobSeekerId: true,
+        title: true,
+        location: true,
+        availabilityStatus: true,
+        workPreference: true,
+        preferredJobTypes: true,
+        yearsOfExperience: true,
+        linkedinUrl: true,
+        portfolioUrl: true,
+        githubUrl: true,
+      },
+    },
+  },
+} satisfies Prisma.JobSeekerDefaultArgs;
+export type PublicJobSeekerProfile = Prisma.JobSeekerGetPayload<typeof publicProfileSelect>;
+
+export const publicJobSeekerProfileDetails = {
+  select: {
+    firstName: true,
+    lastName: true,
+    profileImageUrl: true,
+    profile: {
+      select: {
+        jobSeekerId: true,
+        title: true,
+        location: true,
+        availabilityStatus: true,
+        workPreference: true,
+        preferredJobTypes: true,
+        yearsOfExperience: true,
+        linkedinUrl: true,
+        portfolioUrl: true,
+        githubUrl: true,
+        cvEmail: true,
+        noticePeriod: true,
+        phone: true,
+        expectedSalary: true,
+        summary: true,
+      },
+    },
+    educations: {
+      select: {
+        degreeType: true,
+        description: true,
+        institutionName: true,
+        isCurrent: true,
+        fieldOfStudy: true,
+        endDate: true,
+        gpa: true,
+        startDate: true,
+      },
+    },
+    workExperiences: {
+      select: {
+        companyName: true,
+        description: true,
+        isCurrent: true,
+        startDate: true,
+        jobTitle: true,
+        location: true,
+        endDate: true,
+      },
+    },
+    jobSeekerSkills: {
+      select: {
+        skill: true,
+        verified: true,
+      },
+    },
+  },
+} satisfies Prisma.JobSeekerDefaultArgs;
+
+export type PublicJobSeekerProfileDetails = Prisma.JobSeekerGetPayload<
+  typeof publicJobSeekerProfileDetails
 >;
 
-export type PublicJobSeekerProfileDetails = Omit<
-  JobSeekerProfile,
-  'createdAt' | 'updatedAt' | 'id'
+export const myJobSeekerProfileDetails = {
+  select: {
+    firstName: true,
+    lastName: true,
+    profileImageUrl: true,
+    profile: {
+      select: {
+        jobSeekerId: true,
+        title: true,
+        location: true,
+        availabilityStatus: true,
+        workPreference: true,
+        preferredJobTypes: true,
+        yearsOfExperience: true,
+        linkedinUrl: true,
+        portfolioUrl: true,
+        githubUrl: true,
+        cvEmail: true,
+        noticePeriod: true,
+        phone: true,
+        expectedSalary: true,
+        summary: true,
+      },
+    },
+    educations: {
+      select: {
+        degreeType: true,
+        description: true,
+        institutionName: true,
+        isCurrent: true,
+        fieldOfStudy: true,
+        endDate: true,
+        gpa: true,
+        startDate: true,
+      },
+    },
+    workExperiences: {
+      select: {
+        companyName: true,
+        description: true,
+        isCurrent: true,
+        startDate: true,
+        jobTitle: true,
+        location: true,
+        endDate: true,
+      },
+    },
+    jobSeekerSkills: {
+      select: {
+        skill: true,
+        verified: true,
+      },
+    },
+  },
+} satisfies Prisma.JobSeekerDefaultArgs;
+
+export type MyJobSeekerProfileDetails = Prisma.JobSeekerGetPayload<
+  typeof myJobSeekerProfileDetails
 >;
 
 /**
@@ -65,3 +188,5 @@ export type PaginatedResult<T> = {
   limit: number;
   totalPages: number;
 };
+
+export type UpdateMyProfileData = UpdateJobSeekerData & UpdateJobSeekerProfileData;
