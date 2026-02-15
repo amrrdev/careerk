@@ -48,6 +48,17 @@
               "docs/api-reference/auth/forgot-password",
               "docs/api-reference/auth/reset-password"
             ]
+          },
+          {
+            "group": "Job Seeker",
+            "pages": [
+              "docs/job-seeker/introduction",
+              "docs/api-reference/job-seeker/get-all-profiles",
+              "docs/api-reference/job-seeker/get-my-profile",
+              "docs/api-reference/job-seeker/get-profile-by-id",
+              "docs/api-reference/job-seeker/update-profile",
+              "docs/api-reference/job-seeker/deactivate-account"
+            ]
           }
         ]
       }
