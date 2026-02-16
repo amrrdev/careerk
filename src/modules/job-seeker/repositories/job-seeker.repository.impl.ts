@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
 import { CreateJobSeekerData, JobSeeker, UpdateJobSeekerData } from '../types/job-seeker.types';
 import { JobSeekerRepository } from './job-seeker.repository';
@@ -16,15 +16,31 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
   async updateMyProfile(jobSeekerId: string, data: UpdateMyProfileData): Promise<void> {
     const { firstName, lastName, ...profileData } = data;
 
-    return this.databaseService.$transaction(async (tx) => {
-      if (firstName || lastName) {
+    const jobSeekerData: Prisma.JobSeekerUpdateInput = {};
+    if (firstName) jobSeekerData.firstName = firstName;
+    if (lastName) jobSeekerData.lastName = lastName;
+
+    const hasJobSeekerUpdate = Object.keys(jobSeekerData).length > 0;
+    const hasProfileUpdate = Object.keys(profileData).length > 0;
+
+    if (!hasJobSeekerUpdate && !hasProfileUpdate) return;
+
+    await this.databaseService.$transaction(async (tx) => {
+      const exists = await tx.jobSeeker.findUnique({
+        where: { id: jobSeekerId },
+        select: { id: true },
+      });
+
+      if (!exists) throw new NotFoundException('Job seeker not found');
+
+      if (hasJobSeekerUpdate) {
         await tx.jobSeeker.update({
           where: { id: jobSeekerId },
-          data: { firstName, lastName },
+          data: jobSeekerData,
         });
       }
 
-      if (Object.keys(profileData).length > 0) {
+      if (hasProfileUpdate) {
         await tx.jobSeekerProfile.update({
           where: { jobSeekerId },
           data: profileData,
@@ -32,7 +48,6 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
       }
     });
   }
-
   // It should contains the cv
   findMyProfile(jobSeekerId: string): Promise<MyJobSeekerProfileDetails | null> {
     return this.databaseService.jobSeeker.findUnique({
@@ -85,8 +100,12 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
         },
         jobSeekerSkills: {
           select: {
-            skill: true,
             verified: true,
+            skill: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
       },
@@ -219,8 +238,12 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
         },
         jobSeekerSkills: {
           select: {
-            skill: true,
             verified: true,
+            skill: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
       },

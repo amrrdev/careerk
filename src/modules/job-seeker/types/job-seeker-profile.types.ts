@@ -80,8 +80,12 @@ export const publicJobSeekerProfileDetails = {
     },
     jobSeekerSkills: {
       select: {
-        skill: true,
         verified: true,
+        skill: {
+          select: {
+            name: true,
+          },
+        },
       },
     },
   },
@@ -140,8 +144,12 @@ export const myJobSeekerProfileDetails = {
     },
     jobSeekerSkills: {
       select: {
-        skill: true,
         verified: true,
+        skill: {
+          select: {
+            name: true,
+          },
+        },
       },
     },
   },
