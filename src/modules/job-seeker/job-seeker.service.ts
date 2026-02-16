@@ -27,7 +27,14 @@ export class JobSeekerService {
       throw new NotFoundException(`Job seeker profile not found`);
     }
 
-    return { ...profile };
+    return {
+      ...profile,
+      skills: profile.jobSeekerSkills.map(({ skill, verified }) => ({
+        name: skill.name,
+        verified,
+      })),
+      jobSeekerSkills: undefined,
+    };
   }
 
   async findProfileById(jobSeekerId: string) {
@@ -37,7 +44,14 @@ export class JobSeekerService {
       throw new NotFoundException(`Job seeker profile not found`);
     }
 
-    return { ...profile };
+    return {
+      ...profile,
+      skills: profile.jobSeekerSkills.map(({ skill, verified }) => ({
+        name: skill.name,
+        verified,
+      })),
+      jobSeekerSkills: undefined,
+    };
   }
 
   async updateMyProfile(jobSeekerId: string, updateJobSeekerProfileDto: UpdateJobSeekerProfileDto) {
