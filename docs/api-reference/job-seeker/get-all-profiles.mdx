@@ -218,9 +218,14 @@ GET /api/v1/job-seekers?location=Berlin&workPreference=REMOTE&availabilityStatus
 
 ```json
 {
-  "statusCode": 400,
-  "message": ["Invalid query parameters"],
-  "error": "Bad Request"
+  "success": false,
+  "error": {
+    "message": ["Invalid query parameters"],
+    "statusCode": 400,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/job-seekers",
+    "method": "GET"
+  }
 }
 ```
 
@@ -228,9 +233,14 @@ GET /api/v1/job-seekers?location=Berlin&workPreference=REMOTE&availabilityStatus
 
 ```json
 {
-  "statusCode": 500,
-  "message": "Failed to retrieve job seekers",
-  "error": "Internal Server Error"
+  "success": false,
+  "error": {
+    "message": "Failed to retrieve job seekers",
+    "statusCode": 500,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/job-seekers",
+    "method": "GET"
+  }
 }
 ```
 

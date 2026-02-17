@@ -67,9 +67,14 @@ Retrieve your current CV details including file name, MIME type, and upload time
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Unauthorized",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/me",
+    "method": "GET"
+  }
 }
 ```
 
@@ -77,9 +82,14 @@ Retrieve your current CV details including file name, MIME type, and upload time
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Insufficient permissions",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/me",
+    "method": "GET"
+  }
 }
 ```
 
@@ -87,9 +97,14 @@ Retrieve your current CV details including file name, MIME type, and upload time
 
 ```json
 {
-  "statusCode": 404,
-  "message": "CV not found",
-  "error": "Not Found"
+  "success": false,
+  "error": {
+    "message": "CV not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/me",
+    "method": "GET"
+  }
 }
 ```
 

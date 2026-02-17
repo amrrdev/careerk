@@ -57,9 +57,14 @@ This endpoint deactivates (soft delete) the current job seeker's account. The ac
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Unauthorized",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/job-seekers/me",
+    "method": "DELETE"
+  }
 }
 ```
 
@@ -67,9 +72,14 @@ This endpoint deactivates (soft delete) the current job seeker's account. The ac
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Insufficient permissions",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/job-seekers/me",
+    "method": "DELETE"
+  }
 }
 ```
 
@@ -77,9 +87,14 @@ This endpoint deactivates (soft delete) the current job seeker's account. The ac
 
 ```json
 {
-  "statusCode": 500,
-  "message": "Failed to deactivate account",
-  "error": "Internal Server Error"
+  "success": false,
+  "error": {
+    "message": "Failed to deactivate account",
+    "statusCode": 500,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/job-seekers/me",
+    "method": "DELETE"
+  }
 }
 ```
 
