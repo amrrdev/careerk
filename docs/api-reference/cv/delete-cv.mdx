@@ -1,0 +1,84 @@
+---
+title: 'Delete CV'
+api: 'DELETE /api/v1/cv/me'
+description: 'Delete your uploaded CV from your profile'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/cv/me
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Delete your current CV from your profile. This removes the CV file from storage and detaches it from your profile. This does not delete manually entered profile data.
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-16T15:09:36.452Z",
+    "path": "/cv/me",
+    "method": "DELETE"
+  }
+}
+```
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized",
+  "error": "Unauthorized"
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "statusCode": 401,
+  "message": "Insufficient permissions",
+  "error": "Unauthorized"
+}
+```
+
+### 404 Not Found - No CV
+
+```json
+{
+  "statusCode": 404,
+  "message": "CV not found",
+  "error": "Not Found"
+}
+```
+
+## Notes
+
+<Info>
+  **Profile Data Preserved**: Deleting your CV does not affect your manually entered profile data
+  such as work experience, education, and skills.
+</Info>
+
+<Tip>**Re-upload Available**: You can upload a new CV at any time after deleting the old one.</Tip>

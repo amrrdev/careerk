@@ -30,69 +30,94 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 {
   "success": true,
   "data": {
-    "firstName": "amr",
-    "lastName": "mubarak",
+    "firstName": "Timothy",
+    "lastName": "Davis",
     "profileImageUrl": null,
     "profile": {
-      "jobSeekerId": "a0000000-0000-0000-0000-000000000001",
-      "title": "Senior Software Engineer",
-      "location": "Cairo, Egypt",
-      "availabilityStatus": "OPEN_TO_WORK",
-      "workPreference": "REMOTE",
-      "preferredJobTypes": ["FULL_TIME", "CONTRACT"],
-      "yearsOfExperience": 5,
-      "linkedinUrl": "https://linkedin.com/in/amr-mubarak",
-      "portfolioUrl": "https://amr.dev",
-      "githubUrl": "https://github.com/amr-mubarak",
-      "cvEmail": "amr.cv@example.com",
-      "noticePeriod": 30,
-      "phone": "+20 100 123 4567",
-      "expectedSalary": 5000,
-      "summary": "Experienced software engineer with expertise in backend development..."
+      "jobSeekerId": "fe721809-a9da-4301-a8fe-9d3373dced00",
+      "title": "IT Manager",
+      "location": "Remote",
+      "availabilityStatus": "NOT_LOOKING",
+      "workPreference": "ONSITE",
+      "preferredJobTypes": ["INTERNSHIP", "FREELANCE", "CONTRACT"],
+      "yearsOfExperience": 5.4,
+      "linkedinUrl": null,
+      "portfolioUrl": null,
+      "githubUrl": null,
+      "cvEmail": "cv1756@jobseeker.com",
+      "noticePeriod": 90,
+      "phone": "+17423258561",
+      "expectedSalary": null,
+      "summary": "Experienced IT Manager with 5.4 years of expertise."
     },
     "educations": [
       {
         "degreeType": "BACHELOR",
-        "description": "Computer Science",
+        "description": null,
         "institutionName": "Cairo University",
         "isCurrent": false,
-        "fieldOfStudy": "Computer Science",
-        "endDate": "2020-06-01",
-        "gpa": 3.8,
-        "startDate": "2016-09-01"
+        "fieldOfStudy": "Accounting",
+        "endDate": "2022-12-16T00:00:00.000Z",
+        "gpa": 3.1,
+        "startDate": "2018-10-16T00:00:00.000Z"
+      },
+      {
+        "degreeType": "HIGH_SCHOOL",
+        "description": null,
+        "institutionName": "UC Berkeley",
+        "isCurrent": false,
+        "fieldOfStudy": "Physics",
+        "endDate": "2009-10-15T00:00:00.000Z",
+        "gpa": 3.25,
+        "startDate": "2006-02-07T00:00:00.000Z"
       }
     ],
     "workExperiences": [
       {
-        "companyName": "TechCorp Inc.",
-        "description": "Backend development",
+        "companyName": "MarketPulse",
+        "description": "Worked as Support Engineer at MarketPulse.",
+        "isCurrent": false,
+        "startDate": "2016-11-12T00:00:00.000Z",
+        "jobTitle": "Support Engineer",
+        "location": "Toronto, Canada",
+        "endDate": "2018-12-22T00:00:00.000Z"
+      },
+      {
+        "companyName": "RetailFlow",
+        "description": "Worked as Recruiter at RetailFlow.",
         "isCurrent": true,
-        "startDate": "2022-01-01",
-        "jobTitle": "Senior Backend Engineer",
-        "location": "Cairo, Egypt",
+        "startDate": "2012-02-02T00:00:00.000Z",
+        "jobTitle": "Recruiter",
+        "location": "Denver, CO",
         "endDate": null
       }
     ],
-    "jobSeekerSkills": [
+    "skills": [
       {
-        "skill": {
-          "id": "b0000000-0000-0000-0000-000000000001",
-          "name": "TypeScript"
-        },
+        "name": "Git",
         "verified": true
       },
       {
-        "skill": {
-          "id": "b0000000-0000-0000-0000-000000000002",
-          "name": "Node.js"
-        },
+        "name": "NestJS",
+        "verified": true
+      },
+      {
+        "name": "TypeScript",
+        "verified": true
+      },
+      {
+        "name": "Java",
+        "verified": true
+      },
+      {
+        "name": "Terraform",
         "verified": false
       }
     ]
   },
   "message": "Job seeker profile retrieved successfully",
   "meta": {
-    "timestamp": "2026-02-15T12:01:10.039Z",
+    "timestamp": "2026-02-17T08:09:44.363Z",
     "path": "/job-seekers/me",
     "method": "GET"
   }
@@ -127,7 +152,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     </ResponseField>
     <ResponseField name="availabilityStatus" type="enum">
       Current availability status. - `OPEN_TO_WORK` - Actively looking - `NOT_LOOKING` - Not looking
-      - `EMPLOYED` - Currently employed - `UNAVAILABLE` - Not available
+      - `PASSIVELY_LOOKING` - Open to opportunities
     </ResponseField>
     <ResponseField name="workPreference" type="enum">
       Work preference. - `REMOTE` - Remote work - `ONSITE` - On-site work - `HYBRID` - Hybrid work -
@@ -223,16 +248,11 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
   </Expandable>
 </ResponseField>
 
-<ResponseField name="jobSeekerSkills" type="array">
+<ResponseField name="skills" type="array">
   List of skills.
   <Expandable title="Skill Properties">
-    <ResponseField name="skill" type="object">
-      <ResponseField name="id" type="string">
-        Skill identifier.
-      </ResponseField>
-      <ResponseField name="name" type="string">
-        Skill name.
-      </ResponseField>
+    <ResponseField name="name" type="string">
+      Skill name.
     </ResponseField>
     <ResponseField name="verified" type="boolean">
       Whether skill is verified.
