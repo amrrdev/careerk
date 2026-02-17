@@ -34,6 +34,7 @@ model JobSeeker {
   educations Education[]
   workExperiences WorkExperience[]
   jobSeekerSkills JobSeekerSkill[]
+  cv CV?
 
   @@index([isActive])
   @@map("job_seekers")
@@ -172,6 +173,20 @@ model JobSeekerSkill {
   @@index([jobSeekerId])
   @@map("job_seeker_skills")
 }
+
+model CV {
+  id          String    @id @default(uuid()) @db.Uuid
+  jobSeekerId String    @unique @db.Uuid @map("job_seeker_id")
+  key         String
+  fileName    String    @map("file_name")
+  mimeType    String    @map("mime_type")
+  uploadedAt  DateTime  @default(now()) @map("uploaded_at")
+
+  jobSeeker   JobSeeker @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@map("cvs")
+}
+
 
 enum DegreeTypeEnum {
   HIGH_SCHOOL

@@ -4,7 +4,10 @@ import { CreateJobSeekerData, JobSeeker, UpdateJobSeekerData } from '../types/jo
 import { JobSeekerRepository } from './job-seeker.repository';
 import {
   JobSeekerProfileFilters,
+  myJobSeekerProfileDetails,
   MyJobSeekerProfileDetails,
+  publicJobSeekerProfileDetails,
+  publicProfileSelect,
   UpdateMyProfileData,
 } from '../types/job-seeker-profile.types';
 import { Prisma } from 'generated/prisma/client';
@@ -52,63 +55,7 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
   findMyProfile(jobSeekerId: string): Promise<MyJobSeekerProfileDetails | null> {
     return this.databaseService.jobSeeker.findUnique({
       where: { id: jobSeekerId },
-      select: {
-        firstName: true,
-        lastName: true,
-        profileImageUrl: true,
-        profile: {
-          select: {
-            jobSeekerId: true,
-            title: true,
-            location: true,
-            availabilityStatus: true,
-            workPreference: true,
-            preferredJobTypes: true,
-            yearsOfExperience: true,
-            linkedinUrl: true,
-            portfolioUrl: true,
-            githubUrl: true,
-            cvEmail: true,
-            noticePeriod: true,
-            phone: true,
-            expectedSalary: true,
-            summary: true,
-          },
-        },
-        educations: {
-          select: {
-            degreeType: true,
-            description: true,
-            institutionName: true,
-            isCurrent: true,
-            fieldOfStudy: true,
-            endDate: true,
-            gpa: true,
-            startDate: true,
-          },
-        },
-        workExperiences: {
-          select: {
-            companyName: true,
-            description: true,
-            isCurrent: true,
-            startDate: true,
-            jobTitle: true,
-            location: true,
-            endDate: true,
-          },
-        },
-        jobSeekerSkills: {
-          select: {
-            verified: true,
-            skill: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      ...myJobSeekerProfileDetails,
     });
   }
 
@@ -152,24 +99,7 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
         where: {
           profile: where,
         },
-        select: {
-          firstName: true,
-          lastName: true,
-          profile: {
-            select: {
-              jobSeekerId: true,
-              title: true,
-              location: true,
-              availabilityStatus: true,
-              workPreference: true,
-              preferredJobTypes: true,
-              yearsOfExperience: true,
-              linkedinUrl: true,
-              portfolioUrl: true,
-              githubUrl: true,
-            },
-          },
-        },
+        ...publicProfileSelect,
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { profile: { yearsOfExperience: 'desc' } },
@@ -190,63 +120,7 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
   async findProfileById(jobSeekerId: string) {
     return this.databaseService.jobSeeker.findUnique({
       where: { id: jobSeekerId },
-      select: {
-        firstName: true,
-        lastName: true,
-        profileImageUrl: true,
-        profile: {
-          select: {
-            jobSeekerId: true,
-            title: true,
-            location: true,
-            availabilityStatus: true,
-            workPreference: true,
-            preferredJobTypes: true,
-            yearsOfExperience: true,
-            linkedinUrl: true,
-            portfolioUrl: true,
-            githubUrl: true,
-            cvEmail: true,
-            noticePeriod: true,
-            phone: true,
-            expectedSalary: true,
-            summary: true,
-          },
-        },
-        educations: {
-          select: {
-            degreeType: true,
-            description: true,
-            institutionName: true,
-            isCurrent: true,
-            fieldOfStudy: true,
-            endDate: true,
-            gpa: true,
-            startDate: true,
-          },
-        },
-        workExperiences: {
-          select: {
-            companyName: true,
-            description: true,
-            isCurrent: true,
-            startDate: true,
-            jobTitle: true,
-            location: true,
-            endDate: true,
-          },
-        },
-        jobSeekerSkills: {
-          select: {
-            verified: true,
-            skill: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      ...publicJobSeekerProfileDetails,
     });
   }
 

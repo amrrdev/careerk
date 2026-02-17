@@ -10,6 +10,8 @@ import { ResponseInterceptor } from './core/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './core/filters/http-exception.filter';
 import { EmailModule } from './infrastructure/email/email.module';
 import { QueueModule } from './infrastructure/queue/queue.module';
+import { CvModule } from './modules/cv/cv.module';
+import { CvStorageModule } from './infrastructure/cv-storage/cv-storage.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { QueueModule } from './infrastructure/queue/queue.module';
     RedisModule,
     EmailModule,
     QueueModule,
+    CvModule,
+    CvStorageModule,
   ],
   providers: [
     {
