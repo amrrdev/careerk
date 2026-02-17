@@ -1,0 +1,119 @@
+---
+title: 'Request CV Upload URL'
+api: 'POST /api/v1/cv/presigned-url'
+description: 'Request a presigned URL for uploading your CV file'
+---
+
+## Endpoint
+
+```
+POST /api/v1/cv/presigned-url
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Request a presigned URL for uploading your CV file to cloud storage. This is the first step in the CV upload process.
+
+## Request Body
+
+<ParamField body="fileName" type="string" required>
+  The name of the file to upload (e.g., "my-cv.pdf").
+</ParamField>
+
+<ParamField body="mimeType" type="string" required>
+  The MIME type of the file. Supported types: - `application/pdf` - `application/msword` (.doc) -
+  `application/vnd.openxmlformats-officedocument.wordprocessingml.document` (.docx)
+</ParamField>
+
+## Request Example
+
+```json
+{
+  "fileName": "test-cv.pdf",
+  "mimeType": "application/pdf"
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "uploadUrl": "https://cvs.c0485e90a90f9be9ecd4e72559fee834.r2.cloudflarestorage.com/cvs/a9ff20fb-8010-4a22-8873-344c103726af/1771315860529-test-cv.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=c1feabbe8cd3c62e2dc015a4be9881f0%2F20260217%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260217T081100Z&X-Amz-Expires=3600&X-Amz-Signature=4cc903d3ef75e39b8a3374304d214828bd1291e7acf661fd3d4f3d09ae414983&X-Amz-SignedHeaders=host&x-id=PutObject",
+    "key": "cvs/a9ff20fb-8010-4a22-8873-344c103726af/1771315860529-test-cv.pdf"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-17T08:11:00.544Z",
+    "path": "/cv/presigned-url",
+    "method": "POST"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="uploadUrl" type="string">
+  The presigned URL to use for uploading the file. This URL is valid for 1 hour (3600 seconds).
+</ResponseField>
+
+<ResponseField name="key" type="string">
+  The storage key/path where the file will be stored. Save this for the confirmation step.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized",
+  "error": "Unauthorized"
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "statusCode": 401,
+  "message": "Insufficient permissions",
+  "error": "Unauthorized"
+}
+```
+
+### 400 Bad Request - Invalid File Type
+
+```json
+{
+  "statusCode": 400,
+  "message": "Invalid file type. Only PDF, DOC, and DOCX files are allowed.",
+  "error": "Bad Request"
+}
+```
+
+## Next Steps
+
+1. Use the `uploadUrl` to upload your file (see [Upload CV File](/api-reference/cv/upload-cv-file))
+2. After uploading, confirm the upload (see [Confirm CV Upload](/api-reference/cv/confirm-cv-upload))
+
+<Warning>
+  **URL Expiration**: The presigned URL expires after 1 hour. If you don't upload the file within
+  this time, you'll need to request a new URL.
+</Warning>

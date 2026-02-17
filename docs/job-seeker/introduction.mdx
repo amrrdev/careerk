@@ -23,16 +23,28 @@ http://localhost:3000/api/v1
 | PATCH  | `/job-seekers/me`  | Update current user's profile             | Yes (Job Seeker) |
 | DELETE | `/job-seekers/me`  | Deactivate current user's account         | Yes (Job Seeker) |
 
+## CV Endpoints
+
+| Method | Endpoint             | Description               | Auth Required    |
+| ------ | -------------------- | ------------------------- | ---------------- |
+| POST   | `/cv/presigned-url`  | Request CV upload URL     | Yes (Job Seeker) |
+| PUT    | `{uploadUrl}`        | Upload CV file to storage | Yes (Job Seeker) |
+| POST   | `/cv/confirm`        | Confirm CV upload         | Yes (Job Seeker) |
+| GET    | `/cv/me`             | Get current CV info       | Yes (Job Seeker) |
+| GET    | `/cv/me/downoad-url` | Get CV download URL       | Yes (Job Seeker) |
+| DELETE | `/cv/me`             | Delete current CV         | Yes (Job Seeker) |
+
 ## Common Enums
 
 ### Availability Status
 
-| Value          | Description                               |
-| -------------- | ----------------------------------------- |
-| `OPEN_TO_WORK` | Actively looking for job opportunities    |
-| `NOT_LOOKING`  | Not currently looking for jobs            |
-| `EMPLOYED`     | Currently employed, open to opportunities |
-| `UNAVAILABLE`  | Not available for work                    |
+| Value               | Description                                    |
+| ------------------- | ---------------------------------------------- |
+| `OPEN_TO_WORK`      | Actively looking for job opportunities         |
+| `NOT_LOOKING`       | Not currently looking for jobs                 |
+| `PASSIVELY_LOOKING` | Open to opportunities but not actively looking |
+| `EMPLOYED`          | Currently employed, open to opportunities      |
+| `UNAVAILABLE`       | Not available for work                         |
 
 ### Work Preference
 

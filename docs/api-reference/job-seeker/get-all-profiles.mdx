@@ -18,7 +18,7 @@ GET /api/v1/job-seekers
 
 <ParamField query="availabilityStatus" type="enum">
   Filter by availability status. - `OPEN_TO_WORK` - Actively looking - `NOT_LOOKING` - Not looking -
-  `EMPLOYED` - Currently employed - `UNAVAILABLE` - Not available
+  `PASSIVELY_LOOKING` - Open to opportunities
 </ParamField>
 
 <ParamField query="location" type="string">
@@ -58,7 +58,7 @@ GET /api/v1/job-seekers
 ## Request Example
 
 ```bash
-GET /api/v1/job-seekers?location=Cairo&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=2&page=1&limit=10
+GET /api/v1/job-seekers?location=London&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=2&page=1&limit=10
 ```
 
 ## Response
@@ -71,46 +71,46 @@ GET /api/v1/job-seekers?location=Cairo&workPreference=REMOTE&availabilityStatus=
   "data": {
     "jobSeekers": [
       {
-        "firstName": "Ahmed",
-        "lastName": "Hassan",
+        "firstName": "Jeffrey",
+        "lastName": "Martin",
         "profile": {
-          "jobSeekerId": "a0000000-0000-0000-0000-000000000001",
-          "title": "Senior Backend Engineer",
-          "location": "Cairo, Egypt",
-          "availabilityStatus": "OPEN_TO_WORK",
+          "jobSeekerId": "7933b735-4212-4dbe-8843-ce4dd5961076",
+          "title": "Rust Developer",
+          "location": "London, UK",
+          "availabilityStatus": "NOT_LOOKING",
           "workPreference": "REMOTE",
-          "preferredJobTypes": ["FULL_TIME", "CONTRACT"],
-          "yearsOfExperience": 6.5,
-          "linkedinUrl": "https://linkedin.com/in/ahmed-hassan",
+          "preferredJobTypes": ["PART_TIME", "INTERNSHIP", "CONTRACT"],
+          "yearsOfExperience": 20,
+          "linkedinUrl": null,
           "portfolioUrl": null,
-          "githubUrl": "https://github.com/ahmed-hassan"
+          "githubUrl": null
         }
       },
       {
-        "firstName": "Sara",
-        "lastName": "Ali",
+        "firstName": "Sandra",
+        "lastName": "Morgan",
         "profile": {
-          "jobSeekerId": "a0000000-0000-0000-0000-000000000002",
-          "title": "Frontend Developer",
-          "location": "Alexandria, Egypt",
-          "availabilityStatus": "OPEN_TO_WORK",
-          "workPreference": "HYBRID",
-          "preferredJobTypes": ["FULL_TIME"],
-          "yearsOfExperience": 3,
-          "linkedinUrl": "https://linkedin.com/in/sara-ali",
-          "portfolioUrl": "https://sara-ali.dev",
+          "jobSeekerId": "1245d82c-a49a-4ec5-b4dd-ff5e770c3b2b",
+          "title": "DevOps Engineer",
+          "location": "Berlin, Germany",
+          "availabilityStatus": "NOT_LOOKING",
+          "workPreference": "REMOTE",
+          "preferredJobTypes": ["FREELANCE", "PART_TIME", "INTERNSHIP"],
+          "yearsOfExperience": 20,
+          "linkedinUrl": null,
+          "portfolioUrl": null,
           "githubUrl": null
         }
       }
     ],
-    "total": 4,
+    "total": 1032,
     "page": 1,
     "limit": 20,
-    "totalPages": 1
+    "totalPages": 52
   },
   "message": "Job seeker profiles retrieved successfully",
   "meta": {
-    "timestamp": "2026-02-15T12:00:00.062Z",
+    "timestamp": "2026-02-17T08:34:17.626Z",
     "path": "/job-seekers",
     "method": "GET"
   }
@@ -185,7 +185,7 @@ GET /api/v1/job-seekers?location=Cairo&workPreference=REMOTE&availabilityStatus=
 ### Filter by Location
 
 ```bash
-GET /api/v1/job-seekers?location=Cairo
+GET /api/v1/job-seekers?location=London
 ```
 
 ### Filter by Work Preference
@@ -209,7 +209,7 @@ GET /api/v1/job-seekers?preferredJobTypes=FULL_TIME&preferredJobTypes=CONTRACT
 ### Combine Multiple Filters
 
 ```bash
-GET /api/v1/job-seekers?location=Egypt&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=3
+GET /api/v1/job-seekers?location=Berlin&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=3
 ```
 
 ## Error Responses

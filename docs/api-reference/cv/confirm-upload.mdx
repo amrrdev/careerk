@@ -1,0 +1,113 @@
+---
+title: 'Confirm CV Upload'
+api: 'POST /api/v1/cv/confirm'
+description: 'Confirm the CV upload after the file has been uploaded to cloud storage'
+---
+
+## Endpoint
+
+```
+POST /api/v1/cv/confirm
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Confirm the CV upload after the file has been uploaded to cloud storage. This finalizes the CV attachment to your profile. This is the third and final step in the CV upload process.
+
+## Request Body
+
+<ParamField body="key" type="string" required>
+  The storage key returned from the presigned URL request (e.g.,
+  "cvs/a9ff20fb-8010-4a22-8873-344c103726af/1771315860529-test-cv.pdf").
+</ParamField>
+
+<ParamField body="fileName" type="string" required>
+  The original file name (e.g., "test-cv.pdf").
+</ParamField>
+
+<ParamField body="mimeType" type="string" required>
+  The MIME type of the file (e.g., "application/pdf").
+</ParamField>
+
+## Request Example
+
+```json
+{
+  "key": "cvs/a9ff20fb-8010-4a22-8873-344c103726af/1771315860529-test-cv.pdf",
+  "fileName": "test-cv.pdf",
+  "mimeType": "application/pdf"
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-17T08:11:00.544Z",
+    "path": "/cv/confirm",
+    "method": "POST"
+  }
+}
+```
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized",
+  "error": "Unauthorized"
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "statusCode": 401,
+  "message": "Insufficient permissions",
+  "error": "Unauthorized"
+}
+```
+
+### 400 Bad Request - Missing File
+
+```json
+{
+  "statusCode": 400,
+  "message": "File not found in storage",
+  "error": "Bad Request"
+}
+```
+
+## Complete Upload Flow
+
+<Steps>
+  <Step title="Request Upload URL">Call POST /cv/presigned-url to get an upload URL</Step>
+  <Step title="Upload File">Upload the file using PUT with the upload URL</Step>
+  <Step title="Confirm Upload">Call POST /cv/confirm to finalize the upload</Step>
+</Steps>
+
+<Info>
+  **CV Upload Complete**: After confirmation, your CV will be available via GET /cv/me and can be
+  downloaded using GET /cv/me/downoad-url.
+</Info>

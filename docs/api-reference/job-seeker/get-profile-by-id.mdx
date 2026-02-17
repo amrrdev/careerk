@@ -1,7 +1,7 @@
 ---
 title: 'Get Profile By ID'
 api: 'GET /api/v1/job-seekers/:id'
-description: 'Retrieve a specific job seeker\'s public profile by their unique identifier'
+description: 'Retrieve a specific job seeker public profile by their unique identifier'
 ---
 
 ## Endpoint
@@ -17,13 +17,13 @@ GET /api/v1/job-seekers/:id
 ## Path Parameters
 
 <ParamField path="id" type="string" required>
-  The job seeker's unique identifier (UUID).
+  The unique identifier (UUID) of the job seeker profile to retrieve.
 </ParamField>
 
 ## Request Example
 
 ```bash
-GET /api/v1/job-seekers/a0000000-0000-0000-0000-000000000004
+GET /api/v1/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00
 ```
 
 ## Response
@@ -34,70 +34,95 @@ GET /api/v1/job-seekers/a0000000-0000-0000-0000-000000000004
 {
   "success": true,
   "data": {
-    "firstName": "Nour",
-    "lastName": "Magdy",
+    "firstName": "Timothy",
+    "lastName": "Davis",
     "profileImageUrl": null,
     "profile": {
-      "jobSeekerId": "a0000000-0000-0000-0000-000000000004",
-      "title": "Mobile Developer",
-      "location": "Giza, Egypt",
+      "jobSeekerId": "fe721809-a9da-4301-a8fe-9d3373dced00",
+      "title": "IT Manager",
+      "location": "Remote",
       "availabilityStatus": "NOT_LOOKING",
       "workPreference": "ONSITE",
-      "preferredJobTypes": ["FULL_TIME"],
-      "yearsOfExperience": 2.5,
+      "preferredJobTypes": ["INTERNSHIP", "FREELANCE", "CONTRACT"],
+      "yearsOfExperience": 5.4,
       "linkedinUrl": null,
-      "portfolioUrl": "https://nour-magdy.dev",
+      "portfolioUrl": null,
       "githubUrl": null,
-      "cvEmail": "nour.cv@example.com",
-      "noticePeriod": 30,
-      "phone": "+20 103 456 7890",
-      "expectedSalary": 4000,
-      "summary": "Mobile developer with experience in React Native and Flutter."
+      "cvEmail": "cv1756@jobseeker.com",
+      "noticePeriod": 90,
+      "phone": "+17423258561",
+      "expectedSalary": null,
+      "summary": "Experienced IT Manager with 5.4 years of expertise."
     },
     "educations": [
       {
         "degreeType": "BACHELOR",
-        "description": "Computer Science",
-        "institutionName": "Alexandria University",
+        "description": null,
+        "institutionName": "Cairo University",
         "isCurrent": false,
-        "fieldOfStudy": "Computer Engineering",
-        "endDate": "2022-06-01",
-        "gpa": 3.5,
-        "startDate": "2018-09-01"
+        "fieldOfStudy": "Accounting",
+        "endDate": "2022-12-16T00:00:00.000Z",
+        "gpa": 3.1,
+        "startDate": "2018-10-16T00:00:00.000Z"
+      },
+      {
+        "degreeType": "HIGH_SCHOOL",
+        "description": null,
+        "institutionName": "UC Berkeley",
+        "isCurrent": false,
+        "fieldOfStudy": "Physics",
+        "endDate": "2009-10-15T00:00:00.000Z",
+        "gpa": 3.25,
+        "startDate": "2006-02-07T00:00:00.000Z"
       }
     ],
     "workExperiences": [
       {
-        "companyName": "StartupXYZ",
-        "description": "Developed mobile applications",
+        "companyName": "MarketPulse",
+        "description": "Worked as Support Engineer at MarketPulse.",
+        "isCurrent": false,
+        "startDate": "2016-11-12T00:00:00.000Z",
+        "jobTitle": "Support Engineer",
+        "location": "Toronto, Canada",
+        "endDate": "2018-12-22T00:00:00.000Z"
+      },
+      {
+        "companyName": "RetailFlow",
+        "description": "Worked as Recruiter at RetailFlow.",
         "isCurrent": true,
-        "startDate": "2022-07-01",
-        "jobTitle": "Mobile Developer",
-        "location": "Giza, Egypt",
+        "startDate": "2012-02-02T00:00:00.000Z",
+        "jobTitle": "Recruiter",
+        "location": "Denver, CO",
         "endDate": null
       }
     ],
-    "jobSeekerSkills": [
+    "skills": [
       {
-        "skill": {
-          "id": "c0000000-0000-0000-0000-000000000001",
-          "name": "React Native"
-        },
+        "name": "Git",
         "verified": true
       },
       {
-        "skill": {
-          "id": "c0000000-0000-0000-0000-000000000002",
-          "name": "Flutter"
-        },
+        "name": "NestJS",
+        "verified": true
+      },
+      {
+        "name": "TypeScript",
+        "verified": true
+      },
+      {
+        "name": "Java",
+        "verified": true
+      },
+      {
+        "name": "Terraform",
         "verified": false
       }
     ]
   },
   "message": "Job seeker profile retrieved successfully",
   "meta": {
-    "timestamp": "2026-02-15T12:00:16.066Z",
-    "path": "/job-seekers/a0000000-0000-0000-0000-000000000004",
+    "timestamp": "2026-02-17T08:09:44.363Z",
+    "path": "/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00",
     "method": "GET"
   }
 }
@@ -106,11 +131,11 @@ GET /api/v1/job-seekers/a0000000-0000-0000-0000-000000000004
 ### Response Fields
 
 <ResponseField name="firstName" type="string">
-  Job seeker's first name.
+  User's first name.
 </ResponseField>
 
 <ResponseField name="lastName" type="string">
-  Job seeker's last name.
+  User's last name.
 </ResponseField>
 
 <ResponseField name="profileImageUrl" type="string | null">
@@ -131,7 +156,7 @@ GET /api/v1/job-seekers/a0000000-0000-0000-0000-000000000004
     </ResponseField>
     <ResponseField name="availabilityStatus" type="enum">
       Current availability status. - `OPEN_TO_WORK` - Actively looking - `NOT_LOOKING` - Not looking
-      - `EMPLOYED` - Currently employed - `UNAVAILABLE` - Not available
+      - `PASSIVELY_LOOKING` - Open to opportunities
     </ResponseField>
     <ResponseField name="workPreference" type="enum">
       Work preference. - `REMOTE` - Remote work - `ONSITE` - On-site work - `HYBRID` - Hybrid work -
@@ -227,16 +252,11 @@ GET /api/v1/job-seekers/a0000000-0000-0000-0000-000000000004
   </Expandable>
 </ResponseField>
 
-<ResponseField name="jobSeekerSkills" type="array">
+<ResponseField name="skills" type="array">
   List of skills.
   <Expandable title="Skill Properties">
-    <ResponseField name="skill" type="object">
-      <ResponseField name="id" type="string">
-        Skill identifier.
-      </ResponseField>
-      <ResponseField name="name" type="string">
-        Skill name.
-      </ResponseField>
+    <ResponseField name="name" type="string">
+      Skill name.
     </ResponseField>
     <ResponseField name="verified" type="boolean">
       Whether skill is verified.
@@ -246,9 +266,17 @@ GET /api/v1/job-seekers/a0000000-0000-0000-0000-000000000004
 
 ## Error Responses
 
-### 404 Not Found
+### 400 Bad Request - Invalid ID Format
 
-Returned when the job seeker profile doesn't exist.
+```json
+{
+  "statusCode": 400,
+  "message": "Invalid UUID",
+  "error": "Bad Request"
+}
+```
+
+### 404 Not Found - Profile Not Found
 
 ```json
 {
@@ -258,34 +286,15 @@ Returned when the job seeker profile doesn't exist.
 }
 ```
 
-### 400 Bad Request - Invalid ID Format
-
-```json
-{
-  "statusCode": 400,
-  "message": "Invalid UUID format",
-  "error": "Bad Request"
-}
-```
-
-### 500 Internal Server Error
-
-```json
-{
-  "statusCode": 500,
-  "message": "Failed to retrieve profile",
-  "error": "Internal Server Error"
-}
-```
-
 ## Notes
 
 <Info>
-  **Public Profile Access**: This endpoint returns detailed profile information including education,
-  work experience, and skills. It's designed for companies viewing job seeker profiles.
+  **Public Profile**: This endpoint returns public profile information. It includes education, work
+  experience, and skills. Some sensitive data like phone and expected salary may be hidden based on
+  the profile owner's privacy settings.
 </Info>
 
 <Tip>
-  **Contact Information**: The profile includes contact information (cvEmail, phone) that companies
-  can use to reach out to candidates.
+  **View Other Profiles**: Use this endpoint to view other job seekers' public profiles when
+  researching candidates or networking.
 </Tip>

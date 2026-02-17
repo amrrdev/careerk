@@ -1,0 +1,102 @@
+---
+title: 'Get My CV Info'
+api: 'GET /api/v1/cv/me'
+description: 'Retrieve your current CV information including file name, MIME type, and upload timestamp'
+---
+
+## Endpoint
+
+```
+GET /api/v1/cv/me
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Retrieve your current CV details including file name, MIME type, and upload timestamp.
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "fileName": "test-cv.pdf",
+    "mimeType": "application/pdf",
+    "uploadedAt": "2026-02-16T15:10:47.256Z"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-16T15:10:58.695Z",
+    "path": "/cv/me",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="fileName" type="string">
+  The name of the uploaded CV file.
+</ResponseField>
+
+<ResponseField name="mimeType" type="string">
+  The MIME type of the CV file.
+</ResponseField>
+
+<ResponseField name="uploadedAt" type="string">
+  The timestamp when the CV was uploaded (ISO 8601).
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized",
+  "error": "Unauthorized"
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "statusCode": 401,
+  "message": "Insufficient permissions",
+  "error": "Unauthorized"
+}
+```
+
+### 404 Not Found - No CV
+
+```json
+{
+  "statusCode": 404,
+  "message": "CV not found",
+  "error": "Not Found"
+}
+```
+
+## Notes
+
+<Info>
+  **No CV Uploaded**: If you haven't uploaded a CV yet, this endpoint will return a 404 error.
+</Info>
+
+<Tip>**Get Download URL**: Use GET /cv/me/downoad-url to get a download URL for the CV file.</Tip>

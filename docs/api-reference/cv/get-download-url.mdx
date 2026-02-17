@@ -1,0 +1,91 @@
+---
+title: 'Get CV Download URL'
+api: 'GET /api/v1/cv/me/downoad-url'
+description: 'Get a presigned URL to download your uploaded CV'
+---
+
+## Endpoint
+
+```
+GET /api/v1/cv/me/downoad-url
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Get a presigned URL to download your uploaded CV. The download URL is valid for 1 hour.
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "downloadUrl": "https://cvs.c0485e90a90f9be9ecd4e72559fee834.r2.cloudflarestorage.com/cvs/a9ff20fb-8010-4a22-8873-344c103726af/1771315860529-test-cv.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=c1feabbe8cd3c62e2dc015a4be9881f0%2F20260217%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260217T084609Z&X-Amz-Expires=3600&X-Amz-Signature=71dc5e01b75f773ec8ecb720c3357904842e3ceb0f0a3b855e0351d6787ca836&X-Amz-SignedHeaders=host&x-id=GetObject"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-17T08:46:09.285Z",
+    "path": "/cv/me/downoad-url",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="downloadUrl" type="string">
+  The presigned URL to download the CV file. This URL is valid for 1 hour (3600 seconds).
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized",
+  "error": "Unauthorized"
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "statusCode": 401,
+  "message": "Insufficient permissions",
+  "error": "Unauthorized"
+}
+```
+
+### 404 Not Found - No CV
+
+```json
+{
+  "statusCode": 404,
+  "message": "CV not found",
+  "error": "Not Found"
+}
+```
+
+## Notes
+
+<Warning>
+  **URL Expiration**: The download URL expires after 1 hour. If you need to download the file after
+  this time, request a new URL.
+</Warning>

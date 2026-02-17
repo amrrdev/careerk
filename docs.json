@@ -59,6 +59,17 @@
               "docs/api-reference/job-seeker/update-profile",
               "docs/api-reference/job-seeker/deactivate-account"
             ]
+          },
+          {
+            "group": "CV",
+            "pages": [
+              "docs/api-reference/cv/request-upload-url",
+              "docs/api-reference/cv/upload-cv-file",
+              "docs/api-reference/cv/confirm-upload",
+              "docs/api-reference/cv/get-cv-info",
+              "docs/api-reference/cv/get-download-url",
+              "docs/api-reference/cv/delete-cv"
+            ]
           }
         ]
       }

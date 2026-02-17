@@ -1,0 +1,76 @@
+---
+title: 'Upload CV File'
+api: 'PUT {uploadUrl}'
+description: 'Upload your CV file directly to cloud storage using the presigned URL'
+---
+
+## Endpoint
+
+```
+PUT {uploadUrl}
+```
+
+<Note>
+  The URL is obtained from the [Request Upload URL](/api-reference/cv/request-upload-url) endpoint.
+</Note>
+
+## Description
+
+Upload your CV file directly to cloud storage using the presigned URL. This is the second step in the CV upload process.
+
+## Request Headers
+
+<ParamField header="Content-Type" type="string" required>
+  The MIME type of the file (must match what was requested).
+</ParamField>
+
+## Request Body
+
+Send the raw file content (binary) in the request body.
+
+## Request Example
+
+```bash
+PUT "https://cvs.c0485e90a90f9be9ecd4e72559fee834.r2.cloudflarestorage.com/cvs/a9ff20fb-8010-4a22-8873-344c103726af/1771315860529-test-cv.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=c1feabbe8cd3c62e2dc015a4be9881f0%2F20260217%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260217T081100Z&X-Amz-Expires=3600&X-Amz-Signature=4cc903d3ef75e39b8a3374304d214828bd1291e7acf661fd3d4f3d09ae414983&X-Amz-SignedHeaders=host&x-id=PutObject" \
+  -H "Content-Type: application/pdf" \
+  --data-binary @test-cv.pdf
+```
+
+## Response
+
+### Success Response (200 OK)
+
+The upload returns an empty body with HTTP 200 on success.
+
+```
+(empty response body)
+```
+
+## Error Responses
+
+### 403 Forbidden - Invalid Signature
+
+```json
+{
+  "Code": "SignatureDoesNotMatch",
+  "Message": "The request signature we calculated does not match the signature you provided."
+}
+```
+
+### 410 Gone - URL Expired
+
+```json
+{
+  "Code": "ExpiredToken",
+  "Message": "The provided token has expired."
+}
+```
+
+## Next Steps
+
+After successfully uploading the file, you must confirm the upload (see [Confirm CV Upload](/api-reference/cv/confirm-cv-upload))
+
+<Warning>
+  **Don't Skip Confirmation**: The CV will not be attached to your profile until you confirm the
+  upload.
+</Warning>
