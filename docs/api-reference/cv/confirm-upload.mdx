@@ -73,9 +73,14 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Unauthorized",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/confirm",
+    "method": "POST"
+  }
 }
 ```
 
@@ -83,9 +88,14 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Insufficient permissions",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/confirm",
+    "method": "POST"
+  }
 }
 ```
 
@@ -93,9 +103,14 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
 
 ```json
 {
-  "statusCode": 400,
-  "message": "File not found in storage",
-  "error": "Bad Request"
+  "success": false,
+  "error": {
+    "message": "File not found in storage",
+    "statusCode": 400,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/confirm",
+    "method": "POST"
+  }
 }
 ```
 

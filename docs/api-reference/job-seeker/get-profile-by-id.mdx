@@ -270,9 +270,14 @@ GET /api/v1/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00
 
 ```json
 {
-  "statusCode": 400,
-  "message": "Invalid UUID",
-  "error": "Bad Request"
+  "success": false,
+  "error": {
+    "message": "Invalid UUID",
+    "statusCode": 400,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/job-seekers/123",
+    "method": "GET"
+  }
 }
 ```
 
@@ -280,9 +285,14 @@ GET /api/v1/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00
 
 ```json
 {
-  "statusCode": 404,
-  "message": "Job seeker profile not found",
-  "error": "Not Found"
+  "success": false,
+  "error": {
+    "message": "Job seeker profile not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00",
+    "method": "GET"
+  }
 }
 ```
 

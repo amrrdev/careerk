@@ -82,9 +82,14 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Unauthorized",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/presigned-url",
+    "method": "POST"
+  }
 }
 ```
 
@@ -92,9 +97,14 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Insufficient permissions",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/presigned-url",
+    "method": "POST"
+  }
 }
 ```
 
@@ -102,9 +112,14 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
 
 ```json
 {
-  "statusCode": 400,
-  "message": "Invalid file type. Only PDF, DOC, and DOCX files are allowed.",
-  "error": "Bad Request"
+  "success": false,
+  "error": {
+    "message": "Invalid file type. Only PDF, DOC, and DOCX files are allowed.",
+    "statusCode": 400,
+    "timestamp": "2026-02-17T08:00:00.000Z",
+    "path": "/cv/presigned-url",
+    "method": "POST"
+  }
 }
 ```
 
