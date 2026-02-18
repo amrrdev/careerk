@@ -80,6 +80,16 @@
               "docs/api-reference/work-experience/update-work-experience",
               "docs/api-reference/work-experience/delete-work-experience"
             ]
+          },
+          {
+            "group": "Education",
+            "pages": [
+              "docs/api-reference/education/get-all-educations",
+              "docs/api-reference/education/get-education-by-id",
+              "docs/api-reference/education/create-education",
+              "docs/api-reference/education/update-education",
+              "docs/api-reference/education/delete-education"
+            ]
           }
         ]
       }

@@ -44,6 +44,16 @@ http://localhost:3000/api/v1
 | PATCH  | `/job-seekers/me/work-experiences/:expId` | Update work experience    | Yes (Job Seeker) |
 | DELETE | `/job-seekers/me/work-experiences/:expId` | Delete work experience    | Yes (Job Seeker) |
 
+## Education Endpoints
+
+| Method | Endpoint                                  | Description         | Auth Required    |
+| ------ | ----------------------------------------- | ------------------- | ---------------- |
+| GET    | `/job-seekers/me/educations`              | Get all educations  | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/educations/:educationId` | Get education by ID | Yes (Job Seeker) |
+| POST   | `/job-seekers/me/educations`              | Create education    | Yes (Job Seeker) |
+| PATCH  | `/job-seekers/me/educations/:educationId` | Update education    | Yes (Job Seeker) |
+| DELETE | `/job-seekers/me/educations/:educationId` | Delete education    | Yes (Job Seeker) |
+
 ## Common Enums
 
 ### Availability Status
@@ -182,3 +192,41 @@ Work experience entries allow job seekers to showcase their professional history
 - [Create Work Experience](/api-reference/work-experience/create-work-experience) - Add new work experience
 - [Update Work Experience](/api-reference/work-experience/update-work-experience) - Update work experience
 - [Delete Work Experience](/api-reference/work-experience/delete-work-experience) - Remove work experience
+
+## Education
+
+Education entries allow job seekers to showcase their academic background, including institution name, degree type, field of study, and dates.
+
+### Fields
+
+| Field             | Type    | Required | Description                  |
+| ----------------- | ------- | -------- | ---------------------------- |
+| `institutionName` | string  | Yes      | Name of the institution      |
+| `degreeType`      | enum    | Yes      | Type of degree obtained      |
+| `fieldOfStudy`    | string  | Yes      | Field of study               |
+| `description`     | string  | No       | Additional education details |
+| `gpa`             | number  | No       | GPA (0-4 scale)              |
+| `startDate`       | string  | Yes      | Start date (ISO 8601 format) |
+| `endDate`         | string  | No       | End date (ISO 8601 format)   |
+| `isCurrent`       | boolean | Yes      | Currently studying here      |
+
+### Degree Type Enum
+
+| Value           | Description                 |
+| --------------- | --------------------------- |
+| `HIGH_SCHOOL`   | High school diploma         |
+| `ASSOCIATE`     | Associate degree            |
+| `BACHELOR`      | Bachelor's degree           |
+| `MASTER`        | Master's degree             |
+| `PHD`           | Doctorate/PhD               |
+| `BOOTCAMP`      | Coding bootcamp certificate |
+| `CERTIFICATION` | Professional certification  |
+| `OTHER`         | Other type of education     |
+
+### Related Endpoints
+
+- [Get All Educations](/api-reference/education/get-all-educations) - List all educations
+- [Get Education By ID](/api-reference/education/get-education-by-id) - Get specific education
+- [Create Education](/api-reference/education/create-education) - Add new education
+- [Update Education](/api-reference/education/update-education) - Update education
+- [Delete Education](/api-reference/education/delete-education) - Remove education

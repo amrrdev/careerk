@@ -1,0 +1,195 @@
+---
+title: 'Update Education'
+api: 'PATCH /api/v1/job-seekers/me/educations/:educationId'
+description: 'Update an existing education entry'
+---
+
+## Endpoint
+
+```
+PATCH /api/v1/job-seekers/me/educations/:educationId
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## URL Parameters
+
+| Parameter     | Type   | Required | Description      |
+| ------------- | ------ | -------- | ---------------- |
+| `educationId` | string | Yes      | The education ID |
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Update an existing education entry. Only fields provided in the request body will be updated (partial update).
+
+## Request Body
+
+All fields are optional for updates:
+
+| Field             | Type    | Description                  |
+| ----------------- | ------- | ---------------------------- |
+| `institutionName` | string  | Name of the institution      |
+| `degreeType`      | enum    | Type of degree obtained      |
+| `fieldOfStudy`    | string  | Field of study               |
+| `description`     | string  | Additional education details |
+| `gpa`             | number  | GPA (0-4 scale)              |
+| `startDate`       | string  | Start date (ISO 8601 format) |
+| `endDate`         | string  | End date (ISO 8601 format)   |
+| `isCurrent`       | boolean | Currently studying here      |
+
+### Degree Type Values
+
+| Value           | Description                 |
+| --------------- | --------------------------- |
+| `HIGH_SCHOOL`   | High school diploma         |
+| `ASSOCIATE`     | Associate degree            |
+| `BACHELOR`      | Bachelor's degree           |
+| `MASTER`        | Master's degree             |
+| `PHD`           | Doctorate/PhD               |
+| `BOOTCAMP`      | Coding bootcamp certificate |
+| `CERTIFICATION` | Professional certification  |
+| `OTHER`         | Other type of education     |
+
+### Example Request Body
+
+```json
+{
+  "gpa": 3.9,
+  "description": "Graduated with honors"
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "edu-123-uuid",
+    "institutionName": "Cairo University",
+    "degreeType": "BACHELOR",
+    "fieldOfStudy": "Computer Science",
+    "description": "Graduated with honors",
+    "gpa": 3.9,
+    "startDate": "2017-09-01T00:00:00.000Z",
+    "endDate": "2021-06-30T00:00:00.000Z",
+    "isCurrent": false,
+    "jobSeekerId": "js-456-uuid"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the education entry.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+### 404 Not Found
+
+Returned when the education doesn't exist or doesn't belong to the user.
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Education not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": [
+      "degreeType must be one of: HIGH_SCHOOL, ASSOCIATE, BACHELOR, MASTER, PHD, BOOTCAMP, CERTIFICATION, OTHER",
+      "gpa must be between 0 and 4"
+    ],
+    "statusCode": 400,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+## Example Request
+
+```bash
+curl -X PATCH http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uuid \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "gpa": 3.9,
+    "description": "Graduated with honors"
+  }'
+```
+
+## Notes
+
+<Info>
+  **Partial Update**: Only provide the fields you want to update. All other fields will remain
+  unchanged.
+</Info>
+
+<Tip>
+  **Updating Current Status**: To mark a completed education as currently studying, set `isCurrent`
+  to `true` and remove `endDate`.
+</Tip>

@@ -1,0 +1,120 @@
+---
+title: 'Delete Education'
+api: 'DELETE /api/v1/job-seekers/me/educations/:educationId'
+description: 'Delete an education entry'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/job-seekers/me/educations/:educationId
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## URL Parameters
+
+| Parameter     | Type   | Required | Description      |
+| ------------- | ------ | -------- | ---------------- |
+| `educationId` | string | Yes      | The education ID |
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Delete an education entry. This action cannot be undone.
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Education deleted successfully"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "DELETE"
+  }
+}
+```
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "DELETE"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "DELETE"
+  }
+}
+```
+
+### 404 Not Found
+
+Returned when the education doesn't exist or doesn't belong to the user.
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Education not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "DELETE"
+  }
+}
+```
+
+## Example Request
+
+```bash
+curl -X DELETE http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uuid \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+## Notes
+
+<Warning>
+  **Permanent Deletion**: This action cannot be undone. The education entry will be permanently
+  removed.
+</Warning>
+
+<Tip>
+  **Re-add Deleted Entry**: If you accidentally delete an education, you can create a new one using
+  the create endpoint.
+</Tip>
