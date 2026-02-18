@@ -1,0 +1,156 @@
+---
+title: 'Get Education By ID'
+api: 'GET /api/v1/job-seekers/me/educations/:educationId'
+description: 'Retrieve a specific education entry by its ID'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/educations/:educationId
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## URL Parameters
+
+| Parameter     | Type   | Required | Description      |
+| ------------- | ------ | -------- | ---------------- |
+| `educationId` | string | Yes      | The education ID |
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Retrieve a specific education entry by its ID. Only returns educations belonging to the authenticated job seeker.
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "edu-123-uuid",
+    "institutionName": "Cairo University",
+    "degreeType": "BACHELOR",
+    "fieldOfStudy": "Computer Science",
+    "description": "Focus on software engineering and algorithms",
+    "gpa": 3.8,
+    "startDate": "2017-09-01T00:00:00.000Z",
+    "endDate": "2021-06-30T00:00:00.000Z",
+    "isCurrent": false,
+    "jobSeekerId": "js-456-uuid"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the education entry.
+</ResponseField>
+
+<ResponseField name="institutionName" type="string">
+  Name of the educational institution.
+</ResponseField>
+
+<ResponseField name="degreeType" type="enum">
+  Type of degree obtained. Values: `HIGH_SCHOOL`, `ASSOCIATE`, `BACHELOR`, `MASTER`, `PHD`,
+  `BOOTCAMP`, `CERTIFICATION`, `OTHER`
+</ResponseField>
+
+<ResponseField name="fieldOfStudy" type="string">
+  Field of study or major.
+</ResponseField>
+
+<ResponseField name="description" type="string | null">
+  Additional education details.
+</ResponseField>
+
+<ResponseField name="gpa" type="number | null">
+  Grade Point Average (0-4 scale).
+</ResponseField>
+
+<ResponseField name="startDate" type="string">
+  Start date (ISO 8601 format).
+</ResponseField>
+
+<ResponseField name="endDate" type="string | null">
+  End date (ISO 8601 format). Null if currently studying.
+</ResponseField>
+
+<ResponseField name="isCurrent" type="boolean">
+  Whether currently studying at this institution.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "GET"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "GET"
+  }
+}
+```
+
+### 404 Not Found
+
+Returned when the education doesn't exist or doesn't belong to the user.
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Education not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "GET"
+  }
+}
+```
+
+## Example Request
+
+```bash
+curl -X GET http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uuid \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```

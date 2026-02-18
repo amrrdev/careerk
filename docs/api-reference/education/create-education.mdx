@@ -1,0 +1,195 @@
+---
+title: 'Create Education'
+api: 'POST /api/v1/job-seekers/me/educations'
+description: 'Add a new education entry for the authenticated job seeker'
+---
+
+## Endpoint
+
+```
+POST /api/v1/job-seekers/me/educations
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Create a new education entry for the authenticated job seeker.
+
+## Request Body
+
+| Field             | Type    | Required | Description                  |
+| ----------------- | ------- | -------- | ---------------------------- |
+| `institutionName` | string  | Yes      | Name of the institution      |
+| `degreeType`      | enum    | Yes      | Type of degree obtained      |
+| `fieldOfStudy`    | string  | Yes      | Field of study               |
+| `description`     | string  | No       | Additional education details |
+| `gpa`             | number  | No       | GPA (0-4 scale)              |
+| `startDate`       | string  | Yes      | Start date (ISO 8601 format) |
+| `endDate`         | string  | No       | End date (ISO 8601 format)   |
+| `isCurrent`       | boolean | Yes      | Currently studying here      |
+
+### Degree Type Values
+
+| Value           | Description                 |
+| --------------- | --------------------------- |
+| `HIGH_SCHOOL`   | High school diploma         |
+| `ASSOCIATE`     | Associate degree            |
+| `BACHELOR`      | Bachelor's degree           |
+| `MASTER`        | Master's degree             |
+| `PHD`           | Doctorate/PhD               |
+| `BOOTCAMP`      | Coding bootcamp certificate |
+| `CERTIFICATION` | Professional certification  |
+| `OTHER`         | Other type of education     |
+
+### Example Request Body
+
+```json
+{
+  "institutionName": "Cairo University",
+  "degreeType": "BACHELOR",
+  "fieldOfStudy": "Computer Science",
+  "description": "Focus on software engineering and algorithms",
+  "gpa": 3.8,
+  "startDate": "2017-09-01",
+  "endDate": "2021-06-30",
+  "isCurrent": false
+}
+```
+
+Or for currently studying:
+
+```json
+{
+  "institutionName": "Tech Academy",
+  "degreeType": "CERTIFICATION",
+  "fieldOfStudy": "Full Stack Web Development",
+  "description": "Intensive coding bootcamp",
+  "startDate": "2021-07-01",
+  "isCurrent": true
+}
+```
+
+## Response
+
+### Success Response (201 Created)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "edu-123-uuid",
+    "institutionName": "Cairo University",
+    "degreeType": "BACHELOR",
+    "fieldOfStudy": "Computer Science",
+    "description": "Focus on software engineering and algorithms",
+    "gpa": 3.8,
+    "startDate": "2017-09-01T00:00:00.000Z",
+    "endDate": "2021-06-30T00:00:00.000Z",
+    "isCurrent": false,
+    "jobSeekerId": "js-456-uuid"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations",
+    "method": "POST"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the created education entry.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations",
+    "method": "POST"
+  }
+}
+```
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": [
+      "institutionName must be a string",
+      "degreeType must be one of: HIGH_SCHOOL, ASSOCIATE, BACHELOR, MASTER, PHD, BOOTCAMP, CERTIFICATION, OTHER",
+      "fieldOfStudy must be a string",
+      "startDate must be a valid date string"
+    ],
+    "statusCode": 400,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations",
+    "method": "POST"
+  }
+}
+```
+
+## Example Request
+
+```bash
+curl -X POST http://localhost:3000/api/v1/job-seekers/me/educations \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "institutionName": "Cairo University",
+    "degreeType": "BACHELOR",
+    "fieldOfStudy": "Computer Science",
+    "description": "Focus on software engineering and algorithms",
+    "gpa": 3.8,
+    "startDate": "2017-09-01",
+    "endDate": "2021-06-30",
+    "isCurrent": false
+  }'
+```
+
+## Notes
+
+<Info>
+  **Current Study**: When setting `isCurrent` to `true`, you can omit `endDate` or set it to `null`.
+</Info>
+
+<Warning>**Date Format**: Dates must be in ISO 8601 format (YYYY-MM-DD).</Warning>
+
+<Tip>**GPA**: GPA must be between 0 and 4.</Tip>
