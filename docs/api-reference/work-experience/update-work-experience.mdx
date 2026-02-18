@@ -1,0 +1,179 @@
+---
+title: 'Update Work Experience'
+api: 'PATCH /api/v1/job-seekers/me/work-experiences/:expId'
+description: 'Update an existing work experience entry'
+---
+
+## Endpoint
+
+```
+PATCH /api/v1/job-seekers/me/work-experiences/:expId
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## URL Parameters
+
+| Parameter | Type   | Required | Description            |
+| --------- | ------ | -------- | ---------------------- |
+| `expId`   | string | Yes      | The work experience ID |
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Update an existing work experience entry. Only fields provided in the request body will be updated (partial update).
+
+## Request Body
+
+All fields are optional for updates:
+
+| Field         | Type    | Description                          |
+| ------------- | ------- | ------------------------------------ |
+| `companyName` | string  | Name of the company                  |
+| `jobTitle`    | string  | Title of the position                |
+| `description` | string  | Job description and responsibilities |
+| `location`    | string  | Work location                        |
+| `startDate`   | string  | Start date (ISO 8601 format)         |
+| `endDate`     | string  | End date (ISO 8601 format)           |
+| `isCurrent`   | boolean | Currently working here               |
+
+### Example Request Body
+
+```json
+{
+  "jobTitle": "Lead Software Engineer",
+  "description": "Led team of 5 developers and microservices architecture"
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "exp-123-uuid",
+    "companyName": "Tech Corp",
+    "jobTitle": "Lead Software Engineer",
+    "description": "Led team of 5 developers and microservices architecture",
+    "location": "Cairo, Egypt",
+    "startDate": "2023-01-15T00:00:00.000Z",
+    "endDate": null,
+    "isCurrent": true,
+    "jobSeekerId": "js-456-uuid",
+    "createdAt": "2024-01-10T10:30:00.000Z",
+    "updatedAt": "2024-01-15T14:20:00.000Z"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences/exp-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the work experience entry.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences/exp-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences/exp-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+### 404 Not Found
+
+Returned when the work experience doesn't exist or doesn't belong to the user.
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Work experience not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences/exp-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": ["companyName must be a string", "startDate must be a valid date string"],
+    "statusCode": 400,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences/exp-123-uuid",
+    "method": "PATCH"
+  }
+}
+```
+
+## Example Request
+
+```bash
+curl -X PATCH http://localhost:3000/api/v1/job-seekers/me/work-experiences/exp-123-uuid \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jobTitle": "Lead Software Engineer",
+    "description": "Led team of 5 developers"
+  }'
+```
+
+## Notes
+
+<Info>
+  **Partial Update**: Only provide the fields you want to update. All other fields will remain
+  unchanged.
+</Info>
+
+<Tip>
+  **Updating Current Job**: To mark a past job as current, set `isCurrent` to `true` and remove
+  `endDate`.
+</Tip>

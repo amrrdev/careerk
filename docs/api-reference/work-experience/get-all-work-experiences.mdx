@@ -1,0 +1,146 @@
+---
+title: 'Get All Work Experiences'
+api: 'GET /api/v1/job-seekers/me/work-experiences'
+description: 'Retrieve all work experiences for the authenticated job seeker'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/work-experiences
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Retrieve all work experience entries for the authenticated job seeker. The results are ordered by start date (most recent first).
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "exp-123-uuid",
+      "companyName": "Tech Corp",
+      "jobTitle": "Senior Software Engineer",
+      "description": "Led development of microservices architecture",
+      "location": "Cairo, Egypt",
+      "startDate": "2023-01-15T00:00:00.000Z",
+      "endDate": null,
+      "isCurrent": true,
+      "jobSeekerId": "js-456-uuid",
+      "createdAt": "2024-01-10T10:30:00.000Z",
+      "updatedAt": "2024-01-10T10:30:00.000Z"
+    },
+    {
+      "id": "exp-789-uuid",
+      "companyName": "Startup Inc",
+      "jobTitle": "Software Developer",
+      "description": "Built REST APIs and frontend components",
+      "location": "Remote",
+      "startDate": "2021-06-01T00:00:00.000Z",
+      "endDate": "2022-12-31T00:00:00.000Z",
+      "isCurrent": false,
+      "jobSeekerId": "js-456-uuid",
+      "createdAt": "2023-01-05T09:00:00.000Z",
+      "updatedAt": "2023-01-05T09:00:00.000Z"
+    }
+  ],
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the work experience entry.
+</ResponseField>
+
+<ResponseField name="companyName" type="string">
+  Name of the company.
+</ResponseField>
+
+<ResponseField name="jobTitle" type="string">
+  Title of the position.
+</ResponseField>
+
+<ResponseField name="description" type="string | null">
+  Job description and responsibilities.
+</ResponseField>
+
+<ResponseField name="location" type="string | null">
+  Work location.
+</ResponseField>
+
+<ResponseField name="startDate" type="string">
+  Start date (ISO 8601 format).
+</ResponseField>
+
+<ResponseField name="endDate" type="string | null">
+  End date (ISO 8601 format). Null if currently working.
+</ResponseField>
+
+<ResponseField name="isCurrent" type="boolean">
+  Whether this is the current job.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences",
+    "method": "GET"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences",
+    "method": "GET"
+  }
+}
+```
+
+## Notes
+
+<Info>**Empty Array**: If no work experiences exist, an empty array is returned.</Info>
+
+<Tip>
+  **Sorting**: Results are automatically sorted by start date in descending order (most recent
+  first).
+</Tip>

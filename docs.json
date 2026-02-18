@@ -70,6 +70,16 @@
               "docs/api-reference/cv/get-download-url",
               "docs/api-reference/cv/delete-cv"
             ]
+          },
+          {
+            "group": "Work Experience",
+            "pages": [
+              "docs/api-reference/work-experience/get-all-work-experiences",
+              "docs/api-reference/work-experience/get-work-experience-by-id",
+              "docs/api-reference/work-experience/create-work-experience",
+              "docs/api-reference/work-experience/update-work-experience",
+              "docs/api-reference/work-experience/delete-work-experience"
+            ]
           }
         ]
       }
