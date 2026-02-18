@@ -1,0 +1,176 @@
+---
+title: 'Create Work Experience'
+api: 'POST /api/v1/job-seekers/me/work-experiences'
+description: 'Add a new work experience entry for the authenticated job seeker'
+---
+
+## Endpoint
+
+```
+POST /api/v1/job-seekers/me/work-experiences
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Create a new work experience entry for the authenticated job seeker.
+
+## Request Body
+
+| Field         | Type    | Required | Description                          |
+| ------------- | ------- | -------- | ------------------------------------ |
+| `companyName` | string  | Yes      | Name of the company                  |
+| `jobTitle`    | string  | Yes      | Title of the position                |
+| `description` | string  | No       | Job description and responsibilities |
+| `location`    | string  | No       | Work location                        |
+| `startDate`   | string  | Yes      | Start date (ISO 8601 format)         |
+| `endDate`     | string  | No       | End date (ISO 8601 format)           |
+| `isCurrent`   | boolean | Yes      | Currently working here               |
+
+### Example Request Body
+
+```json
+{
+  "companyName": "Tech Corp",
+  "jobTitle": "Senior Software Engineer",
+  "description": "Led development of microservices architecture",
+  "location": "Cairo, Egypt",
+  "startDate": "2023-01-15",
+  "isCurrent": true
+}
+```
+
+Or for a past job:
+
+```json
+{
+  "companyName": "Startup Inc",
+  "jobTitle": "Software Developer",
+  "description": "Built REST APIs and frontend components",
+  "location": "Remote",
+  "startDate": "2021-06-01",
+  "endDate": "2022-12-31",
+  "isCurrent": false
+}
+```
+
+## Response
+
+### Success Response (201 Created)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "exp-123-uuid",
+    "companyName": "Tech Corp",
+    "jobTitle": "Senior Software Engineer",
+    "description": "Led development of microservices architecture",
+    "location": "Cairo, Egypt",
+    "startDate": "2023-01-15T00:00:00.000Z",
+    "endDate": null,
+    "isCurrent": true,
+    "jobSeekerId": "js-456-uuid",
+    "createdAt": "2024-01-10T10:30:00.000Z",
+    "updatedAt": "2024-01-10T10:30:00.000Z"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences",
+    "method": "POST"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the created work experience entry.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences",
+    "method": "POST"
+  }
+}
+```
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": [
+      "companyName must be a string",
+      "jobTitle must be a string",
+      "startDate must be a valid date string"
+    ],
+    "statusCode": 400,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences",
+    "method": "POST"
+  }
+}
+```
+
+## Example Request
+
+```bash
+curl -X POST http://localhost:3000/api/v1/job-seekers/me/work-experiences \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "companyName": "Tech Corp",
+    "jobTitle": "Senior Software Engineer",
+    "description": "Led development of microservices architecture",
+    "location": "Cairo, Egypt",
+    "startDate": "2023-01-15",
+    "isCurrent": true
+  }'
+```
+
+## Notes
+
+<Info>
+  **Current Job**: When setting `isCurrent` to `true`, you can omit `endDate` or set it to `null`.
+</Info>
+
+<Warning>**Date Format**: Dates must be in ISO 8601 format (YYYY-MM-DD).</Warning>
