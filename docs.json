@@ -68,7 +68,9 @@
               "docs/api-reference/cv/confirm-upload",
               "docs/api-reference/cv/get-cv-info",
               "docs/api-reference/cv/get-download-url",
-              "docs/api-reference/cv/delete-cv"
+              "docs/api-reference/cv/delete-cv",
+              "docs/api-reference/cv/preview-parsed-data",
+              "docs/api-reference/cv/confirm-parsed-data"
             ]
           },
           {
