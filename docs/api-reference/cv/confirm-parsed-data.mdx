@@ -1,0 +1,237 @@
+---
+title: 'Confirm and Save Parsed CV'
+api: 'POST /api/v1/cv-parse/confirm'
+description: 'Confirm and save the parsed CV data to your profile'
+---
+
+## Endpoint
+
+```
+POST /api/v1/cv-parse/confirm
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Review the parsed CV data and confirm to save it to your profile. This creates or updates your JobSeekerProfile, Education, WorkExperience, and JobSeekerSkill records. You can modify any fields in the request body before confirming.
+
+## Request Body
+
+<ParamField body="personalInfo" type="object" required>
+  Personal information including name and contact details.
+</ParamField>
+
+<ParamField body="personalInfo.firstName" type="string" required>
+  First name of the job seeker.
+</ParamField>
+
+<ParamField body="personalInfo.lastName" type="string" required>
+  Last name of the job seeker.
+</ParamField>
+
+<ParamField body="personalInfo.email" type="string" required>
+  Email address.
+</ParamField>
+
+<ParamField body="personalInfo.phone" type="string" required>
+  Phone number.
+</ParamField>
+
+<ParamField body="personalInfo.location" type="string" optional>
+  Location/address.
+</ParamField>
+
+<ParamField body="personalInfo.linkedinUrl" type="string" optional>
+  LinkedIn profile URL.
+</ParamField>
+
+<ParamField body="personalInfo.githubUrl" type="string" optional>
+  GitHub profile URL.
+</ParamField>
+
+<ParamField body="personalInfo.portfolioUrl" type="string" optional>
+  Portfolio website URL.
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Job title (e.g., "Software Engineer").
+</ParamField>
+
+<ParamField body="summary" type="string" required>
+  Professional summary.
+</ParamField>
+
+<ParamField body="education" type="array" required>
+  Array of education entries.
+</ParamField>
+
+<ParamField body="workExperience" type="array" required>
+  Array of work experience entries.
+</ParamField>
+
+<ParamField body="skills" type="array" required>
+  Array of skills. Each skill has `name` and `verified` flag.
+</ParamField>
+
+<ParamField body="profile" type="object" required>
+  Profile preferences and details.
+</ParamField>
+
+<ParamField body="profile.expectedSalary" type="number" optional>
+  Expected salary.
+</ParamField>
+
+<ParamField body="profile.workPreference" type="string" optional>
+  Work preference: ONSITE, REMOTE, HYBRID, ANY
+</ParamField>
+
+<ParamField body="profile.yearsOfExperience" type="number" optional>
+  Years of experience.
+</ParamField>
+
+<ParamField body="profile.noticePeriod" type="number" optional>
+  Notice period in days.
+</ParamField>
+
+<ParamField body="profile.availabilityStatus" type="string" optional>
+  Availability status: OPEN_TO_WORK, NOT_LOOKING, PASSIVELY_LOOKING
+</ParamField>
+
+## Request Example
+
+```json
+{
+  "personalInfo": {
+    "firstName": "Amr",
+    "lastName": "Ashraf Mubarak",
+    "email": "amrrdev@gmail.com",
+    "phone": "+20 120 456 2326",
+    "location": "",
+    "linkedinUrl": "linkedin.com/in/amramubarak",
+    "githubUrl": "github.com/amrrdev",
+    "portfolioUrl": null
+  },
+  "title": "Software Engineer",
+  "summary": "Software Engineer with 1+ year of experience building scalable microservices and RESTful APIs using Node.js and NestJS.",
+  "education": [
+    {
+      "institutionName": "Benha University",
+      "degreeType": "BACHELOR",
+      "fieldOfStudy": "Science in Computer Science",
+      "startDate": "2022",
+      "endDate": "2026",
+      "isCurrent": false,
+      "gpa": 3.6,
+      "description": null
+    }
+  ],
+  "workExperience": [
+    {
+      "companyName": "Linux Foundation Decentralized Trust",
+      "jobTitle": "Software Engineer",
+      "location": "Remote",
+      "startDate": "2025-05-01",
+      "endDate": "2025-07-01",
+      "isCurrent": false,
+      "description": "Developed a testing strategy for a decentralized trust solution..."
+    }
+  ],
+  "skills": [
+    { "name": "typescript", "verified": true },
+    { "name": "node.js", "verified": true },
+    { "name": "nestjs", "verified": true }
+  ],
+  "profile": {
+    "expectedSalary": null,
+    "workPreference": "REMOTE",
+    "yearsOfExperience": 0.3,
+    "noticePeriod": null,
+    "availabilityStatus": "NOT_LOOKING"
+  }
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Profile updated successfully from CV"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-20T14:47:55.971Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST"
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Validation Errors
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": [
+      "profile.workPreference must be one of the following values: ONSITE, REMOTE, HYBRID, ANY",
+      "profile.yearsOfExperience must be a number conforming to the specified constraints",
+      "profile.availabilityStatus must be one of the following values: OPEN_TO_WORK, NOT_LOOKING, PASSIVELY_LOOKING"
+    ],
+    "statusCode": 400,
+    "timestamp": "2026-02-20T14:47:55.971Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST",
+    "details": "Bad Request"
+  }
+}
+```
+
+### 400 Bad Request - No Completed Parse Result
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "No completed parse result to confirm",
+    "statusCode": 400,
+    "timestamp": "2026-02-20T14:00:00.000Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST"
+  }
+}
+```
+
+## Complete CV Flow
+
+<Steps>
+  <Step title="Upload CV">Call POST /cv/presigned-url to get an upload URL</Step>
+  <Step title="Upload File">Upload the file using PUT with the upload URL</Step>
+  <Step title="Confirm Upload">Call POST /cv/confirm to trigger NLP parsing</Step>
+  <Step title="Preview Data">Call GET /cv-parse/preview to see parsed results</Step>
+  <Step title="Confirm & Save">Call POST /cv-parse/confirm to save to your profile</Step>
+</Steps>
+
+<Info>
+  **What gets saved**: This endpoint saves the following to your profile:
+  - JobSeekerProfile: title, summary, phone, email, location, social links, work preferences
+  - Education: all education entries
+  - WorkExperience: all work experience entries
+  - JobSeekerSkill: all skills with verified: true flag
+</Info>

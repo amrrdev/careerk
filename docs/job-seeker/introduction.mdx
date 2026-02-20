@@ -25,14 +25,24 @@ http://localhost:3000/api/v1
 
 ## CV Endpoints
 
-| Method | Endpoint             | Description               | Auth Required    |
-| ------ | -------------------- | ------------------------- | ---------------- |
-| POST   | `/cv/presigned-url`  | Request CV upload URL     | Yes (Job Seeker) |
-| PUT    | `{uploadUrl}`        | Upload CV file to storage | Yes (Job Seeker) |
-| POST   | `/cv/confirm`        | Confirm CV upload         | Yes (Job Seeker) |
-| GET    | `/cv/me`             | Get current CV info       | Yes (Job Seeker) |
-| GET    | `/cv/me/downoad-url` | Get CV download URL       | Yes (Job Seeker) |
-| DELETE | `/cv/me`             | Delete current CV         | Yes (Job Seeker) |
+| Method | Endpoint                | Description                    | Auth Required    |
+| ------ | ---------------------- | ------------------------------ | ---------------- |
+| POST   | `/cv/presigned-url`    | Request CV upload URL          | Yes (Job Seeker) |
+| PUT    | `{uploadUrl}`          | Upload CV file to storage      | Yes (Job Seeker) |
+| POST   | `/cv/confirm`          | Confirm CV upload & parse     | Yes (Job Seeker) |
+| GET    | `/cv/me`               | Get current CV info           | Yes (Job Seeker) |
+| GET    | `/cv/me/download-url`  | Get CV download URL            | Yes (Job Seeker) |
+| DELETE | `/cv/me`               | Delete current CV              | Yes (Job Seeker) |
+| GET    | `/cv-parse/preview`    | Preview parsed CV data        | Yes (Job Seeker) |
+| POST   | `/cv-parse/confirm`    | Confirm & save to profile     | Yes (Job Seeker) |
+
+**CV Upload Flow:** Request URL → Upload File → Confirm Upload → NLP Parsing
+
+**CV Parse Flow:** Preview Parsed Data → Confirm & Save to Profile
+
+> **Note:** Skills extracted from CV have `verified: true` flag indicating they were parsed from the CV document.
+
+See detailed documentation for each endpoint in the API Reference section.
 
 ## Work Experience Endpoints
 

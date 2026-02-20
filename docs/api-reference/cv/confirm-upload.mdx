@@ -58,9 +58,63 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
 ```json
 {
   "success": true,
+  "data": {
+    "status": "COMPLETED",
+    "parseResultId": "9968ae8c-e8f4-4d36-a17a-79215cca669c",
+    "data": {
+      "personalInfo": {
+        "firstName": "Amr",
+        "lastName": "Ashraf Mubarak",
+        "email": "amrrdev@gmail.com",
+        "phone": "+20 120 456 2326",
+        "location": "",
+        "linkedinUrl": "linkedin.com/in/amramubarak",
+        "githubUrl": "github.com/amrrdev",
+        "portfolioUrl": null
+      },
+      "title": "Software Engineer",
+      "summary": "Software Engineer with 1+ year of experience building scalable microservices...",
+      "education": [
+        {
+          "institutionName": "Benha University",
+          "degreeType": "BACHELOR",
+          "fieldOfStudy": "Science in Computer Science",
+          "startDate": "2022",
+          "endDate": "2026",
+          "isCurrent": false,
+          "gpa": 3.6,
+          "description": null
+        }
+      ],
+      "workExperience": [
+        {
+          "companyName": "Linux Foundation Decentralized Trust",
+          "jobTitle": "Software Engineer",
+          "location": "Remote",
+          "startDate": "2025-05-01",
+          "endDate": "2025-07-01",
+          "isCurrent": false,
+          "description": "Developed a testing strategy for a decentralized trust solution..."
+        }
+      ],
+      "skills": [
+        { "name": "typescript", "verified": true },
+        { "name": "node.js", "verified": true },
+        { "name": "nestjs", "verified": true }
+      ],
+      "profile": {
+        "expectedSalary": null,
+        "workPreference": "REMOTE",
+        "yearsOfExperience": 0.3,
+        "noticePeriod": null,
+        "availabilityStatus": null
+      }
+    },
+    "processingTime": 952
+  },
   "message": "Success",
   "meta": {
-    "timestamp": "2026-02-17T08:11:00.544Z",
+    "timestamp": "2026-02-20T14:46:26.580Z",
     "path": "/cv/confirm",
     "method": "POST"
   }
@@ -124,5 +178,6 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
 
 <Info>
   **CV Upload Complete**: After confirmation, your CV will be available via GET /cv/me and can be
-  downloaded using GET /cv/me/downoad-url.
+  downloaded using GET /cv/me/download-url. The NLP parsing starts automatically and you can
+  preview results using GET /cv-parse/preview.
 </Info>
