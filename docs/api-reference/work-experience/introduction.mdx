@@ -1,0 +1,38 @@
+---
+title: Introduction
+description: 'Work Experience API - Manage job seeker work experiences'
+---
+
+# Work Experience API
+
+The Work Experience API provides endpoints for managing job seeker work experiences.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Endpoints Overview
+
+| Method | Endpoint                                  | Description               | Auth Required    |
+| ------ | ----------------------------------------- | ------------------------- | ---------------- |
+| GET    | `/job-seekers/me/work-experiences`        | Get all work experiences  | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/work-experiences/:id`   | Get work experience by ID | Yes (Job Seeker) |
+| POST   | `/job-seekers/me/work-experiences`       | Create work experience    | Yes (Job Seeker) |
+| PATCH  | `/job-seekers/me/work-experiences/:id`   | Update work experience    | Yes (Job Seeker) |
+| DELETE | `/job-seekers/me/work-experiences/:id`   | Delete work experience    | Yes (Job Seeker) |
+
+## Fields
+
+| Field         | Type    | Required | Description                          |
+| ------------- | ------- | -------- | ------------------------------------ |
+| `companyName` | string  | Yes      | Name of the company                  |
+| `jobTitle`    | string  | Yes      | Title of the position                |
+| `description` | string  | No       | Job description and responsibilities |
+| `location`    | string  | No       | Work location                        |
+| `startDate`   | string  | Yes      | Start date (ISO 8601 format)         |
+| `endDate`     | string  | No       | End date (ISO 8601 format)           |
+| `isCurrent`   | boolean | Yes      | Currently working here               |
+
+See detailed documentation for each endpoint in the API Reference section.

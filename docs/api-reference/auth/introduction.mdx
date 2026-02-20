@@ -1,0 +1,54 @@
+---
+title: Introduction
+description: 'Authentication API - Register, login, and manage sessions'
+---
+
+# Authentication API
+
+The Authentication API provides endpoints for user registration, login, and session management.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Endpoints Overview
+
+### Registration
+
+| Method | Endpoint                  | Description                      | Auth Required |
+| ------ | ------------------------ | -------------------------------- | ------------- |
+| POST   | `/auth/register/job-seeker` | Register a new job seeker account | No            |
+| POST   | `/auth/register/company`   | Register a new company account   | No            |
+
+### Login
+
+| Method | Endpoint            | Description                    | Auth Required |
+| ------ | ------------------ | ------------------------------ | ------------- |
+| POST   | `/auth/login`      | Login with email and password | No            |
+| POST   | `/auth/login/google` | Login with Google OAuth       | No            |
+| POST   | `/auth/login/linkedin` | Login with LinkedIn OAuth   | No            |
+
+### Session Management
+
+| Method | Endpoint            | Description                    | Auth Required |
+| ------ | ------------------ | ------------------------------ | ------------- |
+| POST   | `/auth/logout`     | Logout and invalidate token    | Yes           |
+| POST   | `/auth/refresh-token` | Refresh access token        | Yes           |
+
+### Password Management
+
+| Method | Endpoint              | Description                       | Auth Required |
+| ------ | -------------------- | --------------------------------- | ------------- |
+| POST   | `/auth/forgot-password` | Request password reset email   | No            |
+| POST   | `/auth/reset-password` | Reset password with token      | No            |
+
+### Email Verification
+
+| Method | Endpoint               | Description                     | Auth Required |
+| ------ | --------------------- | ------------------------------- | ------------- |
+| POST   | `/auth/verify-email`  | Verify email with token         | No            |
+| POST   | `/auth/resend-verification` | Resend verification email | Yes (Authenticated) |
+
+See detailed documentation for each endpoint in the API Reference section.

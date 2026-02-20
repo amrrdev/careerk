@@ -1,0 +1,52 @@
+---
+title: Introduction
+description: 'Education API - Manage job seeker education records'
+---
+
+# Education API
+
+The Education API provides endpoints for managing job seeker education records.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Endpoints Overview
+
+| Method | Endpoint                              | Description         | Auth Required    |
+| ------ | ------------------------------------ | ------------------- | ---------------- |
+| GET    | `/job-seekers/me/educations`         | Get all educations  | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/educations/:id`    | Get education by ID | Yes (Job Seeker) |
+| POST   | `/job-seekers/me/educations`         | Create education    | Yes (Job Seeker) |
+| PATCH  | `/job-seekers/me/educations/:id`    | Update education    | Yes (Job Seeker) |
+| DELETE | `/job-seekers/me/educations/:id`    | Delete education    | Yes (Job Seeker) |
+
+## Fields
+
+| Field             | Type    | Required | Description                  |
+| ----------------- | ------- | -------- | ---------------------------- |
+| `institutionName` | string  | Yes      | Name of the institution      |
+| `degreeType`      | enum    | Yes      | Type of degree obtained      |
+| `fieldOfStudy`    | string  | Yes      | Field of study               |
+| `description`     | string  | No       | Additional education details |
+| `gpa`             | number  | No       | GPA (0-4 scale)              |
+| `startDate`       | string  | Yes      | Start date (ISO 8601 format) |
+| `endDate`         | string  | No       | End date (ISO 8601 format)   |
+| `isCurrent`       | boolean | Yes      | Currently studying here       |
+
+## Degree Type Enum
+
+| Value           | Description                 |
+| --------------- | --------------------------- |
+| `HIGH_SCHOOL`   | High school diploma         |
+| `ASSOCIATE`     | Associate degree            |
+| `BACHELOR`      | Bachelor's degree           |
+| `MASTER`        | Master's degree             |
+| `PHD`           | Doctorate/PhD               |
+| `BOOTCAMP`      | Coding bootcamp certificate |
+| `CERTIFICATION` | Professional certification  |
+| `OTHER`         | Other type of education     |
+
+See detailed documentation for each endpoint in the API Reference section.
