@@ -1,0 +1,183 @@
+---
+title: 'Preview Parsed CV Data'
+api: 'GET /api/v1/cv-parse/preview'
+description: 'Preview the parsed CV data from the most recent upload'
+---
+
+## Endpoint
+
+```
+GET /api/v1/cv-parse/preview
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Get the latest parsed CV data from the most recent upload. Returns status and parsed data if completed. This endpoint allows you to review the NLP-parsed CV data before saving it to your profile.
+
+## Response
+
+### Success Response (200 OK) - COMPLETED Status
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "COMPLETED",
+    "parseResultId": "9968ae8c-e8f4-4d36-a17a-79215cca669c",
+    "data": {
+      "personalInfo": {
+        "firstName": "Amr",
+        "lastName": "Ashraf Mubarak",
+        "email": "amrrdev@gmail.com",
+        "phone": "+20 120 456 2326",
+        "location": "",
+        "linkedinUrl": "linkedin.com/in/amramubarak",
+        "githubUrl": "github.com/amrrdev",
+        "portfolioUrl": null
+      },
+      "title": "Software Engineer",
+      "summary": "Software Engineer with 1+ year of experience building scalable microservices...",
+      "education": [
+        {
+          "institutionName": "Benha University",
+          "degreeType": "BACHELOR",
+          "fieldOfStudy": "Science in Computer Science",
+          "startDate": "2022",
+          "endDate": "2026",
+          "isCurrent": false,
+          "gpa": 3.6,
+          "description": null
+        }
+      ],
+      "workExperience": [
+        {
+          "companyName": "Linux Foundation Decentralized Trust",
+          "jobTitle": "Software Engineer",
+          "location": "Remote",
+          "startDate": "2025-05-01",
+          "endDate": "2025-07-01",
+          "isCurrent": false,
+          "description": "Developed a testing strategy for a decentralized trust solution..."
+        }
+      ],
+      "skills": [
+        { "name": "typescript", "verified": true },
+        { "name": "node.js", "verified": true },
+        { "name": "nestjs", "verified": true }
+      ],
+      "profile": {
+        "expectedSalary": null,
+        "workPreference": "REMOTE",
+        "yearsOfExperience": 0.3,
+        "noticePeriod": null,
+        "availabilityStatus": null
+      }
+    }
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-20T14:46:55.462Z",
+    "path": "/cv-parse/preview",
+    "method": "GET"
+  }
+}
+```
+
+### Success Response (200 OK) - PENDING Status
+
+Returned when CV is still being processed by NLP service:
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "PENDING",
+    "message": "Your CV is being processed. Please wait..."
+  }
+}
+```
+
+### Success Response (200 OK) - FAILED Status
+
+Returned when NLP parsing failed:
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "FAILED",
+    "message": "Failed to parse CV"
+  }
+}
+```
+
+### Success Response (200 OK) - CONFIRMED Status
+
+Returned when CV data has already been saved to profile:
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "CONFIRMED",
+    "message": "CV data has already been saved to your profile"
+  }
+}
+```
+
+### Error Response (404 Not Found)
+
+Returned when no CV has been uploaded:
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "No CV parse result found. Please upload a CV first.",
+    "statusCode": 404,
+    "timestamp": "2026-02-20T14:00:00.000Z",
+    "path": "/cv-parse/preview",
+    "method": "GET"
+  }
+}
+```
+
+## Data Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | string | Status of the parse result: PENDING, COMPLETED, FAILED, CONFIRMED |
+| `parseResultId` | string | Unique identifier for this parse result |
+| `data.personalInfo` | object | Personal information extracted from CV |
+| `data.title` | string | Job title extracted from CV |
+| `data.summary` | string | Professional summary extracted from CV |
+| `data.education` | array | Array of education entries |
+| `data.workExperience` | array | Array of work experience entries |
+| `data.skills` | array | Array of skills with `verified: true` flag |
+| `data.profile` | object | Profile preferences including workPreference, yearsOfExperience, etc. |
+
+## Complete CV Flow
+
+<Steps>
+  <Step title="Upload CV">Call POST /cv/presigned-url to get an upload URL</Step>
+  <Step title="Upload File">Upload the file using PUT with the upload URL</Step>
+  <Step title="Confirm Upload">Call POST /cv/confirm to trigger NLP parsing</Step>
+  <Step title="Preview Data">Call GET /cv-parse/preview to see parsed results</Step>
+  <Step title="Confirm & Save">Call POST /cv-parse/confirm to save to your profile</Step>
+</Steps>
+
+<Info>
+  **Skills Verification**: All skills returned from CV parsing are marked as `verified: true` since they were extracted from your uploaded CV document.
+</Info>

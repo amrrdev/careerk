@@ -10,6 +10,16 @@
 
 1. [Authentication](#authentication)
 2. [Job Seeker Endpoints](#job-seeker-endpoints)
+   - [Profile Management](#profile-management)
+   - [CV Upload](#cv-upload)
+   - [CV Parse](#cv-parse)
+   - [Work Experience](#work-experience)
+   - [Education](#education)
+   - [Skills](#skills)
+   - [Job Applications](#job-applications)
+   - [Job Matching & Recommendations](#job-matching--recommendations)
+   - [GitHub Projects & Open Source](#github-projects--open-source)
+   - [Career Analytics](#career-analytics)
 3. [Company/Employer Endpoints](#companyemployer-endpoints)
 4. [Jobs (Public)](#jobs-public)
 5. [Search & Discovery](#search--discovery)
@@ -159,30 +169,359 @@ PUT /job-seekers/me/avatar
 
 ---
 
-### CV Management
+### CV Upload
 
-**Note:** Each job seeker can have only ONE CV at a time.
+**Note:** Each job seeker can have only ONE CV at a time. The upload process involves two steps: 1) Get presigned URL, 2) Confirm upload (triggers NLP parsing).
+
+#### Request Upload URL
 
 ```http
-POST /job-seekers/me/cv
+POST /cv/presigned-url
 ```
 
 **Access:** Job Seeker Only  
-**Description:** Upload or replace your CV. Returns presigned URL for file upload. Triggers automatic parsing to extract work experience, education, and skills.
+**Description:** Request a presigned URL for uploading a CV file (PDF).
+
+**Request Body:**
+```json
+{
+  "fileName": "resume.pdf",
+  "mimeType": "application/pdf"
+}
+```
+
+**Response:**
+```json
+{
+  "uploadUrl": "https://storage.url...",
+  "key": "cvs/jobseeker-uuid/resume.pdf"
+}
+```
+
+#### Confirm Upload
 
 ```http
-GET /job-seekers/me/cv
+POST /cv/confirm
+```
+
+**Access:** Job Seeker Only  
+**Description:** Confirm the upload and trigger NLP parsing to extract CV data. This endpoint verifies the file exists, saves metadata, and calls the NLP service.
+
+**Request Body:**
+```json
+{
+  "key": "cvs/jobseeker-uuid/resume.pdf",
+  "fileName": "resume.pdf",
+  "mimeType": "application/pdf"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "status": "COMPLETED",
+    "parseResultId": "uuid",
+    "data": {
+      "personalInfo": {
+        "firstName": "Amr",
+        "lastName": "Ashraf Mubarak",
+        "email": "amrrdev@gmail.com",
+        "phone": "+20 120 456 2326",
+        "location": "",
+        "linkedinUrl": "linkedin.com/in/amramubarak",
+        "githubUrl": "github.com/amrrdev",
+        "portfolioUrl": null
+      },
+      "title": "Software Engineer",
+      "summary": "Software Engineer with experience...",
+      "education": [
+        {
+          "institutionName": "Benha University",
+          "degreeType": "BACHELOR",
+          "fieldOfStudy": "Computer Science",
+          "startDate": "2022",
+          "endDate": "2026",
+          "isCurrent": false,
+          "gpa": 3.6,
+          "description": null
+        }
+      ],
+      "workExperience": [
+        {
+          "companyName": "Tech Corp",
+          "jobTitle": "Software Engineer",
+          "location": "Remote",
+          "startDate": "2025-05-01",
+          "endDate": "2025-07-01",
+          "isCurrent": false,
+          "description": "Developed..."
+        }
+      ],
+      "skills": [
+        { "name": "typescript", "verified": true },
+        { "name": "node.js", "verified": true }
+      ],
+      "profile": {
+        "expectedSalary": null,
+        "workPreference": "REMOTE",
+        "yearsOfExperience": 0.3,
+        "noticePeriod": null,
+        "availabilityStatus": null
+      }
+    },
+    "processingTime": 952
+  },
+  "message": "Success"
+}
+```
+
+#### Get CV Info
+
+```http
+GET /cv/me
 ```
 
 **Access:** Job Seeker Only  
 **Description:** Retrieve your current CV details including file name, URL, size, type, and parsing status.
 
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "jobSeekerId": "uuid",
+    "fileName": "resume.pdf",
+    "mimeType": "application/pdf",
+    "key": "cvs/jobseeker-uuid/resume.pdf",
+    "createdAt": "2026-02-20T14:00:00Z",
+    "updatedAt": "2026-02-20T14:00:00Z"
+  }
+}
+```
+
+#### Get CV Download URL
+
 ```http
-DELETE /job-seekers/me/cv
+GET /cv/me/download-url
+```
+
+**Access:** Job Seeker Only  
+**Description:** Get a temporary download URL for your CV file.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "downloadUrl": "https://storage.url...temp..."
+  }
+}
+```
+
+#### Delete CV
+
+```http
+DELETE /cv/me
 ```
 
 **Access:** Job Seeker Only  
 **Description:** Delete your current CV. This does not delete manually entered profile data.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": null,
+  "message": "CV deleted successfully"
+}
+```
+
+---
+
+### CV Parse
+
+Endpoints for previewing parsed CV data and confirming to save to profile.
+
+#### Preview Parsed Data
+
+```http
+GET /cv-parse/preview
+```
+
+**Access:** Job Seeker Only  
+**Description:** Get the latest parsed CV data from the most recent upload. Returns status (PENDING, COMPLETED, FAILED, CONFIRMED) and parsed data if completed.
+
+**Response (COMPLETED):**
+```json
+{
+  "success": true,
+  "data": {
+    "status": "COMPLETED",
+    "parseResultId": "uuid",
+    "data": {
+      "personalInfo": {
+        "firstName": "Amr",
+        "lastName": "Ashraf Mubarak",
+        "email": "amrrdev@gmail.com",
+        "phone": "+20 120 456 2326",
+        "location": "",
+        "linkedinUrl": "linkedin.com/in/amramubarak",
+        "githubUrl": "github.com/amrrdev",
+        "portfolioUrl": null
+      },
+      "title": "Software Engineer",
+      "summary": "Software Engineer with experience...",
+      "education": [
+        {
+          "institutionName": "Benha University",
+          "degreeType": "BACHELOR",
+          "fieldOfStudy": "Computer Science",
+          "startDate": "2022",
+          "endDate": "2026",
+          "isCurrent": false,
+          "gpa": 3.6,
+          "description": null
+        }
+      ],
+      "workExperience": [
+        {
+          "companyName": "Tech Corp",
+          "jobTitle": "Software Engineer",
+          "location": "Remote",
+          "startDate": "2025-05-01",
+          "endDate": "2025-07-01",
+          "isCurrent": false,
+          "description": "Developed..."
+        }
+      ],
+      "skills": [
+        { "name": "typescript", "verified": true },
+        { "name": "node.js", "verified": true }
+      ],
+      "profile": {
+        "expectedSalary": null,
+        "workPreference": "REMOTE",
+        "yearsOfExperience": 0.3,
+        "noticePeriod": null,
+        "availabilityStatus": null
+      }
+    }
+  },
+  "message": "Success"
+}
+```
+
+**Response (PENDING):**
+```json
+{
+  "success": true,
+  "data": {
+    "status": "PENDING",
+    "message": "Your CV is being processed. Please wait..."
+  }
+}
+```
+
+**Response (CONFIRMED):**
+```json
+{
+  "success": true,
+  "data": {
+    "status": "CONFIRMED",
+    "message": "CV data has already been saved to your profile"
+  }
+}
+```
+
+#### Confirm and Save to Profile
+
+```http
+POST /cv-parse/confirm
+```
+
+**Access:** Job Seeker Only  
+**Description:** Review the parsed data and confirm to save it to your profile. This creates/updates your JobSeekerProfile, Education, WorkExperience, and Skills records.
+
+**Request Body:**
+```json
+{
+  "personalInfo": {
+    "firstName": "Amr",
+    "lastName": "Ashraf Mubarak",
+    "email": "amrrdev@gmail.com",
+    "phone": "+20 120 456 2326",
+    "location": "",
+    "linkedinUrl": "linkedin.com/in/amramubarak",
+    "githubUrl": "github.com/amrrdev",
+    "portfolioUrl": null
+  },
+  "title": "Software Engineer",
+  "summary": "Software Engineer with experience...",
+  "education": [
+    {
+      "institutionName": "Benha University",
+      "degreeType": "BACHELOR",
+      "fieldOfStudy": "Computer Science",
+      "startDate": "2022",
+      "endDate": "2026",
+      "isCurrent": false,
+      "gpa": 3.6,
+      "description": null
+    }
+  ],
+  "workExperience": [
+    {
+      "companyName": "Tech Corp",
+      "jobTitle": "Software Engineer",
+      "location": "Remote",
+      "startDate": "2025-05-01",
+      "endDate": "2025-07-01",
+      "isCurrent": false,
+      "description": "Developed..."
+    }
+  ],
+  "skills": [
+    { "name": "typescript", "verified": true },
+    { "name": "node.js", "verified": true }
+  ],
+  "profile": {
+    "expectedSalary": null,
+    "workPreference": "REMOTE",
+    "yearsOfExperience": 0.3,
+    "noticePeriod": null,
+    "availabilityStatus": "NOT_LOOKING"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Profile updated successfully from CV"
+  },
+  "message": "Success"
+}
+```
+
+**Validation Errors (400):**
+```json
+{
+  "success": false,
+  "error": {
+    "message": [
+      "profile.workPreference must be one of the following values: ONSITE, REMOTE, HYBRID, ANY",
+      "profile.yearsOfExperience must be a number conforming to the specified constraints",
+      "profile.availabilityStatus must be one of the following values: OPEN_TO_WORK, NOT_LOOKING, PASSIVELY_LOOKING"
+    ],
+    "statusCode": 400
+  }
+}
+```
 
 ---
 
