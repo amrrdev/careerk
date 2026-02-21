@@ -1,0 +1,120 @@
+---
+title: 'Get All Skills'
+api: 'GET /api/v1/job-seekers/me/skills'
+description: 'Retrieve all skills associated with the authenticated job seeker'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/skills
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Retrieve all skills associated with the authenticated job seeker, including verification status. Skills can be verified (from CV parsing) or manually added (unverified).
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "skillId": "95847893-6c58-404a-8560-528ec9653502",
+      "verified": false,
+      "name": "golang"
+    },
+    {
+      "skillId": "531c1ac0-1606-4313-9ad3-77420ba09005",
+      "verified": false,
+      "name": "rust"
+    },
+    {
+      "skillId": "1f2d44f1-fa83-451f-bed6-b1af78971913",
+      "verified": true,
+      "name": "TypeScript"
+    },
+    {
+      "skillId": "231a40d8-dd0b-492f-a896-1f958de9d1dd",
+      "verified": true,
+      "name": "SQL"
+    }
+  ],
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-21T12:15:44.969Z",
+    "path": "/job-seekers/me/skills",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="skillId" type="string">
+  Unique identifier for the skill.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Name of the skill.
+</ResponseField>
+
+<ResponseField name="verified" type="boolean">
+  Whether the skill is verified. `true` if verified from CV parsing, `false` if manually added.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-21T12:15:44.969Z",
+    "path": "/job-seekers/me/skills",
+    "method": "GET"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-21T12:15:44.969Z",
+    "path": "/job-seekers/me/skills",
+    "method": "GET"
+  }
+}
+```
+
+## Notes
+
+<Info>**Empty Array**: If no skills are associated, an empty array is returned.</Info>
+
+<Tip>
+  **Verification Status**: Skills parsed from CV are marked as `verified: true`. Manually added
+  skills are marked as `verified: false`.
+</Tip>
