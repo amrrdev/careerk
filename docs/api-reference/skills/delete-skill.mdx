@@ -1,0 +1,88 @@
+---
+title: 'Delete Skill'
+api: 'DELETE /api/v1/job-seekers/me/skills/:skillId'
+description: 'Remove a skill from the authenticated job seeker profile'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/job-seekers/me/skills/:skillId
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Remove a specific skill from your profile.
+
+## Path Parameters
+
+<ParamField name="skillId" type="string" required>
+  The UUID of the skill to remove from your profile.
+</ParamField>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": null,
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-21T12:25:00.000Z",
+    "path": "/job-seekers/me/skills/:skillId",
+    "method": "DELETE"
+  }
+}
+```
+
+## Error Responses
+
+### 404 Not Found - Skill Not in Profile
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Skill not found in your profile",
+    "statusCode": 404,
+    "timestamp": "2026-02-21T12:25:00.000Z",
+    "path": "/job-seekers/me/skills/:skillId",
+    "method": "DELETE"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-21T12:25:00.000Z",
+    "path": "/job-seekers/me/skills/:skillId",
+    "method": "DELETE"
+  }
+}
+```
+
+## Notes
+
+<Info>
+  This only removes the skill association from your profile, not the skill itself from the platform.
+</Info>

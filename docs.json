@@ -96,6 +96,15 @@
               "docs/api-reference/education/update-education",
               "docs/api-reference/education/delete-education"
             ]
+          },
+          {
+            "group": "Skills",
+            "pages": [
+              "docs/api-reference/skills/introduction",
+              "docs/api-reference/skills/get-all-skills",
+              "docs/api-reference/skills/add-skills",
+              "docs/api-reference/skills/delete-skill"
+            ]
           }
         ]
       }

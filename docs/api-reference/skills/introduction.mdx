@@ -1,0 +1,49 @@
+---
+title: Introduction
+description: 'Skills API - Manage job seeker skills'
+---
+
+# Skills API
+
+The Skills API provides endpoints for managing job seeker skills.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Endpoints Overview
+
+| Method | Endpoint                          | Description    | Auth Required    |
+| ------ | --------------------------------- | -------------- | ---------------- |
+| GET    | `/job-seekers/me/skills`          | Get all skills | Yes (Job Seeker) |
+| POST   | `/job-seekers/me/skills`          | Add skills     | Yes (Job Seeker) |
+| DELETE | `/job-seekers/me/skills/:skillId` | Remove skill   | Yes (Job Seeker) |
+
+## Fields
+
+| Field        | Type     | Required | Description                           |
+| ------------ | -------- | -------- | ------------------------------------- |
+| `skillId`    | string   | No\*     | UUID of existing skill                |
+| `skillIds`   | string[] | No\*     | Array of skill UUIDs                  |
+| `skillName`  | string   | No\*     | Name of skill (creates if not exists) |
+| `skillNames` | string[] | No\*     | Array of skill names                  |
+| `verified`   | boolean  | Always   | `true` if from CV, `false` if manual  |
+
+\*At least one of `skillId`, `skillIds`, `skillName`, or `skillNames` is required.
+
+## Verification Status
+
+| Value   | Description                            |
+| ------- | -------------------------------------- |
+| `true`  | Skill verified from CV parsing         |
+| `false` | Skill manually added by the job seeker |
+
+## Notes
+
+- Skills can be added by ID (must exist) or by name (creates if not exists)
+- Duplicate skill additions are handled gracefully (returns existing)
+- Deleting a skill removes only the association, not the skill itself
+
+See detailed documentation for each endpoint in the API Reference section.

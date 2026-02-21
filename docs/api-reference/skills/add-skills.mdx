@@ -1,0 +1,192 @@
+---
+title: 'Add Skills'
+api: 'POST /api/v1/job-seekers/me/skills'
+description: 'Add skills to the authenticated job seeker profile'
+---
+
+## Endpoint
+
+```
+POST /api/v1/job-seekers/me/skills
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Add skills to your profile. Supports multiple formats:
+
+- **By skill ID**: Link existing platform skills (must exist in database)
+- **By skill name**: Create new skill if not exists, then link
+
+You can provide a single skill or multiple skills (bulk).
+
+## Request Body
+
+### Option 1: By Skill ID (single)
+
+```json
+{
+  "skillId": "95847893-6c58-404a-8560-528ec9653502"
+}
+```
+
+### Option 2: By Skill IDs (bulk)
+
+```json
+{
+  "skillIds": ["95847893-6c58-404a-8560-528ec9653502", "531c1ac0-1606-4313-9ad3-77420ba09005"]
+}
+```
+
+### Option 3: By Skill Name (single - creates if not exists)
+
+```json
+{
+  "skillName": "Python"
+}
+```
+
+### Option 4: By Skill Names (bulk - creates if not exists)
+
+```json
+{
+  "skillNames": ["Python", "JavaScript", "Go"]
+}
+```
+
+### Request Fields
+
+<ParamField name="skillId" type="string" optional>
+  Single skill UUID. Skill must exist in the platform.
+</ParamField>
+
+<ParamField name="skillIds" type="string[]" optional>
+  Array of skill UUIDs. Skills must exist in the platform.
+</ParamField>
+
+<ParamField name="skillName" type="string" optional>
+  Single skill name. If skill doesn't exist, it will be created.
+</ParamField>
+
+<ParamField name="skillNames" type="string[]" optional>
+  Array of skill names. Skills that don't exist will be created.
+</ParamField>
+
+<Info>At least one of `skillId`, `skillIds`, `skillName`, or `skillNames` must be provided.</Info>
+
+## Response
+
+### Success Response (201 Created)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "skillId": "95847893-6c58-404a-8560-528ec9653502",
+      "verified": false,
+      "name": "golang"
+    },
+    {
+      "skillId": "531c1ac0-1606-4313-9ad3-77420ba09005",
+      "verified": false,
+      "name": "rust"
+    }
+  ],
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-21T12:20:00.000Z",
+    "path": "/job-seekers/me/skills",
+    "method": "POST"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="skillId" type="string">
+  Unique identifier for the skill.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Name of the skill.
+</ResponseField>
+
+<ResponseField name="verified" type="boolean">
+  Always `false` for manually added skills. Skills from CV parsing would be `true`.
+</ResponseField>
+
+## Error Responses
+
+### 400 Bad Request - No Skill Provided
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "At least one of skillId, skillIds, skillName, or skillNames must be provided",
+    "statusCode": 400,
+    "timestamp": "2026-02-21T12:20:00.000Z",
+    "path": "/job-seekers/me/skills",
+    "method": "POST"
+  }
+}
+```
+
+### 404 Not Found - Skill ID Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Skill with ID {skillId} not found in the platform",
+    "statusCode": 404,
+    "timestamp": "2026-02-21T12:20:00.000Z",
+    "path": "/job-seekers/me/skills",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-21T12:20:00.000Z",
+    "path": "/job-seekers/me/skills",
+    "method": "POST"
+  }
+}
+```
+
+## Notes
+
+<Tip>
+  **Create if not exists**: When using `skillName` or `skillNames`, new skills will be automatically
+  created in the platform if they don't exist.
+</Tip>
+
+<Tip>
+  **Duplicate handling**: If a skill is already associated with your profile, it returns the
+  existing association without error.
+</Tip>
+
+<Tip>
+  **Verification**: Manually added skills are marked as `verified: false`. Only skills parsed from
+  CV are marked as `verified: true`.
+</Tip>
