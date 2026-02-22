@@ -1,0 +1,92 @@
+---
+title: 'Get My Bookmarks'
+api: 'GET /api/v1/jobs/bookmark'
+description: 'Get all bookmarked jobs for the current user'
+---
+
+## Endpoint
+
+```
+GET /api/v1/jobs/bookmark
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** (Job Seeker only).</Note>
+
+## Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "bookmarkId": "510209e1-e4b9-4036-ae4d-aff0c0039360",
+      "bookmarkedAt": "2026-02-22T22:34:05.491Z",
+      "job": {
+        "id": "1b6a74d1-d9aa-4e71-81b6-51d3187e5d93",
+        "title": "Scraped Job 388",
+        "description": null,
+        "location": null,
+        "salary": null,
+        "jobType": null,
+        "companyName": "Company 388",
+        "sourceUrl": "https://job.com/388",
+        "postedAt": null,
+        "source": "scraped",
+        "skills": [
+          { "skillId": "8f8b2d90-7a9c-4b73-8e51-d593e22d5f14", "name": "Skill 338" },
+          { "skillId": "3ce252ef-0e58-4083-9547-23dabd207c3b", "name": "Skill 807" }
+        ]
+      }
+    }
+  ],
+  "message": "Bookmarks retrieved successfully"
+}
+```
+
+<ResponseField name="data" type="array">
+  Array of bookmarked jobs, each containing:
+  <Expandable title="properties">
+    <ResponseField name="bookmarkId" type="string">
+      Unique identifier for the bookmark.
+    </ResponseField>
+    <ResponseField name="bookmarkedAt" type="string">
+      Timestamp when the job was bookmarked.
+    </ResponseField>
+    <ResponseField name="job" type="object">
+      The full job object (DirectJob or ScrapedJob depending on source).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Notes
+
+- Returns empty array if no bookmarks exist.
+- Each bookmark includes the full job details.
+
+## Error Responses
+
+### 401 Unauthorized
+
+Returned when authentication is missing.
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmark",
+    "method": "GET"
+  }
+}
+```
+
+## Example
+
+```bash
+curl -X GET http://localhost:3000/api/v1/jobs/bookmark \
+  -H "Authorization: Bearer <token>"
+```
