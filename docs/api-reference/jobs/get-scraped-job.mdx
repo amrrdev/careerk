@@ -1,0 +1,93 @@
+---
+title: 'Get Scraped Job By ID'
+api: 'GET /api/v1/jobs/scraped/{jobId}'
+description: 'Get a specific scraped job by ID'
+---
+
+## Endpoint
+
+```
+GET /api/v1/jobs/scraped/{jobId}
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint is **public** - no authentication required.</Note>
+
+## Path Parameters
+
+<ParamField name="jobId" type="string" required>
+  The unique identifier of the scraped job.
+</ParamField>
+
+## Response (200 OK)
+
+```json
+{
+  "id": "scr_1234567890",
+  "title": "Senior Software Engineer",
+  "companyName": "Tech Corp",
+  "description": "We are looking for a senior software engineer...",
+  "url": "https://example.com/jobs/123",
+  "postedDate": "2024-01-15T10:00:00Z",
+  "location": "Remote",
+  "salary": "$120,000 - $150,000 per year"
+}
+```
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the scraped job.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Job title.
+</ResponseField>
+
+<ResponseField name="companyName" type="string">
+  Name of the company posting the job.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Full job description.
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  Direct link to the original job posting.
+</ResponseField>
+
+<ResponseField name="postedDate" type="string">
+  Date when the job was posted (ISO 8601).
+</ResponseField>
+
+<ResponseField name="location" type="string">
+  Job location.
+</ResponseField>
+
+<ResponseField name="salary" type="string">
+  Salary range (as reported by source).
+</ResponseField>
+
+## Error Responses
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Scraped job not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/scraped/{jobId}",
+    "method": "GET"
+  }
+}
+```
+
+## Example
+
+```
+GET /api/v1/jobs/scraped/scr_1234567890
+```

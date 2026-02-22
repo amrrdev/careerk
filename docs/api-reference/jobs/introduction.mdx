@@ -1,0 +1,53 @@
+---
+title: Introduction
+description: 'Jobs API - Browse platform and scraped jobs'
+---
+
+# Jobs API
+
+The Jobs API provides public endpoints to browse both direct (platform) jobs and scraped external jobs.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Endpoints Overview
+
+| Method | Endpoint                | Description                |
+| ------ | ----------------------- | -------------------------- |
+| GET    | `/jobs`                 | List all jobs with filters |
+| GET    | `/jobs/direct/{jobId}`  | Get direct job by ID       |
+| GET    | `/jobs/scraped/{jobId}` | Get scraped job by ID      |
+
+## Query Parameters
+
+| Parameter         | Type   | Default | Description                                     |
+| ----------------- | ------ | ------- | ----------------------------------------------- |
+| `source`          | string | `all`   | Filter by source: `direct`, `scraped`, or `all` |
+| `page`            | number | 1       | Page number                                     |
+| `limit`           | number | 20      | Results per page (max 100)                      |
+| `search`          | string | -       | Search in title/description                     |
+| `jobType`         | enum   | -       | Filter by job type                              |
+| `workPreference`  | enum   | -       | Filter by work preference (direct jobs only)    |
+| `location`        | string | -       | Filter by location                              |
+| `experienceLevel` | enum   | -       | Filter by experience level (direct jobs only)   |
+| `salaryMin`       | number | -       | Minimum salary (direct jobs only)               |
+| `salaryMax`       | number | -       | Maximum salary (direct jobs only)               |
+
+## Job Source
+
+| Source    | Description                                                 |
+| --------- | ----------------------------------------------------------- |
+| `direct`  | Jobs posted by companies on the platform                    |
+| `scraped` | Jobs scraped from external sources (LinkedIn, Indeed, etc.) |
+
+## Notes
+
+- All endpoints are public (no authentication required)
+- Direct jobs support more filters (workPreference, salary, experienceLevel)
+- Scraped jobs have limited filters (jobType, location, search)
+- For `/jobs?source=all`, results are merged and sorted by date
+
+See detailed documentation for each endpoint in the API Reference section.
