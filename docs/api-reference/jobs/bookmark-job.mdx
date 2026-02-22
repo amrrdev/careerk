@@ -1,0 +1,100 @@
+---
+title: 'Bookmark Job'
+api: 'POST /api/v1/jobs/bookmark'
+description: 'Bookmark a job to save it for later'
+---
+
+## Endpoint
+
+```
+POST /api/v1/jobs/bookmark
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** (Job Seeker only).</Note>
+
+## Request Body
+
+<ParamField body="jobId" type="string" required>
+  The unique identifier of the job to bookmark.
+</ParamField>
+
+<ParamField body="jobSource" type="enum" required>
+  The source type of the job. Values: `DIRECT`, `SCRAPED`.
+</ParamField>
+
+## Request Shape
+
+```json
+{
+  "jobId": "1b6a74d1-d9aa-4e71-81b6-51d3187e5d93",
+  "jobSource": "SCRAPED"
+}
+```
+
+## Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "b61168e1-abf0-4bce-ab53-41392825aaa5"
+  },
+  "message": "Job bookmarked successfully"
+}
+```
+
+<ResponseField name="data.id" type="string">
+  The bookmark ID.
+</ResponseField>
+
+## Notes
+
+- This endpoint uses **upsert** - if the job is already bookmarked, it returns the existing bookmark ID instead of creating a duplicate.
+- The `jobSource` must match the job type: `DIRECT` for platform jobs, `SCRAPED` for external jobs.
+
+## Error Responses
+
+### 404 Not Found
+
+Returned when the job does not exist.
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Job not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmark",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized
+
+Returned when authentication is missing.
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmark",
+    "method": "POST"
+  }
+}
+```
+
+## Example
+
+```bash
+curl -X POST http://localhost:3000/api/v1/jobs/bookmark \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"jobId": "1b6a74d1-d9aa-4e71-81b6-51d3187e5d93", "jobSource": "SCRAPED"}'
+```

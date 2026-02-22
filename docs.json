@@ -126,7 +126,10 @@
               "docs/api-reference/jobs/introduction",
               "docs/api-reference/jobs/get-all-jobs",
               "docs/api-reference/jobs/get-direct-job",
-              "docs/api-reference/jobs/get-scraped-job"
+              "docs/api-reference/jobs/get-scraped-job",
+              "docs/api-reference/jobs/bookmark-job",
+              "docs/api-reference/jobs/get-bookmarks",
+              "docs/api-reference/jobs/remove-bookmark"
             ]
           }
         ]

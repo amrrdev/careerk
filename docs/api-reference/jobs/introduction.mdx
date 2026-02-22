@@ -20,6 +20,9 @@ http://localhost:3000/api/v1
 | GET    | `/jobs`                 | List all jobs with filters |
 | GET    | `/jobs/direct/{jobId}`  | Get direct job by ID       |
 | GET    | `/jobs/scraped/{jobId}` | Get scraped job by ID      |
+| POST   | `/jobs/bookmark`        | Bookmark a job             |
+| GET    | `/jobs/bookmark`        | Get user's bookmarks       |
+| DELETE | `/jobs/bookmarks/:id`   | Remove bookmark            |
 
 ## Query Parameters
 
@@ -45,7 +48,8 @@ http://localhost:3000/api/v1
 
 ## Notes
 
-- All endpoints are public (no authentication required)
+- All job browsing endpoints are public (no authentication required)
+- Bookmark endpoints require authentication (Job Seeker only)
 - Direct jobs support more filters (workPreference, salary, experienceLevel)
 - Scraped jobs have limited filters (jobType, location, search)
 - For `/jobs?source=all`, results are merged and sorted by date

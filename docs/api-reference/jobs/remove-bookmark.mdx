@@ -1,0 +1,61 @@
+---
+title: 'Remove Bookmark'
+api: 'DELETE /api/v1/jobs/bookmarks/:id'
+description: 'Remove a bookmark by ID'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/jobs/bookmarks/:id
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** (Job Seeker only).</Note>
+
+## Path Parameters
+
+<ParamField name="id" type="string" required>
+  The bookmark ID to remove.
+</ParamField>
+
+## Response (200 OK)
+
+```json
+{
+  "success": true,
+  "message": "Bookmark removed successfully"
+}
+```
+
+## Notes
+
+- This endpoint is **idempotent** - calling it multiple times or on an already deleted bookmark will not throw an error.
+- The `id` parameter is the bookmark ID (not the job ID).
+
+## Error Responses
+
+### 401 Unauthorized
+
+Returned when authentication is missing.
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmarks/:id",
+    "method": "DELETE"
+  }
+}
+```
+
+## Example
+
+```bash
+curl -X DELETE http://localhost:3000/api/v1/jobs/bookmarks/b61168e1-abf0-4bce-ab53-41392825aaa5 \
+  -H "Authorization: Bearer <token>"
+```
