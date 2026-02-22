@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { JobRepository } from './repository/job.repository';
 import { JobQueryDto } from './dto/job-query.dto';
 import { Job, JobFilters, DirectJob, ScrapedJob, PaginatedJobs } from './types/jobs.types';
+import { BookmarkJobDto } from './dto/bookmark-job.dto';
+import { BookmarkedJob, BookmarkWithDetails } from './types/bookmark.types';
 
 @Injectable()
 export class JobService {
@@ -57,5 +59,44 @@ export class JobService {
       throw new NotFoundException('Scraped job not found');
     }
     return job;
+  }
+
+  async bookmarkJob(jobSeekerId: string, bookmarkJobDto: BookmarkJobDto) {
+    const job =
+      bookmarkJobDto.jobSource === 'DIRECT'
+        ? await this.jobRepository.findDirectJobById(bookmarkJobDto.jobId)
+        : await this.jobRepository.findScrapedJobById(bookmarkJobDto.jobId);
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    return this.jobRepository.createBookmark(jobSeekerId, bookmarkJobDto);
+  }
+
+  async removeBookmark(jobSeekerId: string, bookmarkId: string) {
+    await this.jobRepository.deleteBookmark(jobSeekerId, bookmarkId);
+  }
+
+  async getMyBookmarks(jobSeekerId: string) {
+    const bookmarks = await this.jobRepository.findBookmarksByJobSeeker(jobSeekerId);
+
+    const bookmarkedJobs = await Promise.all(
+      bookmarks.map(async (bookmark: BookmarkWithDetails) => {
+        const job =
+          bookmark.jobSource === 'DIRECT'
+            ? await this.jobRepository.findDirectJobById(bookmark.jobId)
+            : await this.jobRepository.findScrapedJobById(bookmark.jobId);
+
+        if (!job) return null;
+
+        return {
+          bookmarkId: bookmark.id,
+          bookmarkedAt: bookmark.createdAt,
+          job,
+        };
+      }),
+    );
+    return bookmarkedJobs.filter(Boolean) as BookmarkedJob[];
   }
 }
