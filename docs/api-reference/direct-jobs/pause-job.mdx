@@ -1,0 +1,129 @@
+---
+title: 'Pause Job'
+api: 'POST /api/v1/companies/me/jobs/{jobId}/pause'
+description: 'Pause a published job posting'
+---
+
+## Endpoint
+
+```
+POST /api/v1/companies/me/jobs/{jobId}/pause
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Temporarily pause a published job posting. Paused jobs are hidden from candidates but can be published again later.
+
+## Path Parameters
+
+<ParamField name="jobId" type="string" required>
+  The UUID of the job to pause.
+</ParamField>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "6cc9f0af-10c0-4998-b252-fc6c52394759",
+    "title": "Backend Engineer",
+    "description": "Job Description",
+    "requirements": null,
+    "responsibilities": null,
+    "location": null,
+    "salaryMin": null,
+    "salaryMax": null,
+    "jobType": "FULL_TIME",
+    "workPreference": "REMOTE",
+    "experienceLevel": "MID",
+    "status": "PAUSED",
+    "deadline": null,
+    "publishedAt": "2026-02-22T14:51:00.000Z",
+    "company": {
+      "id": "8cfee915-6e24-4741-9493-fd5680743a84",
+      "name": "Tech Corp",
+      "logoUrl": null
+    },
+    "skills": [
+      {
+        "skillId": "1d1d1d93-c910-47e3-b2ff-5f5bc2ce0541",
+        "name": "Node.js"
+      }
+    ]
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/pause",
+    "method": "POST"
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Job Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Record not found",
+    "statusCode": 400,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/pause",
+    "method": "POST"
+  }
+}
+```
+
+### 400 Bad Request - Invalid Status
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Only published jobs can be paused",
+    "statusCode": 400,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/pause",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/pause",
+    "method": "POST"
+  }
+}
+```
+
+## Notes
+
+<Info>Only jobs with status `PUBLISHED` can be paused.</Info>
+
+<Tip>**Reverting**: You can publish a paused job again using the publish endpoint.</Tip>
