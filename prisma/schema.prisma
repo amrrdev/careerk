@@ -35,7 +35,7 @@ model JobSeeker {
   workExperiences WorkExperience[]
   jobSeekerSkills JobSeekerSkill[]
   cv CV?
-  cvParseResult   CvParseResult?  // ← add this
+  cvParseResult   CvParseResult?
 
   @@index([isActive])
   @@map("job_seekers")
@@ -69,6 +69,8 @@ model Company {
 
   createdAt            DateTime    @default(now()) @map("created_at")
   updatedAt            DateTime    @updatedAt @map("updated_at")
+
+  directJobs DirectJob[]
 
   @@index([isActive])
   @@map("companies")
@@ -153,7 +155,10 @@ model Skill {
 
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+
   jobSeekerSkills JobSeekerSkill[]
+  scrapedJobSkills ScrapedJobSkill[]
+  directJobSkills DirectJobSkill[]
 
   @@map("skills")
 }
@@ -206,6 +211,98 @@ model CvParseResult {
   jobSeeker      JobSeeker     @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
 
   @@map("cv_parse_results")
+}
+
+model ScrapedJob {
+  id              String   @id @default(uuid()) @db.Uuid
+  url             String   @unique
+  source          String
+  title           String
+  companyName     String   @map("company_name")
+  location        String?
+  description     String?  @db.Text
+  salary          String?
+  jobType         JobTypeEnum? @map("job_type")
+
+  postedAt        DateTime? @map("posted_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  skills          ScrapedJobSkill[]
+
+  @@index([source])
+  @@index([companyName])
+  @@map("scraped_jobs")
+}
+
+model ScrapedJobSkill {
+  id          String   @id @default(uuid()) @db.Uuid
+  jobId       String   @db.Uuid @map("job_id")
+  skillId     String   @db.Uuid @map("skill_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  job         ScrapedJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill       Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, skillId])
+  @@map("scraped_job_skills")
+}
+
+model DirectJob {
+  id                String   @id @default(uuid()) @db.Uuid
+  companyId         String   @db.Uuid @map("company_id")
+  title             String
+  description       String   @db.Text
+  requirements      String?  @db.Text
+  responsibilities  String?  @db.Text
+  location          String?
+  salaryMin         Int?     @map("salary_min")
+  salaryMax         Int?     @map("salary_max")
+  jobType           JobTypeEnum @map("job_type")
+  workPreference    WorkPreferenceEnum @map("work_preference")
+  experienceLevel   ExperienceLevelEnum  @map("experience_level")
+  status            DirectJobStatusEnum @default(DRAFT)
+  deadline          DateTime?
+  publishedAt       DateTime? @map("published_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  skills            DirectJobSkill[]
+
+  @@index([companyId])
+  @@index([status])
+  @@map("direct_jobs")
+}
+
+model DirectJobSkill {
+  id          String   @id @default(uuid()) @db.Uuid
+  jobId       String   @db.Uuid @map("job_id")
+  skillId     String   @db.Uuid @map("skill_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  job         DirectJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill       Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, skillId])
+  @@map("direct_job_skills")
+}
+
+enum ExperienceLevelEnum {
+  ENTRY        // 0-1 years
+  JUNIOR       // 1-2 years
+  MID          // 2-4 years
+  SENIOR       // 4-6 years
+  LEAD         // 6+ years
+  MANAGER      // 8+ years
+}
+
+enum DirectJobStatusEnum {
+  DRAFT
+  PUBLISHED
+  PAUSED
+  CLOSED
+  FILLED
 }
 
 enum CvParseStatusEnum {
