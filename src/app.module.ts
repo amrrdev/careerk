@@ -12,6 +12,7 @@ import { EmailModule } from './infrastructure/email/email.module';
 import { QueueModule } from './infrastructure/queue/queue.module';
 import { CvModule } from './modules/cv/cv.module';
 import { CvStorageModule } from './infrastructure/cv-storage/cv-storage.module';
+import { JobModule } from './modules/jobs/job.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CvStorageModule } from './infrastructure/cv-storage/cv-storage.module';
     InfrastructureModule,
     JobSeekerModule,
     CompanyModule,
+    JobModule,
     IamModule,
     RedisModule,
     EmailModule,
