@@ -105,6 +105,20 @@
               "docs/api-reference/skills/add-skills",
               "docs/api-reference/skills/delete-skill"
             ]
+          },
+          {
+            "group": "Direct Jobs",
+            "pages": [
+              "docs/api-reference/direct-jobs/introduction",
+              "docs/api-reference/direct-jobs/get-all-jobs",
+              "docs/api-reference/direct-jobs/create-job",
+              "docs/api-reference/direct-jobs/get-job-by-id",
+              "docs/api-reference/direct-jobs/update-job",
+              "docs/api-reference/direct-jobs/delete-job",
+              "docs/api-reference/direct-jobs/publish-job",
+              "docs/api-reference/direct-jobs/pause-job",
+              "docs/api-reference/direct-jobs/close-job"
+            ]
           }
         ]
       }

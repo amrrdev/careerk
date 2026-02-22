@@ -1,0 +1,179 @@
+---
+title: 'Get All Jobs'
+api: 'GET /api/v1/companies/me/jobs'
+description: 'Retrieve all job postings for the authenticated company'
+---
+
+## Endpoint
+
+```
+GET /api/v1/companies/me/jobs
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Retrieve all job postings for the authenticated company. Results are ordered by creation date (most recent first).
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "6cc9f0af-10c0-4998-b252-fc6c52394759",
+      "title": "Backend Engineer",
+      "description": "Job Description",
+      "requirements": null,
+      "responsibilities": null,
+      "location": null,
+      "salaryMin": null,
+      "salaryMax": null,
+      "jobType": "FULL_TIME",
+      "workPreference": "REMOTE",
+      "experienceLevel": "MID",
+      "status": "PUBLISHED",
+      "deadline": null,
+      "publishedAt": "2026-02-22T14:51:00.000Z",
+      "company": {
+        "id": "8cfee915-6e24-4741-9493-fd5680743a84",
+        "name": "Tech Corp",
+        "logoUrl": null
+      },
+      "skills": [
+        {
+          "skillId": "1d1d1d93-c910-47e3-b2ff-5f5bc2ce0541",
+          "name": "Node.js"
+        }
+      ]
+    }
+  ],
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the job.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Job title.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Job description.
+</ResponseField>
+
+<ResponseField name="requirements" type="string | null">
+  Job requirements.
+</ResponseField>
+
+<ResponseField name="responsibilities" type="string | null">
+  Job responsibilities.
+</ResponseField>
+
+<ResponseField name="location" type="string | null">
+  Job location.
+</ResponseField>
+
+<ResponseField name="salaryMin" type="number | null">
+  Minimum salary.
+</ResponseField>
+
+<ResponseField name="salaryMax" type="number | null">
+  Maximum salary.
+</ResponseField>
+
+<ResponseField name="jobType" type="enum">
+  Employment type. Values: `FULL_TIME`, `PART_TIME`, `CONTRACT`, `FREELANCE`, `INTERNSHIP`
+</ResponseField>
+
+<ResponseField name="workPreference" type="enum">
+  Work arrangement. Values: `ONSITE`, `REMOTE`, `HYBRID`, `ANY`
+</ResponseField>
+
+<ResponseField name="experienceLevel" type="enum">
+  Required experience level. Values: `ENTRY`, `JUNIOR`, `MID`, `SENIOR`, `LEAD`, `MANAGER`
+</ResponseField>
+
+<ResponseField name="status" type="enum">
+  Job status. Values: `DRAFT`, `PUBLISHED`, `PAUSED`, `CLOSED`
+</ResponseField>
+
+<ResponseField name="deadline" type="string | null">
+  Application deadline (ISO 8601 format).
+</ResponseField>
+
+<ResponseField name="publishedAt" type="string | null">
+  When the job was published (ISO 8601 format).
+</ResponseField>
+
+<ResponseField name="company" type="object">
+  Company information.
+</ResponseField>
+
+<ResponseField name="skills" type="array">
+  Array of skill objects with skillId and name.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs",
+    "method": "GET"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Company
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs",
+    "method": "GET"
+  }
+}
+```
+
+## Notes
+
+<Info>**Empty Array**: If no jobs exist, an empty array is returned.</Info>
+
+<Tip>
+  **Sorting**: Results are automatically sorted by creation date in descending order (most recent
+  first).
+</Tip>

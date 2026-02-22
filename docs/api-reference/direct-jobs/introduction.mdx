@@ -1,0 +1,91 @@
+---
+title: Introduction
+description: 'Direct Jobs API - Manage company job postings'
+---
+
+# Direct Jobs API
+
+The Direct Jobs API provides endpoints for companies to manage their job postings on the platform.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Endpoints Overview
+
+| Method | Endpoint                             | Description     | Auth Required |
+| ------ | ------------------------------------ | --------------- | ------------- |
+| GET    | `/companies/me/jobs`                 | Get all jobs    | Yes (Company) |
+| POST   | `/companies/me/jobs`                 | Create new job  | Yes (Company) |
+| GET    | `/companies/me/jobs/{jobId}`         | Get job details | Yes (Company) |
+| PATCH  | `/companies/me/jobs/{jobId}`         | Update job      | Yes (Company) |
+| DELETE | `/companies/me/jobs/{jobId}`         | Delete job      | Yes (Company) |
+| POST   | `/companies/me/jobs/{jobId}/publish` | Publish job     | Yes (Company) |
+| POST   | `/companies/me/jobs/{jobId}/pause`   | Pause job       | Yes (Company) |
+| POST   | `/companies/me/jobs/{jobId}/close`   | Close job       | Yes (Company) |
+
+## Job Status Flow
+
+```
+DRAFT ──► PUBLISHED ──► PAUSED ──► CLOSED
+   │              │             │
+   │              │             └── Final (cannot reopen)
+   │              │
+   │              └── Can revert to PUBLISHED
+   │
+   └── Can publish anytime
+```
+
+## Job Statuses
+
+| Status      | Description                      | Can Candidates Apply? |
+| ----------- | -------------------------------- | --------------------- |
+| `DRAFT`     | Not visible yet                  | No                    |
+| `PUBLISHED` | Live on platform                 | Yes                   |
+| `PAUSED`    | Temporarily hidden               | No                    |
+| `CLOSED`    | No longer accepting applications | No                    |
+
+## Enums
+
+### Job Type
+
+| Value        | Description        |
+| ------------ | ------------------ |
+| `FULL_TIME`  | Full-time position |
+| `PART_TIME`  | Part-time position |
+| `CONTRACT`   | Contract position  |
+| `FREELANCE`  | Freelance position |
+| `INTERNSHIP` | Internship         |
+
+### Work Preference
+
+| Value    | Description         |
+| -------- | ------------------- |
+| `ONSITE` | Work from office    |
+| `REMOTE` | Work from home      |
+| `HYBRID` | Combination of both |
+| `ANY`    | No preference       |
+
+### Experience Level
+
+| Value     | Description          |
+| --------- | -------------------- |
+| `ENTRY`   | 0-1 years experience |
+| `JUNIOR`  | 1-2 years experience |
+| `MID`     | 2-4 years experience |
+| `SENIOR`  | 4-6 years experience |
+| `LEAD`    | 6+ years experience  |
+| `MANAGER` | 8+ years experience  |
+
+### Job Status
+
+| Value       | Description                            |
+| ----------- | -------------------------------------- |
+| `DRAFT`     | Job is being created/edited            |
+| `PUBLISHED` | Job is live and accepting applications |
+| `PAUSED`    | Job is temporarily hidden              |
+| `CLOSED`    | Job is closed (final)                  |
+
+See detailed documentation for each endpoint in the API Reference section.

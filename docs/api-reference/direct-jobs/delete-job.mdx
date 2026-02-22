@@ -1,0 +1,82 @@
+---
+title: 'Delete Job'
+api: 'DELETE /api/v1/companies/me/jobs/{jobId}'
+description: 'Delete a job posting'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/companies/me/jobs/{jobId}
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Path Parameters
+
+<ParamField name="jobId" type="string" required>
+  The UUID of the job to delete.
+</ParamField>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": null,
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}",
+    "method": "DELETE"
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Job Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Record not found",
+    "statusCode": 400,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}",
+    "method": "DELETE"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}",
+    "method": "DELETE"
+  }
+}
+```
+
+## Notes
+
+<Warning>This action cannot be undone. All applications for this job will also be deleted.</Warning>

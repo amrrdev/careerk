@@ -1,0 +1,187 @@
+---
+title: 'Create Job'
+api: 'POST /api/v1/companies/me/jobs'
+description: 'Create a new job posting for the authenticated company'
+---
+
+## Endpoint
+
+```
+POST /api/v1/companies/me/jobs
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Create a new job posting. The job is created with `DRAFT` status by default. Use the publish endpoint to make it live.
+
+## Request Body
+
+```json
+{
+  "title": "Senior Backend Engineer",
+  "description": "We are looking for an experienced backend engineer...",
+  "requirements": "5+ years experience in Node.js",
+  "responsibilities": "Design and implement APIs",
+  "location": "Cairo, Egypt",
+  "salaryMin": 15000,
+  "salaryMax": 25000,
+  "jobType": "FULL_TIME",
+  "workPreference": "REMOTE",
+  "experienceLevel": "SENIOR",
+  "deadline": "2026-03-15",
+  "skillNames": ["Node.js", "TypeScript", "PostgreSQL"]
+}
+```
+
+### Request Fields
+
+<ParamField name="title" type="string" required>
+  Job title.
+</ParamField>
+
+<ParamField name="description" type="string" required>
+  Full job description.
+</ParamField>
+
+<ParamField name="requirements" type="string" optional>
+  Job requirements.
+</ParamField>
+
+<ParamField name="responsibilities" type="string" optional>
+  Job responsibilities.
+</ParamField>
+
+<ParamField name="location" type="string" optional>
+  Job location.
+</ParamField>
+
+<ParamField name="salaryMin" type="number" optional>
+  Minimum salary.
+</ParamField>
+
+<ParamField name="salaryMax" type="number" optional>
+  Maximum salary.
+</ParamField>
+
+<ParamField name="jobType" type="enum" required>
+  Employment type. Values: `FULL_TIME`, `PART_TIME`, `CONTRACT`, `FREELANCE`, `INTERNSHIP`
+</ParamField>
+
+<ParamField name="workPreference" type="enum" required>
+  Work arrangement. Values: `ONSITE`, `REMOTE`, `HYBRID`, `ANY`
+</ParamField>
+
+<ParamField name="experienceLevel" type="enum" required>
+  Required experience level. Values: `ENTRY`, `JUNIOR`, `MID`, `SENIOR`, `LEAD`, `MANAGER`
+</ParamField>
+
+<ParamField name="deadline" type="string" optional>
+  Application deadline in ISO 8601 format (YYYY-MM-DD).
+</ParamField>
+
+<ParamField name="skillNames" type="string[]" optional>
+  Array of skill names. Skills will be created if they don't exist.
+</ParamField>
+
+## Response
+
+### Success Response (201 Created)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "6cc9f0af-10c0-4998-b252-fc6c52394759",
+    "title": "Senior Backend Engineer",
+    "description": "We are looking for an experienced backend engineer...",
+    "requirements": "5+ years experience in Node.js",
+    "responsibilities": "Design and implement APIs",
+    "location": "Cairo, Egypt",
+    "salaryMin": 15000,
+    "salaryMax": 25000,
+    "jobType": "FULL_TIME",
+    "workPreference": "REMOTE",
+    "experienceLevel": "SENIOR",
+    "status": "DRAFT",
+    "deadline": "2026-03-15T00:00:00.000Z",
+    "publishedAt": null,
+    "company": {
+      "id": "8cfee915-6e24-4741-9493-fd5680743a84",
+      "name": "Tech Corp",
+      "logoUrl": null
+    },
+    "skills": [
+      {
+        "skillId": "1d1d1d93-c910-47e3-b2ff-5f5bc2ce0541",
+        "name": "Node.js"
+      },
+      {
+        "skillId": "2d2d2d93-c910-47e3-b2ff-5f5bc2ce0542",
+        "name": "TypeScript"
+      }
+    ]
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs",
+    "method": "POST"
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "title must be a string",
+    "statusCode": 400,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs",
+    "method": "POST"
+  }
+}
+```
+
+## Notes
+
+<Tip>
+  **Skill Creation**: When providing skillNames, new skills will be automatically created in the
+  platform if they don't exist.
+</Tip>
+
+<Tip>
+  **Initial Status**: Jobs are created with `DRAFT` status. Use `POST /companies/me/jobs/{jobId}
+  /publish` to make the job live.
+</Tip>

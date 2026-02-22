@@ -1,0 +1,129 @@
+---
+title: 'Publish Job'
+api: 'POST /api/v1/companies/me/jobs/{jobId}/publish'
+description: 'Publish a job posting to make it live'
+---
+
+## Endpoint
+
+```
+POST /api/v1/companies/me/jobs/{jobId}/publish
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Publish a job posting to make it visible on the platform. Candidates can apply to published jobs.
+
+## Path Parameters
+
+<ParamField name="jobId" type="string" required>
+  The UUID of the job to publish.
+</ParamField>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "6cc9f0af-10c0-4998-b252-fc6c52394759",
+    "title": "Backend Engineer",
+    "description": "Job Description",
+    "requirements": null,
+    "responsibilities": null,
+    "location": null,
+    "salaryMin": null,
+    "salaryMax": null,
+    "jobType": "FULL_TIME",
+    "workPreference": "REMOTE",
+    "experienceLevel": "MID",
+    "status": "PUBLISHED",
+    "deadline": null,
+    "publishedAt": "2026-02-22T15:01:00.000Z",
+    "company": {
+      "id": "8cfee915-6e24-4741-9493-fd5680743a84",
+      "name": "Tech Corp",
+      "logoUrl": null
+    },
+    "skills": [
+      {
+        "skillId": "1d1d1d93-c910-47e3-b2ff-5f5bc2ce0541",
+        "name": "Node.js"
+      }
+    ]
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/publish",
+    "method": "POST"
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Job Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Record not found",
+    "statusCode": 400,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/publish",
+    "method": "POST"
+  }
+}
+```
+
+### 400 Bad Request - Invalid Status
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Only draft or paused jobs can be published",
+    "statusCode": 400,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/publish",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/publish",
+    "method": "POST"
+  }
+}
+```
+
+## Notes
+
+<Info>You can publish jobs with status `DRAFT` or `PAUSED`.</Info>
+
+<Tip>**Reverting**: You can pause a published job and publish it again later.</Tip>
