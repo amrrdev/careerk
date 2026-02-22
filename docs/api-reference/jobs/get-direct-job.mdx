@@ -1,0 +1,137 @@
+---
+title: 'Get Direct Job By ID'
+api: 'GET /api/v1/jobs/direct/{jobId}'
+description: 'Get a specific direct (platform) job by ID'
+---
+
+## Endpoint
+
+```
+GET /api/v1/jobs/direct/{jobId}
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint is **public** - no authentication required.</Note>
+
+## Path Parameters
+
+<ParamField name="jobId" type="string" required>
+  The UUID of the direct job.
+</ParamField>
+
+## Response (200 OK)
+
+```json
+{
+  "id": "6cc9f0af-10c0-4998-b252-fc6c52394759",
+  "title": "Senior Backend Engineer",
+  "description": "We are looking for an experienced backend engineer...",
+  "requirements": "5+ years experience in Node.js",
+  "responsibilities": "Design and implement APIs, mentor junior developers",
+  "location": "Cairo, Egypt",
+  "salaryMin": 15000,
+  "salaryMax": 25000,
+  "jobType": "FULL_TIME",
+  "workPreference": "REMOTE",
+  "experienceLevel": "SENIOR",
+  "companyName": "Tech Corp",
+  "companyLogoUrl": null,
+  "postedAt": "2026-02-22T14:51:00.000Z",
+  "source": "direct",
+  "skills": [
+    { "skillId": "uuid1", "name": "Node.js" },
+    { "skillId": "uuid2", "name": "TypeScript" },
+    { "skillId": "uuid3", "name": "PostgreSQL" }
+  ]
+}
+```
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the job.
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  Job title.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Full job description.
+</ResponseField>
+
+<ResponseField name="requirements" type="string | null">
+  Job requirements.
+</ResponseField>
+
+<ResponseField name="responsibilities" type="string | null">
+  Job responsibilities.
+</ResponseField>
+
+<ResponseField name="location" type="string | null">
+  Job location.
+</ResponseField>
+
+<ResponseField name="salaryMin" type="number | null">
+  Minimum salary.
+</ResponseField>
+
+<ResponseField name="salaryMax" type="number | null">
+  Maximum salary.
+</ResponseField>
+
+<ResponseField name="jobType" type="enum">
+  Employment type. Values: `FULL_TIME`, `PART_TIME`, `CONTRACT`, `FREELANCE`, `INTERNSHIP`
+</ResponseField>
+
+<ResponseField name="workPreference" type="enum">
+  Work arrangement. Values: `ONSITE`, `REMOTE`, `HYBRID`, `ANY`
+</ResponseField>
+
+<ResponseField name="experienceLevel" type="enum | null">
+  Required experience level. Values: `ENTRY`, `JUNIOR`, `MID`, `SENIOR`, `LEAD`, `MANAGER`
+</ResponseField>
+
+<ResponseField name="companyName" type="string | null">
+  Company name.
+</ResponseField>
+
+<ResponseField name="companyLogoUrl" type="string | null">
+  Company logo URL.
+</ResponseField>
+
+<ResponseField name="postedAt" type="string | null">
+  When the job was published.
+</ResponseField>
+
+<ResponseField name="source" type="string">
+  Always `direct` for this endpoint.
+</ResponseField>
+
+<ResponseField name="skills" type="array">
+  Array of skill objects with skillId and name.
+</ResponseField>
+
+## Error Responses
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Job not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/direct/{jobId}",
+    "method": "GET"
+  }
+}
+```
+
+## Example
+
+```
+GET /api/v1/jobs/direct/6cc9f0af-10c0-4998-b252-fc6c52394759
+```

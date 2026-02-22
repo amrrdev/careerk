@@ -1,0 +1,64 @@
+---
+title: Get Scraped Job
+description: Retrieve a single scraped job by ID
+---
+
+import { ApiEndpoint } from '@site/src/components/ApiEndpoint';
+import { Response } from '@site/src/components/Response';
+import { CodeBlock } from '@site/src/components/CodeBlock';
+
+<ApiEndpoint method="GET" path="/api/v1/jobs/scraped/:id" />
+
+Retrieve a single scraped job from external sources by its unique identifier.
+
+## Path Parameters
+
+| Parameter | Type   | Description                              |
+| --------- | ------ | ---------------------------------------- |
+| id        | string | The unique identifier of the scraped job |
+
+## Response
+
+<Response status={200}>
+
+```json
+{
+  "id": "scr_1234567890",
+  "title": "Senior Software Engineer",
+  "companyName": "Tech Corp",
+  "description": "We are looking for a senior software engineer...",
+  "url": "https://example.com/jobs/123",
+  "postedDate": "2024-01-15T10:00:00Z",
+  "location": "Remote",
+  "salary": "$120,000 - $150,000 per year"
+}
+```
+
+</Response>
+
+## Response Fields
+
+| Field       | Type   | Description                             |
+| ----------- | ------ | --------------------------------------- |
+| id          | string | Unique identifier for the scraped job   |
+| title       | string | Job title                               |
+| companyName | string | Name of the company posting the job     |
+| description | string | Full job description                    |
+| url         | string | Direct link to the original job posting |
+| postedDate  | string | Date when the job was posted (ISO 8601) |
+| location    | string | Job location                            |
+| salary      | string | Salary range (as reported by source)    |
+
+## Error Responses
+
+<Response status={404}>
+
+```json
+{
+  "statusCode": 404,
+  "message": "Scraped job not found",
+  "error": "Not Found"
+}
+```
+
+</Response>

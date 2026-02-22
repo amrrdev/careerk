@@ -1,0 +1,175 @@
+---
+title: 'Get All Jobs'
+api: 'GET /api/v1/jobs'
+description: 'List all jobs with optional filters and pagination'
+---
+
+## Endpoint
+
+```
+GET /api/v1/jobs
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint is **public** - no authentication required.</Note>
+
+## Query Parameters
+
+<ParamField name="source" type="string" optional>
+  Filter by job source. Values: `direct`, `scraped`, `all`. Default: `all`
+</ParamField>
+
+<ParamField name="page" type="number" optional>
+  Page number. Default: 1
+</ParamField>
+
+<ParamField name="limit" type="number" optional>
+  Results per page. Default: 20, Max: 100
+</ParamField>
+
+<ParamField name="search" type="string" optional>
+  Search in job title and description.
+</ParamField>
+
+<ParamField name="jobType" type="enum" optional>
+  Filter by job type. Values: `FULL_TIME`, `PART_TIME`, `CONTRACT`, `FREELANCE`, `INTERNSHIP`
+</ParamField>
+
+<ParamField name="workPreference" type="enum" optional>
+  Filter by work preference (direct jobs only). Values: `ONSITE`, `REMOTE`, `HYBRID`, `ANY`
+</ParamField>
+
+<ParamField name="location" type="string" optional>
+  Filter by location.
+</ParamField>
+
+<ParamField name="experienceLevel" type="enum" optional>
+  Filter by experience level (direct jobs only). Values: `ENTRY`, `JUNIOR`, `MID`, `SENIOR`, `LEAD`,
+  `MANAGER`
+</ParamField>
+
+<ParamField name="salaryMin" type="number" optional>
+  Minimum salary (direct jobs only).
+</ParamField>
+
+<ParamField name="salaryMax" type="number" optional>
+  Maximum salary (direct jobs only).
+</ParamField>
+
+## Response - Direct Jobs
+
+```json
+{
+  "jobs": [
+    {
+      "id": "uuid",
+      "title": "Senior Backend Engineer",
+      "description": "We are looking for...",
+      "requirements": "5+ years experience",
+      "responsibilities": "Design APIs",
+      "location": "Cairo, Egypt",
+      "salaryMin": 15000,
+      "salaryMax": 25000,
+      "jobType": "FULL_TIME",
+      "workPreference": "REMOTE",
+      "experienceLevel": "SENIOR",
+      "companyName": "Tech Corp",
+      "companyLogoUrl": null,
+      "postedAt": "2026-02-22T14:51:00.000Z",
+      "source": "direct",
+      "skills": [{ "skillId": "uuid", "name": "Node.js" }]
+    }
+  ],
+  "total": 50,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 3
+}
+```
+
+## Response - Scraped Jobs
+
+```json
+{
+  "jobs": [
+    {
+      "id": "uuid",
+      "title": "Frontend Developer",
+      "description": "Join our team...",
+      "location": "Remote",
+      "salary": "5000-8000 EGP",
+      "jobType": "FULL_TIME",
+      "companyName": "External Corp",
+      "sourceUrl": "https://linkedin.com/jobs/...",
+      "postedAt": "2026-02-20T10:00:00.000Z",
+      "source": "scraped",
+      "skills": [{ "skillId": "uuid", "name": "React" }]
+    }
+  ],
+  "total": 100,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 5
+}
+```
+
+## Response Fields
+
+<ResponseField name="jobs" type="array">
+  Array of jobs. Shape varies based on source.
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Total number of jobs matching the query.
+</ResponseField>
+
+<ResponseField name="page" type="number">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="limit" type="number">
+  Results per page.
+</ResponseField>
+
+<ResponseField name="totalPages" type="number">
+  Total number of pages.
+</ResponseField>
+
+## Examples
+
+### Get all jobs
+
+```
+GET /api/v1/jobs
+```
+
+### Get only direct jobs
+
+```
+GET /api/v1/jobs?source=direct
+```
+
+### Get only scraped jobs
+
+```
+GET /api/v1/jobs?source=scraped
+```
+
+### Filter by job type and location
+
+```
+GET /api/v1/jobs?jobType=FULL_TIME&location=Cairo
+```
+
+### Pagination
+
+```
+GET /api/v1/jobs?page=2&limit=10
+```
+
+### Search
+
+```
+GET /api/v1/jobs?search=backend
+```

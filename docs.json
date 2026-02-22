@@ -119,6 +119,15 @@
               "docs/api-reference/direct-jobs/pause-job",
               "docs/api-reference/direct-jobs/close-job"
             ]
+          },
+          {
+            "group": "Jobs",
+            "pages": [
+              "docs/api-reference/jobs/introduction",
+              "docs/api-reference/jobs/get-all-jobs",
+              "docs/api-reference/jobs/get-direct-job",
+              "docs/api-reference/jobs/get-scraped-job"
+            ]
           }
         ]
       }
