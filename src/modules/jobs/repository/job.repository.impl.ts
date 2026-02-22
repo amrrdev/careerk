@@ -1,8 +1,13 @@
-import { Prisma } from 'generated/prisma/client';
+import { JobSourceEnum, Prisma } from 'generated/prisma/client';
 import { DirectJob, ScrapedJob, PaginatedJobs, JobFilters } from '../types/jobs.types';
 import { JobRepository } from './job.repository';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
 import { Injectable } from '@nestjs/common';
+import {
+  CreateBookmarkData,
+  bookmarkWithDetailsSelect,
+  BookmarkWithDetails,
+} from '../types/bookmark.types';
 
 @Injectable()
 export class JobRepositoryImpl implements JobRepository {
@@ -10,6 +15,41 @@ export class JobRepositoryImpl implements JobRepository {
   private readonly COMPANY_SELECT = { select: { name: true, logoUrl: true } };
 
   constructor(private readonly databaseService: DatabaseService) {}
+
+  async createBookmark(jobSeekerId: string, data: CreateBookmarkData): Promise<{ id: string }> {
+    return this.databaseService.jobBookmark.upsert({
+      where: {
+        jobSeekerId_jobId_jobSource: {
+          jobSeekerId,
+          jobId: data.jobId,
+          jobSource: data.jobSource,
+        },
+      },
+      create: { ...data, jobSeekerId },
+      update: {},
+      select: { id: true },
+    });
+  }
+
+  async deleteBookmark(jobSeekerId: string, bookmarkId: string): Promise<void> {
+    await this.databaseService.jobBookmark.deleteMany({
+      where: { id: bookmarkId, jobSeekerId },
+    });
+  }
+
+  async findBookmarksByJobSeeker(jobSeekerId: string): Promise<BookmarkWithDetails[]> {
+    return this.databaseService.jobBookmark.findMany({
+      where: { jobSeekerId },
+      ...bookmarkWithDetailsSelect,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async deleteBookmarksByJobId(jobId: string, source: JobSourceEnum): Promise<void> {
+    await this.databaseService.jobBookmark.deleteMany({
+      where: { jobId, jobSource: source },
+    });
+  }
 
   async findPublishedDirectJobs(filters: JobFilters): Promise<PaginatedJobs> {
     const {

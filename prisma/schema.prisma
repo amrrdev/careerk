@@ -36,6 +36,7 @@ model JobSeeker {
   jobSeekerSkills JobSeekerSkill[]
   cv CV?
   cvParseResult   CvParseResult?
+  jobBookmarks    JobBookmark[]
 
   @@index([isActive])
   @@map("job_seekers")
@@ -287,6 +288,28 @@ model DirectJobSkill {
   @@unique([jobId, skillId])
   @@map("direct_job_skills")
 }
+
+
+model JobBookmark {
+  id          String   @id @default(uuid()) @db.Uuid
+  jobSeekerId String   @db.Uuid @map("job_seeker_id")
+  jobId       String   @db.Uuid @map("job_id")
+  jobSource   JobSourceEnum @map("job_source")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  jobSeeker   JobSeeker @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@unique([jobSeekerId, jobId, jobSource])
+  @@index([jobSeekerId])
+  @@map("job_bookmarks")
+}
+
+enum JobSourceEnum {
+  DIRECT
+  SCRAPED
+}
+
 
 enum ExperienceLevelEnum {
   ENTRY        // 0-1 years
