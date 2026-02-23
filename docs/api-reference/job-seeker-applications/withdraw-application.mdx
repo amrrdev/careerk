@@ -1,0 +1,49 @@
+---
+title: 'Withdraw Application'
+api: 'DELETE /api/v1/job-seekers/me/applications/:id'
+description: 'Withdraw from a job application'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/job-seekers/me/applications/:id
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Job Seeker authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique identifier of the application to withdraw (UUID).
+</ParamField>
+
+## Description
+
+This endpoint withdraws the application from a job. The application status will be changed to `WITHDRAWN`. This action cannot be undone.
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": null,
+  "message": "Application withdrawn successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+
+<Error statusCode="404">Application not found</Error>
+
+<Error statusCode="500">Internal server error</Error>

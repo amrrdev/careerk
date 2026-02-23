@@ -1,0 +1,59 @@
+---
+title: 'Get My Company Profile'
+api: 'GET /api/v1/companies/me'
+description: 'Retrieve the authenticated company profile'
+---
+
+## Endpoint
+
+```
+GET /api/v1/companies/me
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Company authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "email": "company@example.com",
+    "name": "Tech Corp",
+    "description": "A leading technology company",
+    "logoUrl": "https://...",
+    "coverUrl": "https://...",
+    "industry": "Technology",
+    "size": "SIZE_201_1000",
+    "type": "ENTERPRISE",
+    "headquartersLocation": "Cairo, Egypt",
+    "foundedYear": 2015,
+    "websiteUrl": "https://techcorp.com",
+    "benefits": "Health insurance, remote work",
+    "linkedIn": "https://linkedin.com/company/techcorp",
+    "facebook": "https://facebook.com/techcorp",
+    "twitter": "https://twitter.com/techcorp",
+    "isVerified": true,
+    "createdAt": "2025-01-15T10:00:00Z",
+    "updatedAt": "2025-02-20T15:30:00Z"
+  },
+  "message": "Company profile retrieved successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+
+<Error statusCode="404">Company not found</Error>
+
+<Error statusCode="500">Internal server error</Error>

@@ -1,0 +1,65 @@
+---
+title: 'Get Company By ID'
+api: 'GET /api/v1/companies/:id'
+description: 'Retrieve a specific company profile by ID'
+---
+
+## Endpoint
+
+```
+GET /api/v1/companies/:id
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint is **public** and does not require authentication.</Note>
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique identifier of the company (UUID).
+</ParamField>
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "name": "Tech Corp",
+    "description": "A leading technology company",
+    "logoUrl": "https://...",
+    "coverUrl": "https://...",
+    "industry": "Technology",
+    "size": "SIZE_201_1000",
+    "type": "ENTERPRISE",
+    "headquartersLocation": "Cairo, Egypt",
+    "foundedYear": 2015,
+    "websiteUrl": "https://techcorp.com",
+    "benefits": "Health insurance, remote work",
+    "linkedIn": "https://linkedin.com/company/techcorp",
+    "facebook": "https://facebook.com/techcorp",
+    "twitter": "https://twitter.com/techcorp",
+    "createdAt": "2025-01-15T10:00:00Z",
+    "directJobs": [
+      {
+        "id": "uuid",
+        "title": "Software Engineer",
+        "location": "Cairo, Egypt",
+        "jobType": "FULL_TIME",
+        "workPreference": "HYBRID",
+        "experienceLevel": "MID",
+        "status": "PUBLISHED"
+      }
+    ]
+  },
+  "message": "Company profile retrieved successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="404">Company not found</Error>
+
+<Error statusCode="500">Internal server error</Error>

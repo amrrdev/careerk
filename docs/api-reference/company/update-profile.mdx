@@ -1,0 +1,122 @@
+---
+title: 'Update Company Profile'
+api: 'PATCH /api/v1/companies/me'
+description: 'Update the authenticated company profile'
+---
+
+## Endpoint
+
+```
+PATCH /api/v1/companies/me
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Company authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Request Body
+
+<ParamField body="name" type="string" optional>
+  Company name.
+</ParamField>
+
+<ParamField body="description" type="string" optional>
+  Company description.
+</ParamField>
+
+<ParamField body="websiteUrl" type="string" optional>
+  Company website URL.
+</ParamField>
+
+<ParamField body="phone" type="string" optional>
+  Contact phone number.
+</ParamField>
+
+<ParamField body="logoUrl" type="string" optional>
+  Logo image URL.
+</ParamField>
+
+<ParamField body="coverUrl" type="string" optional>
+  Cover image URL.
+</ParamField>
+
+<ParamField body="industry" type="string" optional>
+  Industry (e.g., "Technology", "Healthcare", "Finance").
+</ParamField>
+
+<ParamField body="size" type="enum" optional>
+  Company size. - `SIZE_1_50` - `SIZE_51_200` - `SIZE_201_1000` - `SIZE_1000_PLUS`
+</ParamField>
+
+<ParamField body="type" type="enum" optional>
+  Company type. - `STARTUP` - `SCALE_UP` - `ENTERPRISE` - `NON_PROFIT` - `GOVERNMENT`
+</ParamField>
+
+<ParamField body="headquartersLocation" type="string" optional>
+  Headquarters location.
+</ParamField>
+
+<ParamField body="foundedYear" type="number" optional>
+  Year the company was founded.
+</ParamField>
+
+<ParamField body="benefits" type="string" optional>
+  Company benefits description.
+</ParamField>
+
+<ParamField body="linkedIn" type="string" optional>
+  LinkedIn company URL.
+</ParamField>
+
+<ParamField body="facebook" type="string" optional>
+  Facebook page URL.
+</ParamField>
+
+<ParamField body="twitter" type="string" optional>
+  Twitter profile URL.
+</ParamField>
+
+## Example Request
+
+```json
+{
+  "name": "Tech Corp Updated",
+  "description": "Updated description",
+  "industry": "Software",
+  "size": "SIZE_51_200"
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "email": "company@example.com",
+    "name": "Tech Corp Updated",
+    "description": "Updated description",
+    "industry": "Software",
+    "size": "SIZE_51_200",
+    ...
+  },
+  "message": "Company profile updated successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="400">Invalid request body or validation error</Error>
+
+<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+
+<Error statusCode="404">Company not found</Error>
+
+<Error statusCode="500">Internal server error</Error>

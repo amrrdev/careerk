@@ -1,0 +1,72 @@
+---
+title: 'Update Application Status'
+api: 'PATCH /api/v1/companies/me/applications/:id'
+description: 'Update the status of a job application'
+---
+
+## Endpoint
+
+```
+PATCH /api/v1/companies/me/applications/:id
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Company authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique identifier of the application (UUID).
+</ParamField>
+
+## Request Body
+
+<ParamField body="status" type="enum" required>
+  The new status for the application. - `REVIEWED` - Mark as reviewed - `SHORTLISTED` - Add to
+  shortlist - `INTERVIEW_SCHEDULED` - Schedule interview - `REJECTED` - Reject application - `HIRED`
+  - Hire candidate
+</ParamField>
+
+<ParamField body="notes" type="string" optional>
+  Optional notes or feedback about the application.
+</ParamField>
+
+## Example Request
+
+```json
+{
+  "status": "SHORTLISTED",
+  "notes": "Strong technical skills, scheduled for technical interview"
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "status": "SHORTLISTED",
+    "updatedAt": "2025-02-21T14:30:00Z"
+  },
+  "message": "Application status updated successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="400">Invalid status or validation error</Error>
+
+<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+
+<Error statusCode="404">Application not found</Error>
+
+<Error statusCode="500">Internal server error</Error>

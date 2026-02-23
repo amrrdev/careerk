@@ -1,0 +1,59 @@
+---
+title: 'Apply to Job'
+api: 'POST /api/v1/job-seekers/me/applications'
+description: 'Apply to a job posting'
+---
+
+## Endpoint
+
+```
+POST /api/v1/job-seekers/me/applications
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Job Seeker authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Request Body
+
+<ParamField body="jobId" type="string" required>
+  The unique identifier of the job to apply for (UUID).
+</ParamField>
+
+## Example Request
+
+```json
+{
+  "jobId": "uuid-of-the-job"
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid"
+  },
+  "message": "Application submitted successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="400">Invalid request - Job ID is required or already applied</Error>
+
+<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+
+<Error statusCode="404">Job not found</Error>
+
+<Error statusCode="409">Conflict - Already applied to this job</Error>
+
+<Error statusCode="500">Internal server error</Error>

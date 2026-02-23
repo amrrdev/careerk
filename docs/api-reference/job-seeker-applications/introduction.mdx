@@ -1,0 +1,21 @@
+---
+title: 'Job Seeker Applications API'
+description: 'Endpoints for job seekers to manage their job applications'
+---
+
+## Overview
+
+The Job Seeker Applications API allows job seekers to view and manage their job applications.
+
+## Endpoints
+
+| Method | Endpoint                           | Description           |
+| ------ | ---------------------------------- | --------------------- |
+| GET    | `/job-seekers/me/applications`     | List all applications |
+| POST   | `/job-seekers/me/applications`     | Apply to a job        |
+| GET    | `/job-seekers/me/applications/:id` | Get application by ID |
+| DELETE | `/job-seekers/me/applications/:id` | Withdraw application  |
+
+## Authentication
+
+All endpoints require **Job Seeker authentication**.
