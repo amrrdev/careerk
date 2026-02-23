@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CompanyRepository } from './company.repository';
 import { CreateCompanyData, Company, UpdateCompanyData } from '../types/company.types';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
@@ -8,27 +8,21 @@ export class CompanyRepositoryImpl implements CompanyRepository {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async findByEmailAndUpdatePassword(email: string, password: string): Promise<Company | null> {
-    const company = await this.databaseService.company
+    return this.databaseService.company
       .update({
         where: { email },
         data: { password },
       })
       .catch(() => null);
-
-    if (!company) throw new NotFoundException('Company not found');
-    return company;
   }
 
   async findByEmailAndUpdate(email: string, data: UpdateCompanyData): Promise<Company | null> {
-    const company = await this.databaseService.company
+    return this.databaseService.company
       .update({
         where: { email },
         data,
       })
       .catch(() => null);
-
-    if (!company) throw new NotFoundException('Company not found');
-    return company;
   }
 
   async create(data: CreateCompanyData): Promise<Company> {
@@ -36,15 +30,11 @@ export class CompanyRepositoryImpl implements CompanyRepository {
   }
 
   async findByEmail(email: string): Promise<Company | null> {
-    const company = await this.databaseService.company.findUnique({ where: { email } });
-    if (!company) throw new NotFoundException('Company not found');
-    return company;
+    return this.databaseService.company.findUnique({ where: { email } });
   }
 
   async findById(id: string): Promise<Company | null> {
-    const company = await this.databaseService.company.findUnique({ where: { id } });
-    if (!company) throw new NotFoundException('Company not found');
-    return company;
+    return this.databaseService.company.findUnique({ where: { id } });
   }
 
   async existsByEmail(email: string): Promise<boolean> {
@@ -73,36 +63,27 @@ export class CompanyRepositoryImpl implements CompanyRepository {
   }
 
   async deactivateByEmail(email: string): Promise<{ id: string } | null> {
-    const company = await this.databaseService.company
+    return this.databaseService.company
       .update({
         where: { email },
         data: { isActive: false },
         select: { id: true },
       })
       .catch(() => null);
-
-    if (!company) throw new NotFoundException('Company not found');
-    return company;
   }
 
   async findMyProfile(companyId: string): Promise<Company | null> {
-    const company = await this.databaseService.company.findUnique({
+    return this.databaseService.company.findUnique({
       where: { id: companyId },
     });
-
-    if (!company) throw new NotFoundException('Company not found');
-    return company;
   }
 
   async updateMyProfile(companyId: string, data: UpdateCompanyData): Promise<Company | null> {
-    const company = await this.databaseService.company
+    return this.databaseService.company
       .update({
         where: { id: companyId },
         data,
       })
       .catch(() => null);
-
-    if (!company) throw new NotFoundException('Company not found');
-    return company;
   }
 }
