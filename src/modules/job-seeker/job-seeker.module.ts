@@ -7,9 +7,16 @@ import { JobSeekerRepositoryImpl } from './repositories/job-seeker.repository.im
 import { WorkExperienceModule } from './work-experience/work-experience.module';
 import { EducationModule } from './education/education.module';
 import { SkillsModule } from './skills/skills.module';
+import { JobSeekerApplicationModule } from './application/application.module';
 
 @Module({
-  imports: [DatabaseModule, WorkExperienceModule, EducationModule, SkillsModule],
+  imports: [
+    DatabaseModule,
+    WorkExperienceModule,
+    EducationModule,
+    SkillsModule,
+    JobSeekerApplicationModule,
+  ],
   controllers: [JobSeekerController],
   providers: [
     JobSeekerService,

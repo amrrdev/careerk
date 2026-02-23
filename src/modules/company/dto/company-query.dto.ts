@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { CompanySize, CompanyType } from 'generated/prisma/enums';
 
 export class CompanyQueryDto {
   @IsOptional()
@@ -20,5 +21,24 @@ export class CompanyQueryDto {
 
   @IsOptional()
   @IsString()
-  status?: 'active' | 'inactive';
+  industry?: string;
+
+  @IsOptional()
+  @IsEnum(CompanySize)
+  @IsString()
+  size?: CompanySize;
+
+  @IsOptional()
+  @IsEnum(CompanyType)
+  @IsString()
+  type?: CompanyType;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  isVerified?: boolean;
 }

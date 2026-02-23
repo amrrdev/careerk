@@ -14,14 +14,12 @@ import { ResponseMessage } from 'src/core/decorators/response-message.decorator'
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
-  // GET all companies
   @Get()
   @ResponseMessage('Company profiles retrieved successfully')
   async findAllCompanies(@Query() query: CompanyQueryDto) {
     return this.companyService.findAllCompanies(query);
   }
 
-  // GET my profile
   @Get('/me')
   @Auth(AuthType.Bearer)
   @Roles(UserType.COMPANY)
@@ -30,14 +28,12 @@ export class CompanyController {
     return this.companyService.findMyProfile(companyId);
   }
 
-  // GET company by ID
   @Get(':id')
   @ResponseMessage('Company profile retrieved successfully')
   async findCompanyById(@Param('id') id: string) {
     return this.companyService.findCompanyById(id);
   }
 
-  // DELETE my profile
   @Delete('/me')
   @Auth(AuthType.Bearer)
   @Roles(UserType.COMPANY)
@@ -46,7 +42,6 @@ export class CompanyController {
     return this.companyService.deactivate(email);
   }
 
-  // PATCH my profile
   @Patch('/me')
   @Auth(AuthType.Bearer)
   @Roles(UserType.COMPANY)
