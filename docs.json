@@ -62,6 +62,16 @@
             ]
           },
           {
+            "group": "Job Seeker Applications",
+            "pages": [
+              "docs/api-reference/job-seeker-applications/introduction",
+              "docs/api-reference/job-seeker-applications/get-all-applications",
+              "docs/api-reference/job-seeker-applications/apply-to-job",
+              "docs/api-reference/job-seeker-applications/get-application-by-id",
+              "docs/api-reference/job-seeker-applications/withdraw-application"
+            ]
+          },
+          {
             "group": "CV",
             "pages": [
               "docs/api-reference/cv/introduction",
@@ -107,6 +117,17 @@
             ]
           },
           {
+            "group": "Company",
+            "pages": [
+              "docs/api-reference/company/introduction",
+              "docs/api-reference/company/get-all-companies",
+              "docs/api-reference/company/get-company-by-id",
+              "docs/api-reference/company/get-my-profile",
+              "docs/api-reference/company/update-profile",
+              "docs/api-reference/company/deactivate-account"
+            ]
+          },
+          {
             "group": "Direct Jobs",
             "pages": [
               "docs/api-reference/direct-jobs/introduction",
@@ -118,6 +139,15 @@
               "docs/api-reference/direct-jobs/publish-job",
               "docs/api-reference/direct-jobs/pause-job",
               "docs/api-reference/direct-jobs/close-job"
+            ]
+          },
+          {
+            "group": "Company Applications",
+            "pages": [
+              "docs/api-reference/company-applications/introduction",
+              "docs/api-reference/company-applications/get-all-applications",
+              "docs/api-reference/company-applications/get-application-by-id",
+              "docs/api-reference/company-applications/update-application-status"
             ]
           },
           {
