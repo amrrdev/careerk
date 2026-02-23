@@ -8,7 +8,10 @@ export type Company = Prisma.CompanyGetPayload<object>;
 /**
  * Company without sensitive fields (for public profiles)
  */
-export type PublicCompany = Omit<Company, 'password' | 'isActive' | 'isVerified'>;
+export type PublicCompany = Omit<
+  Company,
+  'password' | 'email' | 'isActive' | 'isVerified' | 'createdAt' | 'updatedAt'
+>;
 
 /**
  * Company creation data
