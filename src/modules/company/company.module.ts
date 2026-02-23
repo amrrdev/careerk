@@ -5,9 +5,10 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CompanyRepository } from './repositories/company.repository';
 import { CompanyRepositoryImpl } from './repositories/company.repository.impl';
 import { DirectJobModule } from './direct-jobs/direct-job.module';
+import { CompanyApplicationModule } from './application/application.module';
 
 @Module({
-  imports: [DatabaseModule, DirectJobModule],
+  imports: [DatabaseModule, DirectJobModule, CompanyApplicationModule],
   controllers: [CompanyController],
   providers: [
     CompanyService,

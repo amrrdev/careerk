@@ -21,5 +21,6 @@ import { CvParseService } from './cv-parse.service';
       useClass: CvRespositoryImpl,
     },
   ],
+  exports: [CvService],
 })
 export class CvModule {}
