@@ -15,5 +15,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
       useClass: JobRepositoryImpl,
     },
   ],
+  exports: [JobRepository],
 })
 export class JobModule {}

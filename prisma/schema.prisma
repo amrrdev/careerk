@@ -37,6 +37,7 @@ model JobSeeker {
   cv CV?
   cvParseResult   CvParseResult?
   jobBookmarks    JobBookmark[]
+  applications Application[]
 
   @@index([isActive])
   @@map("job_seekers")
@@ -270,6 +271,7 @@ model DirectJob {
 
   company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   skills            DirectJobSkill[]
+  applications Application[]
 
   @@index([companyId])
   @@index([status])
@@ -310,6 +312,36 @@ enum JobSourceEnum {
   SCRAPED
 }
 
+
+model Application {
+  id              String                 @id @default(uuid()) @db.Uuid
+  jobSeekerId     String                 @db.Uuid @map("job_seeker_id")
+  directJobId     String                 @db.Uuid @map("direct_job_id")
+
+  status          ApplicationStatusEnum  @default(PENDING)
+  appliedAt       DateTime               @default(now()) @map("applied_at")
+  updatedAt       DateTime               @updatedAt @map("updated_at")
+
+  jobSeeker       JobSeeker              @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+  directJob       DirectJob              @relation(fields: [directJobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobSeekerId, directJobId])
+  @@index([directJobId])
+  @@index([jobSeekerId])
+  @@index([status])
+  @@map("applications")
+
+}
+
+enum ApplicationStatusEnum {
+  PENDING
+  REVIEWED
+  SHORTLISTED
+  INTERVIEW_SCHEDULED
+  REJECTED
+  HIRED
+  WITHDRAWN
+}
 
 enum ExperienceLevelEnum {
   ENTRY        // 0-1 years
