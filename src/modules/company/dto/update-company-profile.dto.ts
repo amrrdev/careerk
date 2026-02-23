@@ -1,5 +1,6 @@
-import { IsOptional, IsString, IsUrl, IsNumber } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CompanySize, CompanyType } from 'generated/prisma/enums';
 
 export class UpdateCompanyProfileDto {
   @IsOptional()
@@ -11,20 +12,34 @@ export class UpdateCompanyProfileDto {
   description?: string;
 
   @IsOptional()
-  @IsUrl()
-  website?: string;
+  @IsString()
+  websiteUrl?: string;
 
   @IsOptional()
   @IsString()
   phone?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   logoUrl?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   coverUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  industry?: string;
+
+  @IsOptional()
+  @IsEnum(CompanySize)
+  @IsString()
+  size?: CompanySize;
+
+  @IsOptional()
+  @IsEnum(CompanyType)
+  @IsString()
+  type?: CompanyType;
 
   @IsOptional()
   @IsString()
@@ -32,7 +47,7 @@ export class UpdateCompanyProfileDto {
 
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsInt()
   foundedYear?: number;
 
   @IsOptional()
@@ -40,14 +55,14 @@ export class UpdateCompanyProfileDto {
   benefits?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   linkedIn?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   facebook?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   twitter?: string;
 }

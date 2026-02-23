@@ -1,28 +1,94 @@
 import { Prisma } from 'generated/prisma/client';
+import { CompanySize, CompanyType } from 'generated/prisma/enums';
 
-/**
- * Base Company type from Prisma
- */
 export type Company = Prisma.CompanyGetPayload<object>;
 
-/**
- * Company without sensitive fields (for public profiles)
- */
 export type PublicCompany = Omit<
   Company,
   'password' | 'email' | 'isActive' | 'isVerified' | 'createdAt' | 'updatedAt'
 >;
 
-/**
- * Company creation data
- */
+export const publicCompanySelect = {
+  select: {
+    id: true,
+    name: true,
+    description: true,
+    logoUrl: true,
+    coverUrl: true,
+    industry: true,
+    size: true,
+    type: true,
+    headquartersLocation: true,
+    foundedYear: true,
+    websiteUrl: true,
+    benefits: true,
+    linkedIn: true,
+    facebook: true,
+    twitter: true,
+  },
+} satisfies Prisma.CompanyDefaultArgs;
 
-// export type CreateCompanyData = Omit<
-//   Company,
-//   'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'isVerified'
-// >;
+export type PublicCompanyListItem = Prisma.CompanyGetPayload<typeof publicCompanySelect>;
 
-// TODO: idk, companies might want to provide them during registration:
+export const publicCompanyDetailsSelect = {
+  select: {
+    id: true,
+    name: true,
+    description: true,
+    logoUrl: true,
+    coverUrl: true,
+    industry: true,
+    size: true,
+    type: true,
+    headquartersLocation: true,
+    foundedYear: true,
+    websiteUrl: true,
+    benefits: true,
+    linkedIn: true,
+    facebook: true,
+    twitter: true,
+    createdAt: true,
+    directJobs: {
+      where: { status: 'PUBLISHED' },
+      select: {
+        id: true,
+        title: true,
+        location: true,
+        jobType: true,
+        workPreference: true,
+        experienceLevel: true,
+        status: true,
+      },
+      take: 5,
+    },
+  },
+} satisfies Prisma.CompanyDefaultArgs;
+
+export type PublicCompanyDetails = Prisma.CompanyGetPayload<typeof publicCompanyDetailsSelect>;
+
+export const myCompanyProfileSelect = {
+  select: {
+    id: true,
+    email: true,
+    name: true,
+    description: true,
+    logoUrl: true,
+    coverUrl: true,
+    industry: true,
+    size: true,
+    type: true,
+    headquartersLocation: true,
+    foundedYear: true,
+    websiteUrl: true,
+    benefits: true,
+    linkedIn: true,
+    facebook: true,
+    twitter: true,
+  },
+} satisfies Prisma.CompanyDefaultArgs;
+
+export type MyCompanyProfile = Prisma.CompanyGetPayload<typeof myCompanyProfileSelect>;
+
 export type CreateCompanyData = Omit<
   Company,
   | 'id'
@@ -42,9 +108,17 @@ export type CreateCompanyData = Omit<
   | 'twitter'
 >;
 
-/**
- * Company update data
- */
 export type UpdateCompanyData = Partial<
   Omit<Company, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt' | 'isActive'>
 >;
+
+export type CompanyFilters = {
+  name?: string;
+  industry?: string;
+  size?: CompanySize;
+  type?: CompanyType;
+  location?: string;
+  isVerified?: boolean;
+  page?: number;
+  limit?: number;
+};

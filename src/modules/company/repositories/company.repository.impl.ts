@@ -2,6 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { CompanyRepository } from './company.repository';
 import { CreateCompanyData, Company, UpdateCompanyData } from '../types/company.types';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
+import { Prisma } from 'generated/prisma/client';
+import {
+  publicCompanySelect,
+  publicCompanyDetailsSelect,
+  myCompanyProfileSelect,
+  PublicCompanyListItem,
+  PublicCompanyDetails,
+  MyCompanyProfile,
+  CompanyFilters,
+} from '../types/company.types';
 
 @Injectable()
 export class CompanyRepositoryImpl implements CompanyRepository {
@@ -46,20 +56,42 @@ export class CompanyRepositoryImpl implements CompanyRepository {
   }
 
   async findAllCompanies(
-    filters: Partial<Company> & { page?: number; limit?: number },
-  ): Promise<{ items: Company[]; total: number }> {
-    const { page = 1, limit = 20, ...whereFilters } = filters;
+    filters: CompanyFilters,
+  ): Promise<{ items: PublicCompanyListItem[]; total: number }> {
+    const { page = 1, limit = 20, name, industry, size, type, location, isVerified } = filters;
 
-    const [items, total] = await this.databaseService.$transaction([
+    const where: Prisma.CompanyWhereInput = {
+      isActive: true,
+    };
+
+    if (name) where.name = { contains: name, mode: 'insensitive' };
+    if (industry) where.industry = { contains: industry, mode: 'insensitive' };
+    if (size) where.size = size;
+    if (type) where.type = type;
+    if (location) where.headquartersLocation = { contains: location, mode: 'insensitive' };
+    if (isVerified !== undefined) where.isVerified = isVerified;
+
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
       this.databaseService.company.findMany({
-        where: whereFilters,
-        skip: (page - 1) * limit,
+        where,
+        ...publicCompanySelect,
+        skip,
         take: limit,
+        orderBy: { createdAt: 'desc' },
       }),
-      this.databaseService.company.count({ where: whereFilters }),
+      this.databaseService.company.count({ where }),
     ]);
 
     return { items, total };
+  }
+
+  async findCompanyById(id: string): Promise<PublicCompanyDetails | null> {
+    return this.databaseService.company.findUnique({
+      where: { id, isActive: true },
+      ...publicCompanyDetailsSelect,
+    });
   }
 
   async deactivateByEmail(email: string): Promise<{ id: string } | null> {
@@ -72,17 +104,22 @@ export class CompanyRepositoryImpl implements CompanyRepository {
       .catch(() => null);
   }
 
-  async findMyProfile(companyId: string): Promise<Company | null> {
+  async findMyProfile(companyId: string): Promise<MyCompanyProfile | null> {
     return this.databaseService.company.findUnique({
       where: { id: companyId },
+      ...myCompanyProfileSelect,
     });
   }
 
-  async updateMyProfile(companyId: string, data: UpdateCompanyData): Promise<Company | null> {
+  async updateMyProfile(
+    companyId: string,
+    data: UpdateCompanyData,
+  ): Promise<MyCompanyProfile | null> {
     return this.databaseService.company
       .update({
         where: { id: companyId },
         data,
+        ...myCompanyProfileSelect,
       })
       .catch(() => null);
   }
