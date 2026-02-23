@@ -1,0 +1,78 @@
+---
+title: 'Get Application By ID'
+api: 'GET /api/v1/job-seekers/me/applications/:id'
+description: 'Retrieve a specific application by ID'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/applications/:id
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Job Seeker authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique identifier of the application (UUID).
+</ParamField>
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "status": "PENDING",
+    "appliedAt": "2025-02-20T10:00:00Z",
+    "updatedAt": "2025-02-21T14:30:00Z",
+    "directJob": {
+      "id": "uuid",
+      "title": "Software Engineer",
+      "description": "Job description...",
+      "requirements": "Job requirements...",
+      "responsibilities": "Job responsibilities...",
+      "location": "Cairo, Egypt",
+      "jobType": "FULL_TIME",
+      "workPreference": "HYBRID",
+      "experienceLevel": "MID",
+      "salaryMin": 15000,
+      "salaryMax": 25000,
+      "company": {
+        "id": "uuid",
+        "name": "Tech Corp",
+        "logoUrl": "https://...",
+        "coverUrl": "https://...",
+        "description": "Company description...",
+        "industry": "Technology",
+        "size": "SIZE_201_1000",
+        "websiteUrl": "https://techcorp.com",
+        "linkedIn": "https://linkedin.com/company/techcorp"
+      },
+      "skills": [
+        { "skill": { "id": "uuid", "name": "TypeScript" } },
+        { "skill": { "id": "uuid", "name": "Node.js" } }
+      ]
+    }
+  },
+  "message": "Application retrieved successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+
+<Error statusCode="404">Application not found</Error>
+
+<Error statusCode="500">Internal server error</Error>

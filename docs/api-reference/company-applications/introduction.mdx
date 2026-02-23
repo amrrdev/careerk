@@ -1,0 +1,20 @@
+---
+title: 'Company Applications API'
+description: 'Endpoints for companies to manage job applications'
+---
+
+## Overview
+
+The Company Applications API allows companies to view and manage applications submitted to their job postings.
+
+## Endpoints
+
+| Method | Endpoint                         | Description                                     |
+| ------ | -------------------------------- | ----------------------------------------------- |
+| GET    | `/companies/me/applications`     | List all applications                           |
+| GET    | `/companies/me/applications/:id` | Get application details (includes applicant CV) |
+| PATCH  | `/companies/me/applications/:id` | Update application status                       |
+
+## Authentication
+
+All endpoints require **Company authentication**.

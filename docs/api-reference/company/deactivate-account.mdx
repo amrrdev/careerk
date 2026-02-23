@@ -1,0 +1,45 @@
+---
+title: 'Deactivate Company Account'
+api: 'DELETE /api/v1/companies/me'
+description: 'Deactivate the authenticated company account'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/companies/me
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Company authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Description
+
+This endpoint deactivates the company account. The account and all associated data (jobs, applications) will be hidden but not permanently deleted.
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid"
+  },
+  "message": "Company deactivated successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+
+<Error statusCode="404">Company not found or already deactivated</Error>
+
+<Error statusCode="500">Internal server error</Error>

@@ -1,0 +1,97 @@
+---
+title: 'Get Application By ID'
+api: 'GET /api/v1/companies/me/applications/:id'
+description: 'Retrieve detailed information about a specific application'
+---
+
+## Endpoint
+
+```
+GET /api/v1/companies/me/applications/:id
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Company authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique identifier of the application (UUID).
+</ParamField>
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "status": "PENDING",
+    "appliedAt": "2025-02-20T10:00:00Z",
+    "updatedAt": "2025-02-21T14:30:00Z",
+    "jobSeeker": {
+      "id": "uuid",
+      "firstName": "John",
+      "lastName": "Doe",
+      "profileImageUrl": "https://...",
+      "email": "john@example.com",
+      "profile": {
+        "title": "Software Engineer",
+        "summary": "Experienced software engineer...",
+        "location": "Cairo, Egypt",
+        "yearsOfExperience": 3,
+        "availabilityStatus": "OPEN_TO_WORK",
+        "workPreference": "REMOTE",
+        "expectedSalary": 20000,
+        "linkedinUrl": "https://linkedin.com/in/johndoe",
+        "githubUrl": "https://github.com/johndoe"
+      },
+      "educations": [
+        {
+          "institutionName": "Cairo University",
+          "degreeType": "BACHELOR",
+          "fieldOfStudy": "Computer Science",
+          "startDate": "2018-09-01",
+          "endDate": "2022-06-30",
+          "gpa": 3.5
+        }
+      ],
+      "workExperiences": [
+        {
+          "companyName": "Tech Company",
+          "jobTitle": "Software Engineer",
+          "startDate": "2022-07-01",
+          "endDate": null,
+          "isCurrent": true,
+          "description": "Working on..."
+        }
+      ],
+      "skills": [
+        { "id": "uuid", "name": "TypeScript", "verified": true },
+        { "id": "uuid", "name": "Node.js", "verified": true }
+      ],
+      "cv": "https://storage.url...temp..."
+    },
+    "directJob": {
+      "id": "uuid",
+      "title": "Senior Software Engineer"
+    }
+  },
+  "message": "Application retrieved successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+
+<Error statusCode="404">Application not found</Error>
+
+<Error statusCode="500">Internal server error</Error>

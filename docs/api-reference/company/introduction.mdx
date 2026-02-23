@@ -1,0 +1,22 @@
+---
+title: 'Company API'
+description: 'Endpoints for company profile management'
+---
+
+## Overview
+
+The Company API allows companies to manage their profiles, job postings, and applications.
+
+## Endpoints
+
+| Method | Endpoint          | Description                       |
+| ------ | ----------------- | --------------------------------- |
+| GET    | `/companies`      | List all companies                |
+| GET    | `/companies/{id}` | Get company by ID                 |
+| GET    | `/companies/me`   | Get authenticated company profile |
+| PATCH  | `/companies/me`   | Update company profile            |
+| DELETE | `/companies/me`   | Deactivate company account        |
+
+## Authentication
+
+Endpoints marked as **Company Only** require authentication as a Company user.
