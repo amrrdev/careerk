@@ -21,6 +21,7 @@ import { ResponseMessage } from 'src/core/decorators/response-message.decorator'
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { PasswordResetService } from './password-reset.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 
 @Controller('auth')
 @Auth(AuthType.None)
@@ -101,5 +102,12 @@ export class AuthenticationController {
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return await this.passwordResetService.resetPassword(resetPasswordDto);
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage('Verification email sent successfully')
+  resendVerification(@Body() resendVerificationDto: ResendVerificationDto) {
+    return this.authenticationService.resendVerification(resendVerificationDto.email);
   }
 }
