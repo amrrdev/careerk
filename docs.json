@@ -44,6 +44,7 @@
               "docs/api-reference/auth/register-job-seeker",
               "docs/api-reference/auth/register-company",
               "docs/api-reference/auth/verify-email",
+              "docs/api-reference/auth/resend-verification",
               "docs/api-reference/auth/login",
               "docs/api-reference/auth/refresh-token",
               "docs/api-reference/auth/forgot-password",
