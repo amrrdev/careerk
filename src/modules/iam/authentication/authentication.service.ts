@@ -1,9 +1,11 @@
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { HashingService } from '../hashing/hashing.service';
@@ -254,6 +256,47 @@ export class AuthenticationService {
       }
       throw new UnauthorizedException('Email verification failed');
     }
+  }
+
+  async resendVerification(email: string) {
+    const [jobSeeker, company] = await Promise.all([
+      this.jobSeekerRepository.findByEmail(email),
+      this.companyRepository.findByEmail(email),
+    ]);
+
+    const user = jobSeeker || company;
+
+    if (!user) {
+      throw new NotFoundException('No account found with this email');
+    }
+
+    if (user.isVerified) {
+      throw new BadRequestException('This account is already verified');
+    }
+
+    const userType = jobSeeker ? UserType.JOB_SEEKER : UserType.COMPANY;
+    const userName = jobSeeker
+      ? `${jobSeeker.firstName} ${jobSeeker.lastName}`
+      : company?.name || 'User';
+
+    const otp = await this.otpService.createOtp(email, OtpPurpose.EMAIL_VERIFICATION, userType);
+
+    await this.emailQueue.add(
+      SEND_VERIFICATION_EMAIL_JOB,
+      {
+        email,
+        code: otp,
+        userName,
+      } as SendVerificationEmailJob,
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+        removeOnComplete: true,
+      },
+    );
   }
 
   private async checkEmailExists(email: string): Promise<void> {
