@@ -1,0 +1,55 @@
+---
+title: 'Resend Verification Email'
+api: 'POST /api/v1/auth/resend-verification'
+description: 'Resend the verification email with a new OTP code'
+---
+
+## Endpoint
+
+```
+POST /api/v1/auth/resend-verification
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint is **public** and does not require authentication.</Note>
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  The email address of the account to verify.
+</ParamField>
+
+## Example Request
+
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "data": null,
+  "message": "Verification email sent successfully"
+}
+```
+
+## Error Responses
+
+<Error statusCode="400">Invalid email format</Error>
+
+<Error statusCode="404">No account found with this email</Error>
+
+<Error statusCode="400">This account is already verified</Error>
+
+<Error statusCode="500">Internal server error</Error>
+
+## Notes
+
+- This endpoint generates a new OTP code and invalidates any previously sent codes
+- The OTP code expires after 10 minutes
+- If an account is already verified, this endpoint will return an error
