@@ -1,0 +1,161 @@
+---
+title: 'Get Latest Analysis'
+api: 'GET /api/v1/job-seekers/me/skill-analysis/latest'
+description: 'Retrieve the most recent skill gap analysis for the authenticated job seeker'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/skill-analysis/latest
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "targetRole": "Senior Software Engineer",
+    "status": "COMPLETED",
+    "cvScore": 78,
+    "strengths": [
+      "Strong testing focus: Achieving 80% coverage demonstrates commitment to quality, critical for production systems.",
+      "Full-stack proficiency: Experience with MEAN stack and multiple databases provides flexibility across the stack.",
+      "Cloud exposure: Hands-on use of AWS and Azure demonstrates ability to deploy and manage services in major cloud platforms."
+    ],
+    "gaps": [
+      {
+        "skill": "System Design",
+        "importance": "high",
+        "suggestion": "Practice designing scalable systems using resources like 'System Design Interview' book"
+      },
+      {
+        "skill": "CI/CD Pipeline",
+        "importance": "medium",
+        "suggestion": "Set up GitHub Actions or GitLab CI pipelines for personal projects"
+      }
+    ],
+    "recommendations": [
+      "Build a side project demonstrating microservices architecture to strengthen system design skills",
+      "Contribute to open-source projects to gain visibility and improve collaboration skills"
+    ],
+    "createdAt": "2026-02-26T17:30:00.000Z",
+    "completedAt": "2026-02-26T17:30:15.000Z"
+  },
+  "message": "Latest analysis retrieved successfully",
+  "meta": {
+    "timestamp": "2026-02-26T17:35:00.000Z",
+    "path": "/job-seekers/me/skill-analysis/latest",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the analysis (UUID).
+</ResponseField>
+
+<ResponseField name="targetRole" type="string">
+  The job title the analysis was performed against.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status of the analysis. Values: `PROCESSING`, `COMPLETED`, `FAILED`
+</ResponseField>
+
+<ResponseField name="cvScore" type="number">
+  Overall match score as a percentage (0-100).
+</ResponseField>
+
+<ResponseField name="strengths" type="array">
+  List of strengths identified in the candidate's profile.
+</ResponseField>
+
+<ResponseField name="gaps" type="array">
+  List of skill gaps identified.
+  <Expandable title="Gap Properties">
+    <ResponseField name="skill" type="string">
+      The missing or weak skill.
+    </ResponseField>
+    <ResponseField name="importance" type="string">
+      How critical this skill is. Values: `high`, `medium`, `low`
+    </ResponseField>
+    <ResponseField name="suggestion" type="string">
+      Actionable advice on how to acquire this skill.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="recommendations" type="array">
+  List of career development recommendations.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  When the analysis was created (ISO 8601).
+</ResponseField>
+
+<ResponseField name="completedAt" type="string | null">
+  When the analysis was completed (ISO 8601).
+</ResponseField>
+
+## Error Responses
+
+### 404 Not Found - No Analysis Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "No analysis found. Please create one first.",
+    "statusCode": 404,
+    "timestamp": "2026-02-26T17:35:00.000Z",
+    "path": "/job-seekers/me/skill-analysis/latest",
+    "method": "GET"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-26T17:35:00.000Z",
+    "path": "/job-seekers/me/skill-analysis/latest",
+    "method": "GET"
+  }
+}
+```
+
+## Notes
+
+<Info>
+  **Processing Time**: If you just created an analysis, wait 10-30 seconds before checking the
+  latest result as the analysis is processed asynchronously.
+</Info>
+
+<Tip>
+  **Multiple Analyses**: Use this endpoint to quickly check your most recent analysis result. Use
+  the history endpoint to see all previous analyses.
+</Tip>

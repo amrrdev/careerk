@@ -25,16 +25,16 @@ http://localhost:3000/api/v1
 
 ## CV Endpoints
 
-| Method | Endpoint                | Description                    | Auth Required    |
-| ------ | ---------------------- | ------------------------------ | ---------------- |
-| POST   | `/cv/presigned-url`    | Request CV upload URL          | Yes (Job Seeker) |
-| PUT    | `{uploadUrl}`          | Upload CV file to storage      | Yes (Job Seeker) |
-| POST   | `/cv/confirm`          | Confirm CV upload & parse     | Yes (Job Seeker) |
-| GET    | `/cv/me`               | Get current CV info           | Yes (Job Seeker) |
-| GET    | `/cv/me/download-url`  | Get CV download URL            | Yes (Job Seeker) |
-| DELETE | `/cv/me`               | Delete current CV              | Yes (Job Seeker) |
-| GET    | `/cv-parse/preview`    | Preview parsed CV data        | Yes (Job Seeker) |
-| POST   | `/cv-parse/confirm`    | Confirm & save to profile     | Yes (Job Seeker) |
+| Method | Endpoint              | Description               | Auth Required    |
+| ------ | --------------------- | ------------------------- | ---------------- |
+| POST   | `/cv/presigned-url`   | Request CV upload URL     | Yes (Job Seeker) |
+| PUT    | `{uploadUrl}`         | Upload CV file to storage | Yes (Job Seeker) |
+| POST   | `/cv/confirm`         | Confirm CV upload & parse | Yes (Job Seeker) |
+| GET    | `/cv/me`              | Get current CV info       | Yes (Job Seeker) |
+| GET    | `/cv/me/download-url` | Get CV download URL       | Yes (Job Seeker) |
+| DELETE | `/cv/me`              | Delete current CV         | Yes (Job Seeker) |
+| GET    | `/cv-parse/preview`   | Preview parsed CV data    | Yes (Job Seeker) |
+| POST   | `/cv-parse/confirm`   | Confirm & save to profile | Yes (Job Seeker) |
 
 **CV Upload Flow:** Request URL → Upload File → Confirm Upload → NLP Parsing
 
@@ -63,6 +63,27 @@ See detailed documentation for each endpoint in the API Reference section.
 | POST   | `/job-seekers/me/educations`              | Create education    | Yes (Job Seeker) |
 | PATCH  | `/job-seekers/me/educations/:educationId` | Update education    | Yes (Job Seeker) |
 | DELETE | `/job-seekers/me/educations/:educationId` | Delete education    | Yes (Job Seeker) |
+
+## Skill Gap Analysis Endpoints
+
+| Method | Endpoint                                 | Description                    | Auth Required    |
+| ------ | ---------------------------------------- | ------------------------------ | ---------------- |
+| POST   | `/job-seekers/me/skill-analysis`         | Create new skill gap analysis  | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/skill-analysis/latest`  | Get latest analysis result     | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/skill-analysis/:id`     | Get analysis by ID             | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/skill-analysis/history` | Get paginated analysis history | Yes (Job Seeker) |
+
+<Info>
+  **Weekly Limit:** Job seekers can create up to 10 skill gap analyses per week. The limit resets on
+  Monday.
+</Info>
+
+### Related Endpoints
+
+- [Create Skill Gap Analysis](/api-reference/job-seeker/create-skill-gap-analysis) - Start a new analysis
+- [Get Latest Analysis](/api-reference/job-seeker/get-latest-skill-gap-analysis) - Get most recent result
+- [Get Analysis By ID](/api-reference/job-seeker/get-skill-gap-analysis-by-id) - Get specific analysis
+- [Get Analysis History](/api-reference/job-seeker/get-skill-gap-analysis-history) - List all analyses
 
 ## Common Enums
 

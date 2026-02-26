@@ -1,0 +1,141 @@
+---
+title: 'Get Analysis History'
+api: 'GET /api/v1/job-seekers/me/skill-analysis/history'
+description: 'Retrieve paginated history of skill gap analyses for the authenticated job seeker'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/skill-analysis/history
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Query Parameters
+
+<ResponseField name="page" type="number" optional>
+  Page number for pagination. Default: 1
+</ResponseField>
+
+<ResponseField name="limit" type="number" optional>
+  Number of items per page. Default: 10
+</ResponseField>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "analyses": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "targetRole": "Senior Software Engineer",
+        "status": "COMPLETED",
+        "cvScore": 78,
+        "createdAt": "2026-02-26T17:30:00.000Z",
+        "completedAt": "2026-02-26T17:30:15.000Z"
+      },
+      {
+        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+        "targetRole": "Backend Developer",
+        "status": "COMPLETED",
+        "cvScore": 72,
+        "createdAt": "2026-02-20T10:00:00.000Z",
+        "completedAt": "2026-02-20T10:00:25.000Z"
+      }
+    ],
+    "total": 2,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 1
+  },
+  "message": "Analysis history retrieved successfully",
+  "meta": {
+    "timestamp": "2026-02-26T17:35:00.000Z",
+    "path": "/job-seekers/me/skill-analysis/history",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="analyses" type="array">
+  List of analyses in the current page.
+  <Expandable title="Analysis Properties">
+    <ResponseField name="id" type="string">
+      Unique identifier for the analysis (UUID).
+    </ResponseField>
+    <ResponseField name="targetRole" type="string">
+      The job title the analysis was performed against.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      Current status. Values: `PROCESSING`, `COMPLETED`, `FAILED`
+    </ResponseField>
+    <ResponseField name="cvScore" type="number">
+      Overall match score as a percentage (0-100).
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      When the analysis was created (ISO 8601).
+    </ResponseField>
+    <ResponseField name="completedAt" type="string | null">
+      When the analysis was completed (ISO 8601).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Total number of analyses.
+</ResponseField>
+
+<ResponseField name="page" type="number">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="limit" type="number">
+  Number of items per page.
+</ResponseField>
+
+<ResponseField name="totalPages" type="number">
+  Total number of pages available.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-26T17:35:00.000Z",
+    "path": "/job-seekers/me/skill-analysis/history",
+    "method": "GET"
+  }
+}
+```
+
+## Notes
+
+<Info>**Sorting**: Results are sorted by creation date in descending order (newest first).</Info>
+
+<Tip>
+  **Pagination**: Use the page and limit query parameters to navigate through large result sets. The
+  default limit is 10 items per page.
+</Tip>
