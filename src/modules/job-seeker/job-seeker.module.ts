@@ -8,6 +8,8 @@ import { WorkExperienceModule } from './work-experience/work-experience.module';
 import { EducationModule } from './education/education.module';
 import { SkillsModule } from './skills/skills.module';
 import { JobSeekerApplicationModule } from './application/application.module';
+import { SkillGapAnalysisModule } from './skill-gap-analysis/skill-gap-analysis.module';
+import { SkillGapAnalysisController } from './skill-gap-analysis/skill-gap-analysis.controller';
 
 @Module({
   imports: [
@@ -16,8 +18,9 @@ import { JobSeekerApplicationModule } from './application/application.module';
     EducationModule,
     SkillsModule,
     JobSeekerApplicationModule,
+    SkillGapAnalysisModule,
   ],
-  controllers: [JobSeekerController],
+  controllers: [JobSeekerController, SkillGapAnalysisController],
   providers: [
     JobSeekerService,
     {

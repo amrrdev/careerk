@@ -38,6 +38,7 @@ model JobSeeker {
   cvParseResult   CvParseResult?
   jobBookmarks    JobBookmark[]
   applications Application[]
+  skillGapAnalyses SkillGapAnalysis[]
 
   @@index([isActive])
   @@map("job_seekers")
@@ -292,6 +293,28 @@ model DirectJobSkill {
 }
 
 
+model SkillGapAnalysis {
+  id              String                 @id @default(uuid()) @db.Uuid
+  jobSeekerId     String                 @db.Uuid @map("job_seeker_id")
+  targetRole      String                 @map("target_role")
+
+  status          AnalysisStatusEnum     @default(PROCESSING)
+
+  cvScore         Float?                 @map("cv_score")
+  strengths       String[]
+  gaps            Json?
+  recommendations String[]
+
+  createdAt       DateTime               @default(now()) @map("created_at")
+  completedAt     DateTime?              @map("completed_at")
+
+  jobSeeker       JobSeeker              @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@index([jobSeekerId, createdAt])
+  @@index([status])
+  @@map("skill_gap_analyses")
+}
+
 model JobBookmark {
   id          String   @id @default(uuid()) @db.Uuid
   jobSeekerId String   @db.Uuid @map("job_seeker_id")
@@ -305,11 +328,6 @@ model JobBookmark {
   @@unique([jobSeekerId, jobId, jobSource])
   @@index([jobSeekerId])
   @@map("job_bookmarks")
-}
-
-enum JobSourceEnum {
-  DIRECT
-  SCRAPED
 }
 
 
@@ -331,6 +349,17 @@ model Application {
   @@index([status])
   @@map("applications")
 
+}
+
+enum AnalysisStatusEnum {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum JobSourceEnum {
+  DIRECT
+  SCRAPED
 }
 
 enum ApplicationStatusEnum {
