@@ -1,0 +1,142 @@
+---
+title: 'Create Skill Gap Analysis'
+api: 'POST /api/v1/job-seekers/me/skill-analysis'
+description: 'Start a new skill gap analysis based on the job seeker profile'
+---
+
+## Endpoint
+
+```
+POST /api/v1/job-seekers/me/skill-analysis
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Request Body
+
+This endpoint does not require a request body. It automatically uses the authenticated job seeker's profile data.
+
+## Response
+
+### Success Response (201 Created)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "status": "PROCESSING",
+    "message": "Analysis started. This may take 10-30 seconds."
+  },
+  "message": "Skill gap analysis started",
+  "meta": {
+    "timestamp": "2026-02-26T17:30:00.000Z",
+    "path": "/job-seekers/me/skill-analysis",
+    "method": "POST"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="id" type="string">
+  Unique identifier for the analysis (UUID).
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status of the analysis. Value: `PROCESSING`
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Informational message about the analysis progress.
+</ResponseField>
+
+## Error Responses
+
+### 400 Bad Request - Weekly Limit Reached
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "You have reached your weekly limit of 10 analyses. Next analysis available on Mon Mar 02 2026",
+    "statusCode": 400,
+    "timestamp": "2026-02-26T17:30:00.001Z",
+    "path": "/job-seekers/me/skill-analysis",
+    "method": "POST"
+  }
+}
+```
+
+### 400 Bad Request - Profile Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Job seeker profile not found",
+    "statusCode": 400,
+    "timestamp": "2026-02-26T17:30:00.000Z",
+    "path": "/job-seekers/me/skill-analysis",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-26T17:30:00.000Z",
+    "path": "/job-seekers/me/skill-analysis",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Not a Job Seeker
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Insufficient permissions",
+    "statusCode": 401,
+    "timestamp": "2026-02-26T17:30:00.000Z",
+    "path": "/job-seekers/me/skill-analysis",
+    "method": "POST"
+  }
+}
+```
+
+## Notes
+
+<Info>
+  **Async Processing**: The analysis is processed asynchronously in the background. The status will
+  initially be `PROCESSING`. Use the `GET /job-seekers/me/skill-analysis/latest` endpoint to check
+  the completed results after 10-30 seconds.
+</Info>
+
+<Info>
+  **Weekly Limit**: Job seekers can create up to 10 skill gap analyses per week. The limit resets on
+  Monday.
+</Info>
+
+<Tip>
+  **Profile Required**: Ensure your profile is complete with skills, work experience, and a target
+  job title before creating an analysis for the best results.
+</Tip>
