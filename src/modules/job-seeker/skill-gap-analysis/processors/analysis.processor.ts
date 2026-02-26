@@ -3,8 +3,16 @@ import { SKILL_GAP_ANALYSIS } from '../jobs/queue.constants';
 import { Injectable, Logger } from '@nestjs/common';
 import { SkillGapAnalysisRepository } from '../repository/analysis.repository';
 import { SkillGapAnalysisLLMService } from '../services/llm.service';
-import { JobSeekerRepository } from '../../repositories/job-seeker.repository';
 import { Job } from 'bullmq';
+
+interface AnalysisJobData {
+  analysisId: string;
+  jobSeekerId: string;
+  targetRole: string;
+  yearsOfExperience: number;
+  currentSkills: string[];
+  workExperience: string[];
+}
 
 @Processor(SKILL_GAP_ANALYSIS)
 @Injectable()
@@ -13,34 +21,21 @@ export class SkillGapAnalysisProcessor extends WorkerHost {
   constructor(
     private readonly analysisRepository: SkillGapAnalysisRepository,
     private readonly llmService: SkillGapAnalysisLLMService,
-    private readonly jobSeekerRepository: JobSeekerRepository,
   ) {
     super();
   }
 
-  async process(job: Job<{ analysisId: string; jobSeekerId: string }>): Promise<any> {
-    const { analysisId, jobSeekerId } = job.data;
+  async process(job: Job<AnalysisJobData>): Promise<any> {
+    const { analysisId, targetRole, yearsOfExperience, currentSkills, workExperience } = job.data;
 
     try {
-      this.logger.log(`Processing skill gap analysis ${analysisId} for user ${jobSeekerId}`);
-      const profile = await this.jobSeekerRepository.findMyProfile(jobSeekerId);
-      if (!profile || !profile.profile) {
-        throw new Error('Job seeker profile not found');
-      }
+      this.logger.log(`Processing skill gap analysis ${analysisId}`);
 
-      const skills = profile.jobSeekerSkills.map((jss) => jss.skill.name);
-      const workExperience = profile.workExperiences.map(
-        (wrkexp) => `
-        Company Name: ${wrkexp.companyName},
-        Title: ${wrkexp.jobTitle}
-        Description: ${wrkexp.description}
-        `,
-      );
       const result = await this.llmService.generateAnalysis({
-        currentSkills: skills,
-        targetRole: profile.profile.title,
-        yearsOfExperience: profile.profile.yearsOfExperience || 0,
-        workExperience: workExperience,
+        currentSkills,
+        targetRole,
+        yearsOfExperience,
+        workExperience,
       });
 
       await this.analysisRepository.update(analysisId, {
@@ -48,7 +43,8 @@ export class SkillGapAnalysisProcessor extends WorkerHost {
         status: 'COMPLETED',
         completedAt: new Date(),
       });
-    } catch {
+    } catch (error) {
+      this.logger.error(`Failed to process analysis ${analysisId}:`, error);
       await this.analysisRepository.update(analysisId, {
         status: 'FAILED',
       });

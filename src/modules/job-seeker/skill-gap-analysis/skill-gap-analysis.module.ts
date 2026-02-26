@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { SkillGapAnalysisLLMService } from './services/llm.service';
 import { SkillGapAnalysisService } from './skill-gap-analysis.service';
 import { SkillGapAnalysisRepository } from './repository/analysis.repository';
@@ -6,9 +6,7 @@ import { SkillGapAnalysisRepositoryImpl } from './repository/analysis.repository
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { BullModule } from '@nestjs/bullmq';
 import { SKILL_GAP_ANALYSIS_QUEUE } from './jobs/queue.constants';
-import { JobSeekerModule } from '../job-seeker.module';
 import { SkillGapAnalysisProcessor } from './processors/analysis.processor';
-import { SkillGapAnalysisController } from './skill-gap-analysis.controller';
 
 @Module({
   imports: [
@@ -16,10 +14,7 @@ import { SkillGapAnalysisController } from './skill-gap-analysis.controller';
     BullModule.registerQueue({
       name: SKILL_GAP_ANALYSIS_QUEUE,
     }),
-    // JobSeekerModule,
-    forwardRef(() => JobSeekerModule),
   ],
-  controllers: [SkillGapAnalysisController],
   providers: [
     SkillGapAnalysisLLMService,
     SkillGapAnalysisService,

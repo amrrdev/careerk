@@ -3,40 +3,54 @@ import { SkillGapAnalysisRepository } from './repository/analysis.repository';
 import { InjectQueue } from '@nestjs/bullmq';
 import { GENERATE_ANALYSIS_QUEUE, SKILL_GAP_ANALYSIS } from './jobs/queue.constants';
 import { Queue } from 'bullmq';
-import { JobSeekerRepository } from '../repositories/job-seeker.repository';
 import { HistoryQueryDto } from './dto/history-query.dto';
+
+interface AnalysisJobData {
+  analysisId: string;
+  jobSeekerId: string;
+  targetRole: string;
+  yearsOfExperience: number;
+  currentSkills: string[];
+  workExperience: string[];
+}
 
 @Injectable()
 export class SkillGapAnalysisService {
   constructor(
     private readonly analysisRepository: SkillGapAnalysisRepository,
-    private readonly jobSeekerRepository: JobSeekerRepository,
     @InjectQueue(SKILL_GAP_ANALYSIS) private readonly analysisQueue: Queue,
   ) {}
 
-  async createAnalysis(jobSeekerId: string) {
+  async createAnalysis(
+    jobSeekerId: string,
+    targetRole: string,
+    yearsOfExperience: number,
+    currentSkills: string[],
+    workExperience: string[],
+  ) {
     const countThisWeek = await this.analysisRepository.countThisWeek(jobSeekerId);
     if (countThisWeek >= 10) {
       const nextMonday = this.getNextMonday();
       throw new BadRequestException(
-        `You have reached your weekly limit of 3 analyses. Next analysis available on ${nextMonday.toDateString()}`,
+        `You have reached your weekly limit of 10 analyses. Next analysis available on ${nextMonday.toDateString()}`,
       );
     }
 
-    const profile = await this.jobSeekerRepository.findMyProfile(jobSeekerId);
-    if (!profile || !profile.profile) {
-      throw new BadRequestException('Job seeker profile not found');
-    }
-
     const analysis = await this.analysisRepository.create(jobSeekerId, {
-      targetRole: profile.profile.title,
+      targetRole,
       status: 'PROCESSING',
     });
 
-    await this.analysisQueue.add(GENERATE_ANALYSIS_QUEUE, {
+    const jobData: AnalysisJobData = {
       analysisId: analysis.id,
       jobSeekerId,
-    });
+      targetRole,
+      yearsOfExperience,
+      currentSkills,
+      workExperience,
+    };
+
+    await this.analysisQueue.add(GENERATE_ANALYSIS_QUEUE, jobData);
 
     return {
       id: analysis.id,

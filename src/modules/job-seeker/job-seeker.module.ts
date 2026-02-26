@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JobSeekerController } from './job-seeker.controller';
 import { JobSeekerService } from './job-seeker.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
@@ -9,6 +9,7 @@ import { EducationModule } from './education/education.module';
 import { SkillsModule } from './skills/skills.module';
 import { JobSeekerApplicationModule } from './application/application.module';
 import { SkillGapAnalysisModule } from './skill-gap-analysis/skill-gap-analysis.module';
+import { SkillGapAnalysisController } from './skill-gap-analysis/skill-gap-analysis.controller';
 
 @Module({
   imports: [
@@ -18,9 +19,8 @@ import { SkillGapAnalysisModule } from './skill-gap-analysis/skill-gap-analysis.
     SkillsModule,
     JobSeekerApplicationModule,
     SkillGapAnalysisModule,
-    forwardRef(() => SkillGapAnalysisModule),
   ],
-  controllers: [JobSeekerController],
+  controllers: [JobSeekerController, SkillGapAnalysisController],
   providers: [
     JobSeekerService,
     {
