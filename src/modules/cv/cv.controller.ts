@@ -32,7 +32,7 @@ export class CvController {
     return this.cvService.getMyCvInfo(jobSeekerId);
   }
 
-  @Get('me/downoad-url')
+  @Get('me/download-url')
   getMyCvDownloadUrl(@ActiveUser('sub') jobSeekerId: string) {
     return this.cvService.getMyCvDownloadUrl(jobSeekerId);
   }

@@ -78,14 +78,14 @@ Retrieve your current CV details including file name, MIME type, and upload time
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me",
     "method": "GET"
@@ -115,3 +115,6 @@ Retrieve your current CV details including file name, MIME type, and upload time
 </Info>
 
 <Tip>**Get Download URL**: Use GET /cv/me/downoad-url to get a download URL for the CV file.</Tip>
+
+
+

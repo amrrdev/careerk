@@ -24,14 +24,26 @@ GET /api/v1/jobs/scraped/{jobId}
 
 ```json
 {
-  "id": "scr_1234567890",
-  "title": "Senior Software Engineer",
-  "companyName": "Tech Corp",
-  "description": "We are looking for a senior software engineer...",
-  "url": "https://example.com/jobs/123",
-  "postedDate": "2024-01-15T10:00:00Z",
-  "location": "Remote",
-  "salary": "$120,000 - $150,000 per year"
+  "success": true,
+  "data": {
+    "id": "scr_1234567890",
+    "title": "Senior Software Engineer",
+    "description": "We are looking for a senior software engineer...",
+    "location": "Remote",
+    "salary": "$120,000 - $150,000 per year",
+    "jobType": "FULL_TIME",
+    "companyName": "Tech Corp",
+    "sourceUrl": "https://example.com/jobs/123",
+    "postedAt": "2024-01-15T10:00:00Z",
+    "source": "scraped",
+    "skills": [{ "skillId": "uuid1", "name": "TypeScript" }]
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-27T11:20:00.000Z",
+    "path": "/jobs/scraped/scr_1234567890",
+    "method": "GET"
+  }
 }
 ```
 
@@ -53,12 +65,16 @@ GET /api/v1/jobs/scraped/{jobId}
   Full job description.
 </ResponseField>
 
-<ResponseField name="url" type="string">
+<ResponseField name="sourceUrl" type="string | null">
   Direct link to the original job posting.
 </ResponseField>
 
-<ResponseField name="postedDate" type="string">
+<ResponseField name="postedAt" type="string | null">
   Date when the job was posted (ISO 8601).
+</ResponseField>
+
+<ResponseField name="source" type="string">
+  Always `scraped` for this endpoint.
 </ResponseField>
 
 <ResponseField name="location" type="string">

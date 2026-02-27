@@ -277,14 +277,14 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
     "method": "GET"
@@ -319,3 +319,6 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
   **Profile Completeness**: Ensure your profile is complete with education, work experience, and
   skills to increase visibility to employers.
 </Tip>
+
+
+

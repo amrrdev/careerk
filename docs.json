@@ -30,7 +30,7 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["docs/introduction", "docs/authentication"]
+            "pages": ["docs/introduction"]
           }
         ]
       },
@@ -59,7 +59,13 @@
               "docs/api-reference/job-seeker/get-my-profile",
               "docs/api-reference/job-seeker/get-profile-by-id",
               "docs/api-reference/job-seeker/update-profile",
-              "docs/api-reference/job-seeker/deactivate-account",
+              "docs/api-reference/job-seeker/deactivate-account"
+            ]
+          },
+          {
+            "group": "Skill Gap Analysis",
+            "pages": [
+              "docs/api-reference/job-seeker/skill-gap-analysis-introduction",
               "docs/api-reference/job-seeker/create-skill-gap-analysis",
               "docs/api-reference/job-seeker/get-latest-skill-gap-analysis",
               "docs/api-reference/job-seeker/get-skill-gap-analysis-by-id",

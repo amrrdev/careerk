@@ -1,281 +1,141 @@
 ---
 title: Introduction
-description: 'CareerK API Documentation - Connect job seekers with employers'
+description: 'CareerK API integration guide for frontend applications'
 ---
 
-# Welcome to CareerK API
+# CareerK API
 
-CareerK is a comprehensive job platform API that connects job seekers with employers. This documentation provides everything you need to integrate CareerK into your frontend application.
+This documentation is the integration contract for frontend clients.
 
-## Base URL
+## API Base Path
 
+Use this base path for all endpoints:
+
+```text
+{API_ORIGIN}/api/v1
 ```
+
+Local example:
+
+```text
 http://localhost:3000/api/v1
 ```
 
-All authentication endpoints are under the `/api/v1` prefix.
+<Note>
+  Treat `/api/v1` as the canonical API namespace for frontend development.
+</Note>
 
-For production, replace with your actual API URL.
+## Global Response Contract
 
-## Authentication
-
-CareerK uses JWT (JSON Web Tokens) for authentication. After registration or login, you'll receive:
-
-- **Access Token**: Used to authenticate API requests (valid for 1 hour)
-- **Refresh Token**: Stored in HTTP-only cookie, used to get new access tokens (valid for 24 hours)
-
-### Using Access Tokens
-
-Include the access token in the Authorization header:
-
-```bash
-Authorization: Bearer YOUR_ACCESS_TOKEN
-```
-
-## Quick Start
-
-### 1. Register a User
-
-**Endpoint**: `POST /api/v1/auth/register/job-seeker`
-
-**Request Shape**:
-
-```typescript
-interface RegisterJobSeekerDto {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-}
-```
-
-**Response Shape**:
-
-```typescript
-interface RegisterJobSeekerResponse {
-  success: boolean;
-  data: {
-    email: string;
-  };
-  message: string;
-}
-```
-
-### 2. Verify Email
-
-Check your email for the 6-digit OTP code.
-
-**Endpoint**: `POST /api/v1/auth/verify-email`
-
-**Request Shape**:
-
-```typescript
-interface VerifyEmailDto {
-  email: string;
-  code: string;
-}
-```
-
-**Response Shape**:
-
-```typescript
-interface VerifyEmailResponse {
-  success: boolean;
-  data: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    accessToken: string;
-    // ... other fields
-  };
-  message: string;
-}
-```
-
-### 3. Make Authenticated Requests
-
-Include the access token in the Authorization header:
-
-```typescript
-Authorization: Bearer<accessToken>;
-```
-
-## Response Format
-
-All API responses follow this structure:
-
-### Success Response
+Most successful responses are wrapped in a consistent envelope:
 
 ```json
 {
   "success": true,
-  "data": {
-    // Response data here
-  },
-  "message": "Operation successful"
+  "data": {},
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-27T00:00:00.000Z",
+    "path": "/jobs",
+    "method": "GET"
+  }
 }
 ```
 
-### Error Response
+### Frontend Notes
+
+- `data` contains endpoint-specific payload.
+- `message` is human-readable and can be shown in toasts/snackbars.
+- `meta` is useful for logging, debugging, and tracing.
+
+## Global Error Contract
+
+Errors are returned in this envelope:
 
 ```json
 {
-  "statusCode": 400,
-  "message": "Error message or array of validation errors",
-  "error": "Bad Request"
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-27T00:00:00.000Z",
+    "path": "/jobs/bookmarks",
+    "method": "GET",
+    "details": "Bad Request"
+  }
 }
 ```
 
-## Available Endpoints
+### Frontend Notes
 
-### Authentication
+- Always read `error.statusCode` for control flow.
+- `error.message` may be a string or an array (especially for validation errors).
+- `error.details` is optional.
 
-- `POST /auth/register/job-seeker` - Register as job seeker
-- `POST /auth/register/company` - Register as company
-- `POST /auth/verify-email` - Verify email with OTP code
-- `POST /auth/login` - Login to existing account
-- `POST /auth/refresh-token` - Refresh access token
-- `POST /auth/forgot-password` - Request password reset code
-- `POST /auth/reset-password` - Reset password with OTP code
+## Authentication Model
 
-## Common HTTP Status Codes
+CareerK uses access token + refresh token authentication.
 
-| Code | Description                                            |
-| ---- | ------------------------------------------------------ |
-| 200  | Success - Request completed successfully               |
-| 201  | Created - Resource created successfully                |
-| 400  | Bad Request - Invalid input or validation error        |
-| 401  | Unauthorized - Missing or invalid authentication       |
-| 403  | Forbidden - Authenticated but not authorized           |
-| 404  | Not Found - Resource doesn't exist                     |
-| 409  | Conflict - Resource already exists (e.g., email taken) |
-| 500  | Internal Server Error - Something went wrong           |
+- Access token: sent in `Authorization` header.
+- Refresh token: stored in an HTTP-only cookie named `refreshToken`.
+- Protected endpoints: require valid access token.
+- Role-protected endpoints: return `403` when user role is not allowed.
 
-## User Types
+Authorization header format:
 
-CareerK supports two types of users:
-
-### Job Seeker
-
-Individual users looking for job opportunities
-
-- Register at `/auth/register/job-seeker`
-- Access job seeker endpoints
-
-### Company
-
-Employers posting job opportunities
-
-- Register at `/auth/register/company`
-- Access company endpoints
-
-## Password Reset Flow
-
-If you forget your password, you can reset it using a two-step process:
-
-### 1. Request Password Reset
-
-**Endpoint**: `POST /api/v1/auth/forgot-password`
-
-**Request Shape**:
-
-```typescript
-interface ForgotPasswordDto {
-  email: string;
-}
+```http
+Authorization: Bearer <accessToken>
 ```
-
-**Response Shape**:
-
-```typescript
-interface ForgotPasswordResponse {
-  success: boolean;
-  data: {
-    email: string;
-  };
-  message: string;
-}
-```
-
-### 2. Reset Password with OTP
-
-**Endpoint**: `POST /api/v1/auth/reset-password`
-
-**Request Shape**:
-
-```typescript
-interface ResetPasswordDto {
-  email: string;
-  code: string; // OTP from email
-  newPassword: string;
-}
-```
-
-**Response Shape**:
-
-```typescript
-interface ResetPasswordResponse {
-  success: boolean;
-  data: {
-    message: string;
-  };
-  message: string;
-}
-```
-
-### 2. Reset Password with OTP
-
-```javascript
-const response = await fetch('http://localhost:3000/api/v1/auth/reset-password', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    email: 'john@example.com',
-    code: '123456', // OTP from email
-    newPassword: 'newSecurePassword123',
-  }),
-});
-
-const data = await response.json();
-// Password reset successful
-// All active sessions are logged out - must login again
-```
-
-## Important Security Notes
 
 <Warning>
-  **Refresh Token Cookies**: Always use `credentials: 'include'` in your fetch requests to enable
-  cookie handling. The refresh token is stored as an HTTP-only cookie and cannot be accessed via
-  JavaScript.
+  Use `credentials: 'include'` for browser requests so refresh-token cookie flow works correctly.
 </Warning>
 
-<Info>
-  **Password Security**: All passwords are hashed using bcrypt before storage. Passwords are never
-  stored in plain text.
-</Info>
+
+## Query and Pagination Conventions
+
+Most list endpoints support:
+
+- `page` (default commonly `1`)
+- `limit` (default commonly `20`)
+- endpoint-specific filters (for example `search`, `location`, `jobType`)
+
+Use query params as strings in URLs, for example:
+
+```text
+/jobs?page=1&limit=20&search=frontend
+```
+
+## File Upload Flow (CV)
+
+CV upload is a multi-step flow:
+
+1. Request a pre-signed upload URL from API.
+2. Upload file directly to storage using returned `uploadUrl`.
+3. Confirm upload with API.
+4. Optionally preview and confirm parsed data.
 
 <Tip>
-  **OTP Codes**: All OTP codes (email verification and password reset) are valid for 10 minutes and
-  can be attempted a maximum of 3 times.
+  The direct upload request (`PUT {uploadUrl}`) is against storage, not the CareerK API host.
 </Tip>
 
-## Token Lifetimes
+## Status Code Guide
 
-| Token Type    | Lifetime   | Storage                      |
-| ------------- | ---------- | ---------------------------- |
-| Access Token  | 1 hour     | Memory/State (client-side)   |
-| Refresh Token | 24 hours   | HTTP-only cookie (automatic) |
-| OTP Code      | 10 minutes | Redis (server-side)          |
+| Code | Meaning |
+| ---- | ------- |
+| 200 | Success |
+| 201 | Created |
+| 400 | Validation or bad request |
+| 401 | Missing/invalid authentication |
+| 403 | Authenticated but not authorized for role/resource |
+| 404 | Resource not found |
+| 409 | Conflict (duplicate/resource state conflict) |
+| 500 | Internal server error |
 
-## Need Help?
+## Where To Start
 
-- Check the [Authentication Guide](/authentication) for detailed auth flow
-- Browse the API Reference for all endpoints:
-  - [Register Job Seeker](/api-reference/auth/register-job-seeker)
-  - [Register Company](/api-reference/auth/register-company)
-  - [Verify Email](/api-reference/auth/verify-email)
-  - [Login](/api-reference/auth/login)
-  - [Forgot Password](/api-reference/auth/forgot-password)
-  - [Reset Password](/api-reference/auth/reset-password)
-  - [Refresh Token](/api-reference/auth/refresh-token)
+- [Authentication Endpoints](/api-reference/auth/introduction)
+- [Jobs API](/api-reference/jobs/introduction)
+- [Job Seeker API](/job-seeker/introduction)
+- [CV API](/api-reference/cv/introduction)
+- [Company API](/api-reference/company/introduction)

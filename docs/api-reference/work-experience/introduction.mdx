@@ -17,11 +17,11 @@ http://localhost:3000/api/v1
 
 | Method | Endpoint                                  | Description               | Auth Required    |
 | ------ | ----------------------------------------- | ------------------------- | ---------------- |
-| GET    | `/job-seekers/me/work-experiences`        | Get all work experiences  | Yes (Job Seeker) |
-| GET    | `/job-seekers/me/work-experiences/:id`   | Get work experience by ID | Yes (Job Seeker) |
-| POST   | `/job-seekers/me/work-experiences`       | Create work experience    | Yes (Job Seeker) |
-| PATCH  | `/job-seekers/me/work-experiences/:id`   | Update work experience    | Yes (Job Seeker) |
-| DELETE | `/job-seekers/me/work-experiences/:id`   | Delete work experience    | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/work-experiences`        | Get all work experiences  | Yes (Authenticated) |
+| GET    | `/job-seekers/me/work-experiences/:expId` | Get work experience by ID | Yes (Authenticated) |
+| POST   | `/job-seekers/me/work-experiences`        | Create work experience    | Yes (Authenticated) |
+| PATCH  | `/job-seekers/me/work-experiences/:expId` | Update work experience    | Yes (Authenticated) |
+| DELETE | `/job-seekers/me/work-experiences/:expId` | Delete work experience    | Yes (Authenticated) |
 
 ## Fields
 

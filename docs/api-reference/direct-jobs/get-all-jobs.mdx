@@ -154,14 +154,14 @@ Retrieve all job postings for the authenticated company. Results are ordered by 
 }
 ```
 
-### 401 Unauthorized - Not a Company
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/companies/me/jobs",
     "method": "GET"
@@ -177,3 +177,6 @@ Retrieve all job postings for the authenticated company. Results are ordered by 
   **Sorting**: Results are automatically sorted by creation date in descending order (most recent
   first).
 </Tip>
+
+
+

@@ -95,20 +95,6 @@ Retrieve all skills associated with the authenticated job seeker, including veri
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
-    "timestamp": "2026-02-21T12:15:44.969Z",
-    "path": "/job-seekers/me/skills",
-    "method": "GET"
-  }
-}
-```
 
 ## Notes
 
@@ -118,3 +104,7 @@ Retrieve all skills associated with the authenticated job seeker, including veri
   **Verification Status**: Skills parsed from CV are marked as `verified: true`. Manually added
   skills are marked as `verified: false`.
 </Tip>
+
+
+
+

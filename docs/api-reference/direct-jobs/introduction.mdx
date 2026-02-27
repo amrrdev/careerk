@@ -28,15 +28,14 @@ http://localhost:3000/api/v1
 
 ## Job Status Flow
 
+```text
+DRAFT -> PUBLISHED -> PAUSED -> CLOSED
 ```
-DRAFT ──► PUBLISHED ──► PAUSED ──► CLOSED
-   │              │             │
-   │              │             └── Final (cannot reopen)
-   │              │
-   │              └── Can revert to PUBLISHED
-   │
-   └── Can publish anytime
-```
+
+- `DRAFT` can be published anytime.
+- `PUBLISHED` can move to `PAUSED` or `CLOSED`.
+- `PAUSED` can move back to `PUBLISHED` or to `CLOSED`.
+- `CLOSED` is final and cannot be reopened.
 
 ## Job Statuses
 
@@ -89,3 +88,4 @@ DRAFT ──► PUBLISHED ──► PAUSED ──► CLOSED
 | `CLOSED`    | Job is closed (final)                  |
 
 See detailed documentation for each endpoint in the API Reference section.
+

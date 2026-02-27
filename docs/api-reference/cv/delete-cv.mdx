@@ -59,14 +59,14 @@ Delete your current CV from your profile. This removes the CV file from storage 
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me",
     "method": "DELETE"
@@ -97,3 +97,6 @@ Delete your current CV from your profile. This removes the CV file from storage 
 </Info>
 
 <Tip>**Re-upload Available**: You can upload a new CV at any time after deleting the old one.</Tip>
+
+
+

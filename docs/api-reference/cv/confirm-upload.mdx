@@ -138,14 +138,14 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/confirm",
     "method": "POST"
@@ -181,3 +181,6 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
   downloaded using GET /cv/me/download-url. The NLP parsing starts automatically and you can
   preview results using GET /cv-parse/preview.
 </Info>
+
+
+
