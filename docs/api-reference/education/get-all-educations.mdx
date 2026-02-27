@@ -124,20 +124,6 @@ Retrieve all education entries for the authenticated job seeker. The results are
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
-    "timestamp": "2026-02-18T10:00:00.000Z",
-    "path": "/job-seekers/me/educations",
-    "method": "GET"
-  }
-}
-```
 
 ## Notes
 
@@ -147,3 +133,7 @@ Retrieve all education entries for the authenticated job seeker. The results are
   **Sorting**: Results are automatically sorted by start date in descending order (most recent
   first).
 </Tip>
+
+
+
+

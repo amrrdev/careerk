@@ -1,11 +1,12 @@
 ---
 title: Introduction
-description: 'Authentication API - Register, login, and manage sessions'
+description: 'Authentication API - Register, verify, login, and refresh sessions'
 ---
 
 # Authentication API
 
-The Authentication API provides endpoints for user registration, login, and session management.
+The Authentication API provides endpoints for account creation, email verification, login, session
+refresh, and password recovery.
 
 ## Base URL
 
@@ -17,38 +18,34 @@ http://localhost:3000/api/v1
 
 ### Registration
 
-| Method | Endpoint                  | Description                      | Auth Required |
-| ------ | ------------------------ | -------------------------------- | ------------- |
-| POST   | `/auth/register/job-seeker` | Register a new job seeker account | No            |
-| POST   | `/auth/register/company`   | Register a new company account   | No            |
+| Method | Endpoint                     | Description                       | Auth Required |
+| ------ | ---------------------------- | --------------------------------- | ------------- |
+| POST   | `/auth/register/job-seeker`  | Register a new job seeker account | No            |
+| POST   | `/auth/register/company`     | Register a new company account    | No            |
 
-### Login
+### Verification and Login
 
-| Method | Endpoint            | Description                    | Auth Required |
-| ------ | ------------------ | ------------------------------ | ------------- |
-| POST   | `/auth/login`      | Login with email and password | No            |
-| POST   | `/auth/login/google` | Login with Google OAuth       | No            |
-| POST   | `/auth/login/linkedin` | Login with LinkedIn OAuth   | No            |
+| Method | Endpoint                      | Description                                 | Auth Required |
+| ------ | ----------------------------- | ------------------------------------------- | ------------- |
+| POST   | `/auth/verify-email`          | Verify account email using OTP              | No            |
+| POST   | `/auth/resend-verification`   | Resend verification OTP                     | No            |
+| POST   | `/auth/login`                 | Login with email and password               | No            |
 
 ### Session Management
 
-| Method | Endpoint            | Description                    | Auth Required |
-| ------ | ------------------ | ------------------------------ | ------------- |
-| POST   | `/auth/logout`     | Logout and invalidate token    | Yes           |
-| POST   | `/auth/refresh-token` | Refresh access token        | Yes           |
+| Method | Endpoint               | Description                                          | Auth Required |
+| ------ | ---------------------- | ---------------------------------------------------- | ------------- |
+| POST   | `/auth/refresh-token`  | Refresh access token using `refreshToken` cookie     | No            |
 
 ### Password Management
 
-| Method | Endpoint              | Description                       | Auth Required |
-| ------ | -------------------- | --------------------------------- | ------------- |
-| POST   | `/auth/forgot-password` | Request password reset email   | No            |
-| POST   | `/auth/reset-password` | Reset password with token      | No            |
+| Method | Endpoint                 | Description                         | Auth Required |
+| ------ | ------------------------ | ----------------------------------- | ------------- |
+| POST   | `/auth/forgot-password`  | Request password reset OTP          | No            |
+| POST   | `/auth/reset-password`   | Reset password with email + OTP     | No            |
 
-### Email Verification
-
-| Method | Endpoint               | Description                     | Auth Required |
-| ------ | --------------------- | ------------------------------- | ------------- |
-| POST   | `/auth/verify-email`  | Verify email with token         | No            |
-| POST   | `/auth/resend-verification` | Resend verification email | Yes (Authenticated) |
+<Note>
+  There are currently no OAuth login endpoints and no logout endpoint in this API.
+</Note>
 
 See detailed documentation for each endpoint in the API Reference section.

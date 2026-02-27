@@ -108,14 +108,14 @@ This endpoint does not require a request body. It automatically uses the authent
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-26T17:30:00.000Z",
     "path": "/job-seekers/me/skill-analysis",
     "method": "POST"
@@ -140,3 +140,6 @@ This endpoint does not require a request body. It automatically uses the authent
   **Profile Required**: Ensure your profile is complete with skills, work experience, and a target
   job title before creating an analysis for the best results.
 </Tip>
+
+
+

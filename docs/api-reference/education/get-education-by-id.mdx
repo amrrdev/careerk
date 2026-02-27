@@ -116,20 +116,6 @@ Retrieve a specific education entry by its ID. Only returns educations belonging
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
-    "timestamp": "2026-02-18T10:00:00.000Z",
-    "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "GET"
-  }
-}
-```
 
 ### 404 Not Found
 
@@ -154,3 +140,7 @@ Returned when the education doesn't exist or doesn't belong to the user.
 curl -X GET http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uuid \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
+
+
+
+

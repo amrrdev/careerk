@@ -1,0 +1,70 @@
+---
+title: 'Skill Gap Analysis API'
+description: 'Create and track AI-powered skill gap analyses for job seekers'
+---
+
+# Skill Gap Analysis API
+
+The Skill Gap Analysis API helps job seekers evaluate profile readiness for a target role and get
+actionable recommendations.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Endpoints Overview
+
+| Method | Endpoint                                 | Description                    | Auth Required    |
+| ------ | ---------------------------------------- | ------------------------------ | ---------------- |
+| POST   | `/job-seekers/me/skill-analysis`         | Start a new analysis           | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/skill-analysis/latest`  | Get most recent analysis       | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/skill-analysis/:id`     | Get a specific analysis by ID  | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/skill-analysis/history` | Get paginated analysis history | Yes (Job Seeker) |
+
+## How It Works
+
+1. Frontend calls `POST /job-seekers/me/skill-analysis` to start analysis.
+2. API returns immediately with `status: PROCESSING`.
+3. Background worker generates results asynchronously.
+4. Frontend polls `GET /job-seekers/me/skill-analysis/latest` (or uses history/by-id) to read final
+   output.
+
+## Analysis Status
+
+| Status       | Meaning |
+| ------------ | ------- |
+| `PROCESSING` | Analysis is running in background |
+| `COMPLETED`  | Analysis finished successfully |
+| `FAILED`     | Analysis failed |
+
+## Response Shape (Summary)
+
+Completed analyses typically include:
+
+- `targetRole`
+- `cvScore` (0 to 100)
+- `strengths` (array of strings)
+- `gaps` (array with `skill`, `importance`, `suggestion`)
+- `recommendations` (array of strings)
+- timestamps like `createdAt` and `completedAt`
+
+## Limits and Behavior
+
+- Weekly limit: up to 10 new analyses per job seeker.
+- Weekly window resets on Monday.
+- History endpoint is paginated (`page`, `limit`; default `limit` is 10).
+
+## Frontend Integration Tips
+
+- After create, show a "processing" state and retry latest endpoint after 10-30 seconds.
+- Keep polling interval reasonable (for example every 3-5 seconds) with timeout handling.
+- Use history for older analyses and by-id route for detail views.
+
+## Related Endpoints
+
+- [Create Skill Gap Analysis](/api-reference/job-seeker/create-skill-gap-analysis)
+- [Get Latest Analysis](/api-reference/job-seeker/get-latest-skill-gap-analysis)
+- [Get Analysis By ID](/api-reference/job-seeker/get-skill-gap-analysis-by-id)
+- [Get Analysis History](/api-reference/job-seeker/get-skill-gap-analysis-history)

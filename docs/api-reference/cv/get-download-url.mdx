@@ -68,14 +68,14 @@ Get a presigned URL to download your uploaded CV. The download URL is valid for 
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me/downoad-url",
     "method": "GET"
@@ -104,3 +104,6 @@ Get a presigned URL to download your uploaded CV. The download URL is valid for 
   **URL Expiration**: The download URL expires after 1 hour. If you need to download the file after
   this time, request a new URL.
 </Warning>
+
+
+

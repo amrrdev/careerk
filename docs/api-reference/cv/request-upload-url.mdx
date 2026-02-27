@@ -93,14 +93,14 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/presigned-url",
     "method": "POST"
@@ -132,3 +132,6 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
   **URL Expiration**: The presigned URL expires after 1 hour. If you don't upload the file within
   this time, you'll need to request a new URL.
 </Warning>
+
+
+

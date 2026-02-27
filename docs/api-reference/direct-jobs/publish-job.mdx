@@ -34,7 +34,7 @@ Publish a job posting to make it visible on the platform. Candidates can apply t
 
 ## Response
 
-### Success Response (200 OK)
+### Success Response (201 Created)
 
 ```json
 {
@@ -77,14 +77,14 @@ Publish a job posting to make it visible on the platform. Candidates can apply t
 
 ## Error Responses
 
-### 400 Bad Request - Job Not Found
+### 404 Not Found - Job Not Found
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Record not found",
-    "statusCode": 400,
+    "message": "Job not found",
+    "statusCode": 404,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/companies/me/jobs/{jobId}/publish",
     "method": "POST"

@@ -117,20 +117,6 @@ Or for a past job:
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
-    "timestamp": "2026-02-18T10:00:00.000Z",
-    "path": "/job-seekers/me/work-experiences",
-    "method": "POST"
-  }
-}
-```
 
 ### 400 Bad Request - Validation Error
 
@@ -174,3 +160,7 @@ curl -X POST http://localhost:3000/api/v1/job-seekers/me/work-experiences \
 </Info>
 
 <Warning>**Date Format**: Dates must be in ISO 8601 format (YYYY-MM-DD).</Warning>
+
+
+
+

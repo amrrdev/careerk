@@ -39,9 +39,6 @@ Delete an education entry. This action cannot be undone.
 ```json
 {
   "success": true,
-  "data": {
-    "message": "Education deleted successfully"
-  },
   "message": "Success",
   "meta": {
     "timestamp": "2026-02-18T10:00:00.000Z",
@@ -68,20 +65,6 @@ Delete an education entry. This action cannot be undone.
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
-    "timestamp": "2026-02-18T10:00:00.000Z",
-    "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "DELETE"
-  }
-}
-```
 
 ### 404 Not Found
 
@@ -118,3 +101,7 @@ curl -X DELETE http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uu
   **Re-add Deleted Entry**: If you accidentally delete an education, you can create a new one using
   the create endpoint.
 </Tip>
+
+
+
+

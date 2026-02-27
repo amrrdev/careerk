@@ -68,14 +68,14 @@ This endpoint deactivates (soft delete) the current job seeker's account. The ac
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
+### 403 Forbidden - Insufficient Permissions
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
+    "message": "Forbidden resource",
+    "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
     "method": "DELETE"
@@ -132,3 +132,6 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
   **Consider Before Deactivating**: If you're just taking a break from job hunting, consider
   updating your availability status to "NOT_LOOKING" instead of deactivating your account.
 </Tip>
+
+
+

@@ -29,18 +29,36 @@ No request body is required. The refresh token is automatically sent via HTTP-on
 
 ```typescript
 interface RefreshTokenResponse {
-  accessToken: string;
+  success: boolean;
+  data: {
+    accessToken: string;
+  };
+  message: string;
+  meta: {
+    timestamp: string;
+    path: string;
+    method: string;
+  };
 }
 ```
 
 ```json
 {
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwidHlwZSI6IkpPQl9TRUVLRVIiLCJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MDUzMTk0MDAsImV4cCI6MTcwNTMyMzAwMCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.signature"
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-27T11:20:00.000Z",
+    "path": "/auth/refresh-token",
+    "method": "POST"
+  }
 }
 ```
 
-<ResponseField name="accessToken" type="string">
-  New JWT access token for authenticating API requests. Valid for 1 hour.
+<ResponseField name="data.accessToken" type="string">
+  New JWT access token for authenticating API requests.
 </ResponseField>
 
 ## Important: Refresh Token Cookie
@@ -108,9 +126,14 @@ Returned when refresh token cookie is missing.
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Refresh token not found",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Refresh token not found",
+    "statusCode": 401,
+    "timestamp": "2026-02-27T11:20:00.000Z",
+    "path": "/auth/refresh-token",
+    "method": "POST"
+  }
 }
 ```
 
@@ -129,9 +152,14 @@ Returned when refresh token is invalid, expired, or already used.
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Invalid refresh token",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Invalid refresh token",
+    "statusCode": 401,
+    "timestamp": "2026-02-27T11:20:00.000Z",
+    "path": "/auth/refresh-token",
+    "method": "POST"
+  }
 }
 ```
 
@@ -152,9 +180,14 @@ Returned when using access token instead of refresh token.
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Invalid token type",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Invalid token type",
+    "statusCode": 401,
+    "timestamp": "2026-02-27T11:20:00.000Z",
+    "path": "/auth/refresh-token",
+    "method": "POST"
+  }
 }
 ```
 

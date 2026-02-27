@@ -131,20 +131,6 @@ Or for currently studying:
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
-    "timestamp": "2026-02-18T10:00:00.000Z",
-    "path": "/job-seekers/me/educations",
-    "method": "POST"
-  }
-}
-```
 
 ### 400 Bad Request - Validation Error
 
@@ -193,3 +179,7 @@ curl -X POST http://localhost:3000/api/v1/job-seekers/me/educations \
 <Warning>**Date Format**: Dates must be in ISO 8601 format (YYYY-MM-DD).</Warning>
 
 <Tip>**GPA**: GPA must be between 0 and 4.</Tip>
+
+
+
+

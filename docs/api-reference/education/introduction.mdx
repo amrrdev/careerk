@@ -17,11 +17,11 @@ http://localhost:3000/api/v1
 
 | Method | Endpoint                              | Description         | Auth Required    |
 | ------ | ------------------------------------ | ------------------- | ---------------- |
-| GET    | `/job-seekers/me/educations`         | Get all educations  | Yes (Job Seeker) |
-| GET    | `/job-seekers/me/educations/:id`    | Get education by ID | Yes (Job Seeker) |
-| POST   | `/job-seekers/me/educations`         | Create education    | Yes (Job Seeker) |
-| PATCH  | `/job-seekers/me/educations/:id`    | Update education    | Yes (Job Seeker) |
-| DELETE | `/job-seekers/me/educations/:id`    | Delete education    | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/educations`         | Get all educations  | Yes (Authenticated) |
+| GET    | `/job-seekers/me/educations/:educationId` | Get education by ID | Yes (Authenticated) |
+| POST   | `/job-seekers/me/educations`         | Create education    | Yes (Authenticated) |
+| PATCH  | `/job-seekers/me/educations/:educationId` | Update education    | Yes (Authenticated) |
+| DELETE | `/job-seekers/me/educations/:educationId` | Delete education    | Yes (Authenticated) |
 
 ## Fields
 

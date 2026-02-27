@@ -120,20 +120,6 @@ All fields are optional for updates:
 }
 ```
 
-### 401 Unauthorized - Not a Job Seeker
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Insufficient permissions",
-    "statusCode": 401,
-    "timestamp": "2026-02-18T10:00:00.000Z",
-    "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "PATCH"
-  }
-}
-```
 
 ### 404 Not Found
 
@@ -193,3 +179,7 @@ curl -X PATCH http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uui
   **Updating Current Status**: To mark a completed education as currently studying, set `isCurrent`
   to `true` and remove `endDate`.
 </Tip>
+
+
+
+

@@ -61,30 +61,39 @@ GET /api/v1/jobs
 
 ```json
 {
-  "jobs": [
-    {
-      "id": "uuid",
-      "title": "Senior Backend Engineer",
-      "description": "We are looking for...",
-      "requirements": "5+ years experience",
-      "responsibilities": "Design APIs",
-      "location": "Cairo, Egypt",
-      "salaryMin": 15000,
-      "salaryMax": 25000,
-      "jobType": "FULL_TIME",
-      "workPreference": "REMOTE",
-      "experienceLevel": "SENIOR",
-      "companyName": "Tech Corp",
-      "companyLogoUrl": null,
-      "postedAt": "2026-02-22T14:51:00.000Z",
-      "source": "direct",
-      "skills": [{ "skillId": "uuid", "name": "Node.js" }]
-    }
-  ],
-  "total": 50,
-  "page": 1,
-  "limit": 20,
-  "totalPages": 3
+  "success": true,
+  "data": {
+    "jobs": [
+      {
+        "id": "uuid",
+        "title": "Senior Backend Engineer",
+        "description": "We are looking for...",
+        "requirements": "5+ years experience",
+        "responsibilities": "Design APIs",
+        "location": "Cairo, Egypt",
+        "salaryMin": 15000,
+        "salaryMax": 25000,
+        "jobType": "FULL_TIME",
+        "workPreference": "REMOTE",
+        "experienceLevel": "SENIOR",
+        "companyName": "Tech Corp",
+        "companyLogoUrl": null,
+        "postedAt": "2026-02-22T14:51:00.000Z",
+        "source": "direct",
+        "skills": [{ "skillId": "uuid", "name": "Node.js" }]
+      }
+    ],
+    "total": 50,
+    "page": 1,
+    "limit": 20,
+    "totalPages": 3
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-27T11:20:00.000Z",
+    "path": "/jobs",
+    "method": "GET"
+  }
 }
 ```
 
@@ -92,25 +101,34 @@ GET /api/v1/jobs
 
 ```json
 {
-  "jobs": [
-    {
-      "id": "uuid",
-      "title": "Frontend Developer",
-      "description": "Join our team...",
-      "location": "Remote",
-      "salary": "5000-8000 EGP",
-      "jobType": "FULL_TIME",
-      "companyName": "External Corp",
-      "sourceUrl": "https://linkedin.com/jobs/...",
-      "postedAt": "2026-02-20T10:00:00.000Z",
-      "source": "scraped",
-      "skills": [{ "skillId": "uuid", "name": "React" }]
-    }
-  ],
-  "total": 100,
-  "page": 1,
-  "limit": 20,
-  "totalPages": 5
+  "success": true,
+  "data": {
+    "jobs": [
+      {
+        "id": "uuid",
+        "title": "Frontend Developer",
+        "description": "Join our team...",
+        "location": "Remote",
+        "salary": "5000-8000 EGP",
+        "jobType": "FULL_TIME",
+        "companyName": "External Corp",
+        "sourceUrl": "https://linkedin.com/jobs/...",
+        "postedAt": "2026-02-20T10:00:00.000Z",
+        "source": "scraped",
+        "skills": [{ "skillId": "uuid", "name": "React" }]
+      }
+    ],
+    "total": 100,
+    "page": 1,
+    "limit": 20,
+    "totalPages": 5
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-27T11:20:00.000Z",
+    "path": "/jobs",
+    "method": "GET"
+  }
 }
 ```
 
