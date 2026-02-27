@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { Auth } from 'src/modules/iam/authentication/decorators/auth.decorator';
 import { Roles } from 'src/modules/iam/authentication/decorators/roles.decorator';
 import { AuthType } from 'src/modules/iam/enums/auth-type.enum';
@@ -7,7 +7,7 @@ import { SkillGapAnalysisService } from './skill-gap-analysis.service';
 import { ResponseMessage } from 'src/core/decorators/response-message.decorator';
 import { ActiveUser } from 'src/modules/iam/decorators/active-user.decorator';
 import { HistoryQueryDto } from './dto/history-query.dto';
-import { JobSeekerRepository } from '../repositories/job-seeker.repository';
+import { SkillGapAnalysisOrchestratorService } from './skill-gap-analysis-orchestrator.service';
 
 @Controller('job-seekers/me/skill-analysis')
 @Auth(AuthType.Bearer)
@@ -15,30 +15,13 @@ import { JobSeekerRepository } from '../repositories/job-seeker.repository';
 export class SkillGapAnalysisController {
   constructor(
     private readonly skillAnalysisGapService: SkillGapAnalysisService,
-    private readonly jobSeekerRepository: JobSeekerRepository,
+    private readonly skillGapAnalysisOrchestrator: SkillGapAnalysisOrchestratorService,
   ) {}
 
   @Post()
   @ResponseMessage('Skill gap analysis started')
   async createAnalysis(@ActiveUser('sub') jobSeekerId: string) {
-    const profile = await this.jobSeekerRepository.findMyProfile(jobSeekerId);
-    if (!profile || !profile.profile) {
-      throw new BadRequestException('Job seeker profile not found');
-    }
-
-    const skills = profile.jobSeekerSkills.map((jss) => jss.skill.name);
-    const workExperience = profile.workExperiences.map(
-      (wrkexp) =>
-        `Company: ${wrkexp.companyName}, Title: ${wrkexp.jobTitle}, Description: ${wrkexp.description}`,
-    );
-
-    return this.skillAnalysisGapService.createAnalysis(
-      jobSeekerId,
-      profile.profile.title,
-      profile.profile.yearsOfExperience || 0,
-      skills,
-      workExperience,
-    );
+    return this.skillGapAnalysisOrchestrator.createAnalysisForJobSeeker(jobSeekerId);
   }
 
   @Get('latest')

@@ -10,6 +10,7 @@ import { SkillsModule } from './skills/skills.module';
 import { JobSeekerApplicationModule } from './application/application.module';
 import { SkillGapAnalysisModule } from './skill-gap-analysis/skill-gap-analysis.module';
 import { SkillGapAnalysisController } from './skill-gap-analysis/skill-gap-analysis.controller';
+import { SkillGapAnalysisOrchestratorService } from './skill-gap-analysis/skill-gap-analysis-orchestrator.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SkillGapAnalysisController } from './skill-gap-analysis/skill-gap-analy
   controllers: [JobSeekerController, SkillGapAnalysisController],
   providers: [
     JobSeekerService,
+    SkillGapAnalysisOrchestratorService,
     {
       provide: JobSeekerRepository,
       useClass: JobSeekerRepositoryImpl,
