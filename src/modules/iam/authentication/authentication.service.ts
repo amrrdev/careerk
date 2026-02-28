@@ -353,7 +353,18 @@ export class AuthenticationService {
       },
     );
   }
-  async logout(userId: string) {
-    await this.refreshTokenStroageService.invalidate(userId);
+  async logout(refreshToken?: string) {
+    if (!refreshToken || typeof refreshToken !== 'string') {
+      throw new UnauthorizedException('Refresh token not found');
+    }
+
+    const payload = await this.jwtService.verifyAsync<{
+      sub: string;
+      refreshTokenId: string;
+    }>(refreshToken);
+
+    await this.refreshTokenStroageService.invalidate(payload.sub);
+
+    return {};
   }
 }
