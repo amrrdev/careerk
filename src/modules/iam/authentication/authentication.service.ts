@@ -353,4 +353,7 @@ export class AuthenticationService {
       },
     );
   }
+  async logout(userId: string) {
+    await this.refreshTokenStroageService.invalidate(userId);
+  }
 }

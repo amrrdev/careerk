@@ -110,4 +110,30 @@ export class AuthenticationController {
   resendVerification(@Body() resendVerificationDto: ResendVerificationDto) {
     return this.authenticationService.resendVerification(resendVerificationDto.email);
   }
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage('Logged out successfully')
+  async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
+    const cookies = request.cookies as Record<string, unknown> | undefined;
+    const refreshToken = cookies?.[REFRESH_TOKEN_COOKIE_KEY];
+
+    if (refreshToken && typeof refreshToken === 'string') {
+      try {
+        const payload = await this.authenticationService['jwtService'].verifyAsync<{
+          sub: string;
+          type: string;
+          tokenType: string;
+          refreshTokenId: string;
+        }>(refreshToken);
+
+        await this.authenticationService.logout(payload.sub);
+      } catch {
+        // intentionally empty: ignore invalid refresh token
+      }
+    }
+
+    response.clearCookie(REFRESH_TOKEN_COOKIE_KEY, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+    return {};
+  }
 }
