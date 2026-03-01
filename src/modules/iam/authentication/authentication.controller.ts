@@ -110,4 +110,20 @@ export class AuthenticationController {
   resendVerification(@Body() resendVerificationDto: ResendVerificationDto) {
     return this.authenticationService.resendVerification(resendVerificationDto.email);
   }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage('Logged out successfully')
+  async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
+    const cookies = request.cookies as Record<string, unknown> | undefined;
+    const token = cookies?.[REFRESH_TOKEN_COOKIE_KEY];
+
+    const refreshToken = typeof token === 'string' ? token : undefined;
+
+    await this.authenticationService.logout(refreshToken);
+
+    response.clearCookie(REFRESH_TOKEN_COOKIE_KEY, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+    return {};
+  }
 }
