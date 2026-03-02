@@ -39,6 +39,9 @@ model JobSeeker {
   jobBookmarks    JobBookmark[]
   applications Application[]
   skillGapAnalyses SkillGapAnalysis[]
+  directJobMatches  DirectJobMatch[]  @relation("DirectJobMatches")
+  scrapedJobMatches ScrapedJobMatch[] @relation("ScrapedJobMatches")
+
 
   @@index([isActive])
   @@map("job_seekers")
@@ -232,6 +235,8 @@ model ScrapedJob {
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   skills          ScrapedJobSkill[]
+  matches ScrapedJobMatch[]
+
 
   @@index([source])
   @@index([companyName])
@@ -273,6 +278,8 @@ model DirectJob {
   company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   skills            DirectJobSkill[]
   applications Application[]
+  matches DirectJobMatch[]
+
 
   @@index([companyId])
   @@index([status])
@@ -291,6 +298,44 @@ model DirectJobSkill {
   @@unique([jobId, skillId])
   @@map("direct_job_skills")
 }
+
+
+model DirectJobMatch {
+  id                   String    @id @default(uuid()) @db.Uuid
+  directJobId          String    @db.Uuid @map("direct_job_id")
+  jobSeekerId          String    @db.Uuid @map("job_seeker_id")
+
+  matchScore           Decimal   @map("match_score") @db.Decimal(5, 2)
+
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  directJob            DirectJob @relation(fields: [directJobId], references: [id], onDelete: Cascade)
+  jobSeeker            JobSeeker @relation("DirectJobMatches", fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@unique([directJobId, jobSeekerId])
+  @@index([jobSeekerId, matchScore])
+  @@map("direct_job_matches")
+}
+
+model ScrapedJobMatch {
+  id                   String     @id @default(uuid()) @db.Uuid
+  scrapedJobId         String     @db.Uuid @map("scraped_job_id")
+  jobSeekerId          String     @db.Uuid @map("job_seeker_id")
+
+  matchScore           Decimal    @map("match_score") @db.Decimal(5, 2)
+
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
+
+  scrapedJob           ScrapedJob @relation(fields: [scrapedJobId], references: [id], onDelete: Cascade)
+  jobSeeker            JobSeeker  @relation("ScrapedJobMatches", fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@unique([scrapedJobId, jobSeekerId])
+  @@index([scrapedJobId, matchScore])
+  @@map("scraped_job_matches")
+}
+
 
 
 model SkillGapAnalysis {
