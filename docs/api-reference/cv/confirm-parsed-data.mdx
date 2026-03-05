@@ -40,8 +40,8 @@ Review the parsed CV data and confirm to save it to your profile. This creates o
   Last name of the job seeker.
 </ParamField>
 
-<ParamField body="personalInfo.email" type="string" required>
-  Email address.
+<ParamField body="personalInfo.cvEmail" type="string" required>
+  Email address from the CV.
 </ParamField>
 
 <ParamField body="personalInfo.phone" type="string" required>
@@ -115,7 +115,7 @@ Review the parsed CV data and confirm to save it to your profile. This creates o
   "personalInfo": {
     "firstName": "Amr",
     "lastName": "Ashraf Mubarak",
-    "email": "amrrdev@gmail.com",
+    "cvEmail": "amrrdev@gmail.com",
     "phone": "+20 120 456 2326",
     "location": "",
     "linkedinUrl": "linkedin.com/in/amramubarak",
@@ -229,9 +229,8 @@ Review the parsed CV data and confirm to save it to your profile. This creates o
 </Steps>
 
 <Info>
-  **What gets saved**: This endpoint saves the following to your profile:
-  - JobSeekerProfile: title, summary, phone, email, location, social links, work preferences
-  - Education: all education entries
-  - WorkExperience: all work experience entries
-  - JobSeekerSkill: all skills with verified: true flag
+  **What gets saved**: This endpoint saves the following to your profile: - JobSeekerProfile: title,
+  summary, phone, cvEmail, location, social links, work preferences - Education: all education
+  entries - WorkExperience: all work experience entries - JobSeekerSkill: all skills with verified:
+  true flag
 </Info>
