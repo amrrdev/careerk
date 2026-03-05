@@ -19,7 +19,7 @@ class PersonalInfoDto {
   lastName: string;
 
   @IsString()
-  email: string;
+  cvEmail: string;
 
   @IsString()
   phone: string;
