@@ -40,7 +40,7 @@ Get the latest parsed CV data from the most recent upload. Returns status and pa
       "personalInfo": {
         "firstName": "Amr",
         "lastName": "Ashraf Mubarak",
-        "email": "amrrdev@gmail.com",
+        "cvEmail": "amrrdev@gmail.com",
         "phone": "+20 120 456 2326",
         "location": "",
         "linkedinUrl": "linkedin.com/in/amramubarak",
@@ -156,17 +156,17 @@ Returned when no CV has been uploaded:
 
 ## Data Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `status` | string | Status of the parse result: PENDING, COMPLETED, FAILED, CONFIRMED |
-| `parseResultId` | string | Unique identifier for this parse result |
-| `data.personalInfo` | object | Personal information extracted from CV |
-| `data.title` | string | Job title extracted from CV |
-| `data.summary` | string | Professional summary extracted from CV |
-| `data.education` | array | Array of education entries |
-| `data.workExperience` | array | Array of work experience entries |
-| `data.skills` | array | Array of skills with `verified: true` flag |
-| `data.profile` | object | Profile preferences including workPreference, yearsOfExperience, etc. |
+| Field                 | Type   | Description                                                           |
+| --------------------- | ------ | --------------------------------------------------------------------- |
+| `status`              | string | Status of the parse result: PENDING, COMPLETED, FAILED, CONFIRMED     |
+| `parseResultId`       | string | Unique identifier for this parse result                               |
+| `data.personalInfo`   | object | Personal information extracted from CV                                |
+| `data.title`          | string | Job title extracted from CV                                           |
+| `data.summary`        | string | Professional summary extracted from CV                                |
+| `data.education`      | array  | Array of education entries                                            |
+| `data.workExperience` | array  | Array of work experience entries                                      |
+| `data.skills`         | array  | Array of skills with `verified: true` flag                            |
+| `data.profile`        | object | Profile preferences including workPreference, yearsOfExperience, etc. |
 
 ## Complete CV Flow
 
@@ -179,5 +179,6 @@ Returned when no CV has been uploaded:
 </Steps>
 
 <Info>
-  **Skills Verification**: All skills returned from CV parsing are marked as `verified: true` since they were extracted from your uploaded CV document.
+  **Skills Verification**: All skills returned from CV parsing are marked as `verified: true` since
+  they were extracted from your uploaded CV document.
 </Info>
