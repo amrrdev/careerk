@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   ApplicationDetail,
   ApplicationFilters,
+  ApplicationForStatusUpdate,
   PaginatedApplications,
   UpdateApplicationData,
 } from '../types/application.types';
@@ -24,6 +25,9 @@ export abstract class CompanyApplicationRepository {
     data: UpdateApplicationData,
   ): Promise<void>;
 
-  abstract checkExistingApplication(applicationId: string, companyId: string): Promise<boolean>;
+  abstract findApplicationForStatusUpdate(
+    applicationId: string,
+    companyId: string,
+  ): Promise<ApplicationForStatusUpdate | null>;
   // abstract getApplicationCvKey(applicationId: string, companyId: string): Promise<string | null>;
 }

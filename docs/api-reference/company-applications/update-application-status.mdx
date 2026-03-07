@@ -29,44 +29,106 @@ PATCH /api/v1/companies/me/applications/:id
 ## Request Body
 
 <ParamField body="status" type="enum" required>
-  The new status for the application. - `REVIEWED` - Mark as reviewed - `SHORTLISTED` - Add to
-  shortlist - `INTERVIEW_SCHEDULED` - Schedule interview - `REJECTED` - Reject application - `HIRED`
-  - Hire candidate
-</ParamField>
+  The new status for the application. Supported values:
 
-<ParamField body="notes" type="string" optional>
-  Optional notes or feedback about the application.
+  - `PENDING`
+  - `REVIEWED`
+  - `SHORTLISTED`
+  - `INTERVIEW_SCHEDULED`
+  - `REJECTED`
+  - `HIRED`
+  - `WITHDRAWN`
 </ParamField>
 
 ## Example Request
 
 ```json
 {
-  "status": "SHORTLISTED",
-  "notes": "Strong technical skills, scheduled for technical interview"
+  "status": "SHORTLISTED"
 }
 ```
 
 ## Response
 
+### Success Response (200 OK)
+
 ```json
 {
   "success": true,
-  "data": {
-    "id": "uuid",
-    "status": "SHORTLISTED",
-    "updatedAt": "2025-02-21T14:30:00Z"
-  },
-  "message": "Application status updated successfully"
+  "message": "Application status updated successfully",
+  "meta": {
+    "timestamp": "2026-03-07T21:15:00.000Z",
+    "path": "/companies/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "PATCH"
+  }
 }
 ```
 
+<Info>
+  **Current Implementation**: This endpoint currently returns a success envelope only. It does not
+  return the updated application object.
+</Info>
+
 ## Error Responses
 
-<Error statusCode="400">Invalid status or validation error</Error>
+### 400 Bad Request - Validation Error
 
-<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": [
+      "status must be a valid enum value"
+    ],
+    "statusCode": 400,
+    "timestamp": "2026-03-07T21:15:00.000Z",
+    "path": "/companies/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "PATCH"
+  }
+}
+```
 
-<Error statusCode="404">Application not found</Error>
+### 401 Unauthorized - Invalid or Missing Authentication
 
-<Error statusCode="500">Internal server error</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-03-07T21:15:00.000Z",
+    "path": "/companies/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "PATCH"
+  }
+}
+```
+
+### 403 Forbidden - Not a Company Account
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-03-07T21:15:00.000Z",
+    "path": "/companies/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "PATCH"
+  }
+}
+```
+
+### 404 Not Found - Application Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "no application exists with this id",
+    "statusCode": 404,
+    "timestamp": "2026-03-07T21:15:00.000Z",
+    "path": "/companies/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "PATCH"
+  }
+}
+```

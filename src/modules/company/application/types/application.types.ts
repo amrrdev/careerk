@@ -128,6 +128,23 @@ export const applicationDetailSelect = {
 
 export type ApplicationDetail = Prisma.ApplicationGetPayload<typeof applicationDetailSelect>;
 
+export const applicationForStatusUpdateSelect = {
+  select: {
+    jobSeekerId: true,
+    status: true,
+    jobSeeker: {
+      select: {
+        firstName: true,
+        email: true,
+      },
+    },
+  },
+} satisfies Prisma.ApplicationDefaultArgs;
+
+export type ApplicationForStatusUpdate = Prisma.ApplicationGetPayload<
+  typeof applicationForStatusUpdateSelect
+>;
+
 export type ApplicationFilters = {
   jobId?: string;
   status?: ApplicationStatusEnum;

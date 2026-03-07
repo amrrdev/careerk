@@ -19,7 +19,7 @@ import { OtpService } from './otp/otp.service';
 import { BullModule } from '@nestjs/bullmq';
 import { EMAIL_QUEUE } from './jobs/queue.constants';
 import { EmailProcessor } from './processors/email.processor';
-import { PasswordResetService } from './authentication/password-reset.service';
+import { PasswordService } from './authentication/password.service';
 
 @Module({
   imports: [
@@ -52,7 +52,7 @@ import { PasswordResetService } from './authentication/password-reset.service';
     RefreshTokenStorageService,
     OtpService,
     EmailProcessor,
-    PasswordResetService,
+    PasswordService,
   ],
 })
 export class IamModule {}

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ApplicationStatusEnum } from 'generated/prisma/client';
 
 @Injectable()
 export class EmailTemplatesService {
@@ -566,5 +567,302 @@ export class EmailTemplatesService {
 </body>
 </html>
     `.trim();
+  }
+
+  getApplicationStatusUpdateTemplate(params: {
+    status: ApplicationStatusEnum;
+    userName?: string;
+    companyName?: string;
+  }): string {
+    const { status, userName, companyName } = params;
+    const safeUserName = userName ? this.escapeHtml(userName) : 'there';
+    const safeCompanyName = companyName ? this.escapeHtml(companyName) : 'a company';
+    const statusLabel = this.formatApplicationStatus(status);
+    const theme = this.getApplicationStatusTheme(status);
+    const statusMessage = this.getApplicationStatusMessage(status);
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status Updated</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #f3f4f6;
+        }
+
+        .email-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .email-container {
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        .email-header {
+            background: linear-gradient(135deg, ${theme.headerStart} 0%, ${theme.headerEnd} 100%);
+            padding: 36px 30px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 30px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.4px;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 15px;
+        }
+
+        .email-body {
+            padding: 42px 36px;
+        }
+
+        .greeting {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 18px;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #4b5563;
+            margin-bottom: 24px;
+        }
+
+        .status-card {
+            background: ${theme.surface};
+            border: 1px solid ${theme.border};
+            border-radius: 14px;
+            padding: 24px;
+            margin: 30px 0;
+        }
+
+        .status-label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 14px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: ${theme.badgeBackground};
+            color: ${theme.badgeText};
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .status-description {
+            font-size: 15px;
+            color: #374151;
+            line-height: 1.7;
+        }
+
+        .next-step {
+            background: #f9fafb;
+            border-left: 4px solid ${theme.headerEnd};
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin: 28px 0;
+        }
+
+        .next-step-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .next-step p {
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        .footer-message {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .email-footer {
+            padding: 28px 36px;
+            background: #f9fafb;
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #d1d5db, transparent);
+            margin: 18px 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-wrapper {
+                padding: 20px 10px;
+            }
+
+            .email-body {
+                padding: 32px 24px;
+            }
+
+            .greeting {
+                font-size: 21px;
+            }
+
+            .email-footer {
+                padding: 22px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <div class="email-header">
+                <div class="logo">CareerK</div>
+                <div class="header-subtitle">Application status update</div>
+            </div>
+
+            <div class="email-body">
+                <div class="greeting">Hi ${safeUserName},</div>
+
+                <div class="message">
+                    ${safeCompanyName} has updated the status of your application on CareerK.
+                </div>
+
+                <div class="status-card">
+                    <div class="status-label">Current status</div>
+                    <div class="status-badge">${statusLabel}</div>
+                    <div class="status-description">
+                        ${statusMessage}
+                    </div>
+                </div>
+
+                <div class="next-step">
+                    <div class="next-step-title">Next step</div>
+                    <p>Open your CareerK account to review the latest application details and continue any required follow-up.</p>
+                </div>
+
+                <div class="footer-message">
+                    This email was sent because application status notifications are enabled for your account.
+                </div>
+            </div>
+
+            <div class="email-footer">
+                <div class="divider"></div>
+                <p>&copy; ${new Date().getFullYear()} CareerK. All rights reserved.</p>
+                <p style="margin-top: 12px;">This is an automated email. Please do not reply to this message.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+  }
+
+  private formatApplicationStatus(status: ApplicationStatusEnum): string {
+    return status
+      .toLowerCase()
+      .split('_')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  }
+
+  private getApplicationStatusMessage(status: ApplicationStatusEnum): string {
+    switch (status) {
+      case ApplicationStatusEnum.PENDING:
+        return 'Your application is in the queue and waiting for the hiring team to review it.';
+      case ApplicationStatusEnum.REVIEWED:
+        return 'Your application has been reviewed and is moving through the company evaluation process.';
+      case ApplicationStatusEnum.SHORTLISTED:
+        return 'Good progress. You have been shortlisted for the next stage of consideration.';
+      case ApplicationStatusEnum.INTERVIEW_SCHEDULED:
+        return 'The company wants to continue with your application and has marked it as interview scheduled. Check the platform for the next instruction.';
+      case ApplicationStatusEnum.REJECTED:
+        return 'The company has decided not to move forward with your application at this stage.';
+      case ApplicationStatusEnum.HIRED:
+        return 'The company has marked your application as hired. Review the platform for any final coordination.';
+      case ApplicationStatusEnum.WITHDRAWN:
+        return 'This application is now marked as withdrawn and is no longer active.';
+      default:
+        return 'Your application status has been updated. Open your account to review the latest details.';
+    }
+  }
+
+  private getApplicationStatusTheme(status: ApplicationStatusEnum) {
+    switch (status) {
+      case ApplicationStatusEnum.SHORTLISTED:
+      case ApplicationStatusEnum.INTERVIEW_SCHEDULED:
+      case ApplicationStatusEnum.HIRED:
+        return {
+          headerStart: '#0f766e',
+          headerEnd: '#15803d',
+          surface: '#ecfdf5',
+          border: '#a7f3d0',
+          badgeBackground: '#d1fae5',
+          badgeText: '#065f46',
+        };
+      case ApplicationStatusEnum.REJECTED:
+      case ApplicationStatusEnum.WITHDRAWN:
+        return {
+          headerStart: '#b91c1c',
+          headerEnd: '#dc2626',
+          surface: '#fef2f2',
+          border: '#fecaca',
+          badgeBackground: '#fee2e2',
+          badgeText: '#991b1b',
+        };
+      case ApplicationStatusEnum.PENDING:
+      case ApplicationStatusEnum.REVIEWED:
+      default:
+        return {
+          headerStart: '#1d4ed8',
+          headerEnd: '#2563eb',
+          surface: '#eff6ff',
+          border: '#bfdbfe',
+          badgeBackground: '#dbeafe',
+          badgeText: '#1d4ed8',
+        };
+    }
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 }

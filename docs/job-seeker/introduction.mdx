@@ -22,6 +22,8 @@ http://localhost:3000/api/v1
 | GET    | `/job-seekers/:id` | Get job seeker profile by ID              | No               |
 | PATCH  | `/job-seekers/me`  | Update current user's profile             | Yes (Job Seeker) |
 | DELETE | `/job-seekers/me`  | Deactivate current user's account         | Yes (Job Seeker) |
+| GET    | `/job-seekers/me/notification-preference` | Get current notification preferences | Yes (Job Seeker) |
+| PATCH  | `/job-seekers/me/notification-preference` | Update notification preferences      | Yes (Job Seeker) |
 
 ## CV Endpoints
 
@@ -84,6 +86,23 @@ See detailed documentation for each endpoint in the API Reference section.
 - [Get Latest Analysis](/api-reference/job-seeker/get-latest-skill-gap-analysis) - Get most recent result
 - [Get Analysis By ID](/api-reference/job-seeker/get-skill-gap-analysis-by-id) - Get specific analysis
 - [Get Analysis History](/api-reference/job-seeker/get-skill-gap-analysis-history) - List all analyses
+
+## Notification Preference Endpoints
+
+| Method | Endpoint                                  | Description                          | Auth Required    |
+| ------ | ----------------------------------------- | ------------------------------------ | ---------------- |
+| GET    | `/job-seekers/me/notification-preference` | Get current notification preferences | Yes (Job Seeker) |
+| PATCH  | `/job-seekers/me/notification-preference` | Update notification preferences      | Yes (Job Seeker) |
+
+<Info>
+  **Default Values**: Notification preferences are initialized automatically with both settings
+  enabled the first time the job seeker reads them.
+</Info>
+
+### Related Endpoints
+
+- [Get Notification Preference](/api-reference/job-seeker/get-notification-preference) - Read current notification settings
+- [Update Notification Preference](/api-reference/job-seeker/update-notification-preference) - Change notification settings
 
 ## Common Enums
 
@@ -199,6 +218,8 @@ The `/job-seekers` endpoint supports filters:
 - [Get Profile By ID](/api-reference/job-seeker/get-profile-by-id) - View a specific profile
 - [Update Profile](/api-reference/job-seeker/update-profile) - Update your profile
 - [Deactivate Account](/api-reference/job-seeker/deactivate-account) - Deactivate your account
+- [Get Notification Preference](/api-reference/job-seeker/get-notification-preference) - Read current notification settings
+- [Update Notification Preference](/api-reference/job-seeker/update-notification-preference) - Change notification settings
 
 ## Work Experience
 

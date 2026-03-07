@@ -31,6 +31,8 @@ model JobSeeker {
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
   profile JobSeekerProfile?
+  notificationPreference JobSeekerNotificationPreference?
+
   educations Education[]
   workExperiences WorkExperience[]
   jobSeekerSkills JobSeekerSkill[]
@@ -404,6 +406,22 @@ model Application {
   @@index([jobSeekerId, updatedAt])
   @@index([status])
   @@map("applications")
+
+}
+
+model JobSeekerNotificationPreference {
+  id                                    String    @id @default(uuid()) @db.Uuid
+  jobSeekerId                           String    @unique @db.Uuid @map("job_seeker_id")
+
+  jobMatchNotificationsEnabled          Boolean   @default(true) @map("job_match_notifications_enabled")
+  applicationStatusNotificationsEnabled Boolean   @default(true) @map("application_status_notifications_enabled")
+
+  createdAt                             DateTime  @default(now()) @map("created_at")
+  updatedAt                             DateTime  @updatedAt @map("updated_at")
+
+  jobSeeker                             JobSeeker @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
+
+  @@map("job_seeker_notification_preferences")
 
 }
 

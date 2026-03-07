@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -19,10 +20,11 @@ import { SendPasswordResetEmailJob } from '../jobs/send-password-reset-email.job
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { HashingService } from '../hashing/hashing.service';
 import { RefreshTokenStorageService } from './refresh-token-storage.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
-export class PasswordResetService {
-  private readonly logger = new Logger(PasswordResetService.name);
+export class PasswordService {
+  private readonly logger = new Logger(PasswordService.name);
   constructor(
     private readonly jobSeekerRepository: JobSeekerRepository,
     private readonly companyRepository: CompanyRepository,
@@ -116,5 +118,41 @@ export class PasswordResetService {
       }
       throw new InternalServerErrorException('Password reset failed');
     }
+  }
+
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
+    const [jobSeeker, company] = await Promise.all([
+      this.jobSeekerRepository.findById(userId),
+      this.companyRepository.findById(userId),
+    ]);
+
+    const user = jobSeeker || company;
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isCorrect = await this.hashingService.compare(
+      changePasswordDto.currentPassword,
+      user.password,
+    );
+
+    if (!isCorrect) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    const newHashedPassword = await this.hashingService.hash(changePasswordDto.newPassword);
+
+    const userType = jobSeeker ? UserType.JOB_SEEKER : UserType.COMPANY;
+
+    const updatedUser =
+      userType === UserType.JOB_SEEKER
+        ? await this.jobSeekerRepository.findByEmailAndUpdatePassword(user.email, newHashedPassword)
+        : await this.companyRepository.findByEmailAndUpdatePassword(user.email, newHashedPassword);
+
+    if (!updatedUser) {
+      throw new InternalServerErrorException('Failed to update password');
+    }
+
+    return updatedUser;
   }
 }

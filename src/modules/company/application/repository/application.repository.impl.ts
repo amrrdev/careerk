@@ -6,6 +6,8 @@ import {
   UpdateApplicationData,
   applicationListSelect,
   applicationDetailSelect,
+  ApplicationForStatusUpdate,
+  applicationForStatusUpdateSelect,
 } from '../types/application.types';
 import { CompanyApplicationRepository } from './application.repository';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
@@ -75,14 +77,17 @@ export class CompanyApplicationRepositoryImpl implements CompanyApplicationRepos
     });
   }
 
-  async checkExistingApplication(applicationId: string, companyId: string): Promise<boolean> {
-    const count = await this.databaseService.application.count({
+  async findApplicationForStatusUpdate(
+    applicationId: string,
+    companyId: string,
+  ): Promise<ApplicationForStatusUpdate | null> {
+    return this.databaseService.application.findUnique({
       where: {
         id: applicationId,
         directJob: { companyId },
       },
+      ...applicationForStatusUpdateSelect,
     });
-    return count > 0;
   }
 
   // getApplicationCvKey(applicationId: string, companyId: string): Promise<string | null> {

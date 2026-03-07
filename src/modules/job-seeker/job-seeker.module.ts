@@ -11,6 +11,7 @@ import { JobSeekerApplicationModule } from './application/application.module';
 import { SkillGapAnalysisModule } from './skill-gap-analysis/skill-gap-analysis.module';
 import { SkillGapAnalysisController } from './skill-gap-analysis/skill-gap-analysis.controller';
 import { SkillGapAnalysisOrchestratorService } from './skill-gap-analysis/skill-gap-analysis-orchestrator.service';
+import { NotificationPreferenceModule } from './notification-preference/notification-preference.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SkillGapAnalysisOrchestratorService } from './skill-gap-analysis/skill-
     SkillsModule,
     JobSeekerApplicationModule,
     SkillGapAnalysisModule,
+    NotificationPreferenceModule,
   ],
   controllers: [JobSeekerController, SkillGapAnalysisController],
   providers: [

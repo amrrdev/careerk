@@ -36,6 +36,7 @@ http://localhost:3000/api/v1
 | Method | Endpoint               | Description                                          | Auth Required |
 | ------ | ---------------------- | ---------------------------------------------------- | ------------- |
 | POST   | `/auth/refresh-token`  | Refresh access token using `refreshToken` cookie     | No            |
+| POST   | `/auth/logout`         | Invalidate the current refresh token and clear cookie | Cookie        |
 
 ### Password Management
 
@@ -43,9 +44,10 @@ http://localhost:3000/api/v1
 | ------ | ------------------------ | ----------------------------------- | ------------- |
 | POST   | `/auth/forgot-password`  | Request password reset OTP          | No            |
 | POST   | `/auth/reset-password`   | Reset password with email + OTP     | No            |
+| POST   | `/auth/change-password`  | Change password for authenticated user | Bearer     |
 
 <Note>
-  There are currently no OAuth login endpoints and no logout endpoint in this API.
+  There are currently no OAuth login endpoints in this API.
 </Note>
 
 See detailed documentation for each endpoint in the API Reference section.

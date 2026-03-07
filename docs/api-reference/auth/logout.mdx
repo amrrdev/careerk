@@ -1,0 +1,108 @@
+---
+title: 'Logout'
+api: 'POST /api/v1/auth/logout'
+description: 'Invalidate the current refresh token and clear the authentication cookie'
+---
+
+## Endpoint
+
+```
+POST /api/v1/auth/logout
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>
+  This endpoint does not use Bearer authentication. It requires the `refreshToken` cookie issued at
+  login or email verification.
+</Note>
+
+## Authentication
+
+Include the refresh token cookie with the request:
+
+```bash
+Cookie: refreshToken=YOUR_REFRESH_TOKEN
+```
+
+If you call this endpoint from the browser, send credentials:
+
+```ts
+fetch('/api/v1/auth/logout', {
+  method: 'POST',
+  credentials: 'include',
+});
+```
+
+## Description
+
+This endpoint:
+
+- verifies the refresh token from the cookie
+- invalidates it in storage
+- clears the `refreshToken` cookie from the response
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": "Logged out successfully",
+  "meta": {
+    "timestamp": "2026-03-07T21:05:00.000Z",
+    "path": "/auth/logout",
+    "method": "POST"
+  }
+}
+```
+
+## Error Responses
+
+### 401 Unauthorized - Refresh Token Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Refresh token not found",
+    "statusCode": 401,
+    "timestamp": "2026-03-07T21:05:00.000Z",
+    "path": "/auth/logout",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized - Invalid Refresh Token
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "invalid token",
+    "statusCode": 401,
+    "timestamp": "2026-03-07T21:05:00.000Z",
+    "path": "/auth/logout",
+    "method": "POST"
+  }
+}
+```
+
+## Notes
+
+<Info>
+  **Cookie-Based Logout**: This endpoint is tied to the refresh token cookie, not the access token
+  in the Authorization header.
+</Info>
+
+<Tip>
+  **Frontend**: After logout succeeds, clear any locally stored access token on the client side.
+</Tip>
+
+## Related Endpoints
+
+- [Login](/api-reference/auth/login) - Create a new authenticated session
+- [Refresh Token](/api-reference/auth/refresh-token) - Rotate the access token using the cookie

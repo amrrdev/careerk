@@ -1,0 +1,112 @@
+---
+title: 'Get Notification Preference'
+api: 'GET /api/v1/job-seekers/me/notification-preference'
+description: 'Retrieve the current job seeker notification preferences'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/notification-preference
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Retrieve the authenticated job seeker's notification preferences.
+
+If a preference row does not exist yet, the backend initializes it with the default values:
+
+- `jobMatchNotificationsEnabled = true`
+- `applicationStatusNotificationsEnabled = true`
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "applicationStatusNotificationsEnabled": true,
+    "jobMatchNotificationsEnabled": true,
+    "updatedAt": "2026-03-07T20:15:00.000Z"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-03-07T20:15:00.000Z",
+    "path": "/job-seekers/me/notification-preference",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="applicationStatusNotificationsEnabled" type="boolean">
+  Whether the user wants email notifications when a company changes the status of one of their
+  applications.
+</ResponseField>
+
+<ResponseField name="jobMatchNotificationsEnabled" type="boolean">
+  Whether the user wants email notifications when new job matches are generated for their account.
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  ISO 8601 timestamp of the latest update to the preference row.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-03-07T20:15:00.000Z",
+    "path": "/job-seekers/me/notification-preference",
+    "method": "GET"
+  }
+}
+```
+
+### 403 Forbidden - Insufficient Permissions
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-03-07T20:15:00.000Z",
+    "path": "/job-seekers/me/notification-preference",
+    "method": "GET"
+  }
+}
+```
+
+## Notes
+
+<Info>
+  **Default Initialization**: The first `GET` request creates a preference row automatically if one
+  does not exist yet.
+</Info>
+
+<Tip>
+  **Frontend Behavior**: This endpoint always returns a real preference object, so the frontend does
+  not need special handling for `null` settings.
+</Tip>

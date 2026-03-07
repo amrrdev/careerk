@@ -4,6 +4,7 @@ import emailConfig from './config/email.config';
 import type { ConfigType } from '@nestjs/config';
 import { SendEmailOptions } from './interfaces/email-options.interface';
 import { EmailTemplatesService } from './email-templates.service';
+import { ApplicationStatusEnum } from 'generated/prisma/enums';
 
 @Injectable()
 export class EmailService {
@@ -54,6 +55,29 @@ export class EmailService {
     return this.sendEmail({
       to,
       subject: 'Reset Your Password - CareerK',
+      html,
+    });
+  }
+
+  async sendApplicationStatusUpdateEmail(
+    to: string,
+    jobSeekerName: string,
+    status: ApplicationStatusEnum,
+  ) {
+    const statusLabel = status
+      .toLowerCase()
+      .split('_')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+
+    const html = this.emailTemplatesService.getApplicationStatusUpdateTemplate({
+      status,
+      userName: jobSeekerName,
+    });
+
+    return this.sendEmail({
+      to,
+      subject: `Application Status Updated: ${statusLabel} - CareerK`,
       html,
     });
   }

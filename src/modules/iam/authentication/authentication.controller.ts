@@ -19,16 +19,18 @@ import type { Request, Response } from 'express';
 import { REFRESH_TOKEN_COOKIE_KEY, REFRESH_TOKEN_COOKIE_OPTIONS } from '../iam.constants';
 import { ResponseMessage } from 'src/core/decorators/response-message.decorator';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { PasswordResetService } from './password-reset.service';
+import { PasswordService } from './password.service';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
+import { ActiveUser } from '../decorators/active-user.decorator';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 @Auth(AuthType.None)
 export class AuthenticationController {
   constructor(
     private readonly authenticationService: AuthenticationService,
-    private readonly passwordResetService: PasswordResetService,
+    private readonly passwordService: PasswordService,
   ) {}
 
   private setRefreshTokenCookie(response: Response, refreshToken: string): void {
@@ -95,13 +97,13 @@ export class AuthenticationController {
     "If an account exists with that email, you'll receive a password reset link shortly.",
   )
   forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.passwordResetService.forgotPassword(forgotPasswordDto);
+    return this.passwordService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return await this.passwordResetService.resetPassword(resetPasswordDto);
+    return await this.passwordService.resetPassword(resetPasswordDto);
   }
 
   @Post('resend-verification')
@@ -109,6 +111,14 @@ export class AuthenticationController {
   @ResponseMessage('Verification email sent successfully')
   resendVerification(@Body() resendVerificationDto: ResendVerificationDto) {
     return this.authenticationService.resendVerification(resendVerificationDto.email);
+  }
+
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  @ResponseMessage('Password changed successfully')
+  @Auth(AuthType.Bearer)
+  changePassword(@ActiveUser('sub') userId: string, @Body() changePasswordDto: ChangePasswordDto) {
+    return this.passwordService.changePassword(userId, changePasswordDto);
   }
 
   @Post('logout')

@@ -1,0 +1,161 @@
+---
+title: 'Update Notification Preference'
+api: 'PATCH /api/v1/job-seekers/me/notification-preference'
+description: 'Update the current job seeker notification preferences'
+---
+
+## Endpoint
+
+```
+PATCH /api/v1/job-seekers/me/notification-preference
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Request Body
+
+All fields are optional. Only provide the settings you want to change.
+
+<ParamField body="applicationStatusNotificationsEnabled" type="boolean">
+  Enable or disable application status update notifications.
+</ParamField>
+
+<ParamField body="jobMatchNotificationsEnabled" type="boolean">
+  Enable or disable new job match notifications.
+</ParamField>
+
+## Request Shape
+
+```typescript
+interface UpdateNotificationPreferenceDto {
+  applicationStatusNotificationsEnabled?: boolean;
+  jobMatchNotificationsEnabled?: boolean;
+}
+```
+
+## Request Examples
+
+### Disable Job Match Notifications
+
+```bash
+PATCH /api/v1/job-seekers/me/notification-preference
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "jobMatchNotificationsEnabled": false
+}
+```
+
+### Disable Both Notification Types
+
+```bash
+PATCH /api/v1/job-seekers/me/notification-preference
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "applicationStatusNotificationsEnabled": false,
+  "jobMatchNotificationsEnabled": false
+}
+```
+
+### Re-enable Application Status Notifications
+
+```bash
+PATCH /api/v1/job-seekers/me/notification-preference
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "applicationStatusNotificationsEnabled": true
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-03-07T20:20:00.000Z",
+    "path": "/job-seekers/me/notification-preference",
+    "method": "PATCH"
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": [
+      "applicationStatusNotificationsEnabled must be a boolean value"
+    ],
+    "statusCode": 400,
+    "timestamp": "2026-03-07T20:20:00.000Z",
+    "path": "/job-seekers/me/notification-preference",
+    "method": "PATCH"
+  }
+}
+```
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-03-07T20:20:00.000Z",
+    "path": "/job-seekers/me/notification-preference",
+    "method": "PATCH"
+  }
+}
+```
+
+### 403 Forbidden - Insufficient Permissions
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-03-07T20:20:00.000Z",
+    "path": "/job-seekers/me/notification-preference",
+    "method": "PATCH"
+  }
+}
+```
+
+## Notes
+
+<Info>
+  **Upsert Behavior**: If the preference row does not exist yet, this endpoint creates it before
+  applying the update.
+</Info>
+
+<Tip>
+  **Read After Write**: Call `GET /job-seekers/me/notification-preference` after updating if the
+  frontend needs the latest persisted values.
+</Tip>
