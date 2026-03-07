@@ -1,350 +1,375 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# CareerK API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+CareerK is the backend for a two-sided hiring platform.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+It serves two main actors:
 
-## Description
+- Job seekers who manage profiles, upload CVs, apply to jobs, bookmark jobs, run skill-gap analysis, and control notification preferences.
+- Companies that manage profiles, publish direct jobs, review applications, and move candidates through the hiring pipeline.
 
-CareerK - A job platform API built with NestJS, PostgreSQL, and Redis.
+The codebase is a NestJS application backed by PostgreSQL, Redis, BullMQ, SMTP email delivery, R2-compatible object storage for CV files, and an external NLP service for CV parsing.
+
+This README is written for someone who needs to run the system, understand the moving parts, and make changes without guessing.
+
+## What this repo covers
+
+- Email verification, login, refresh-token rotation, forgot/reset password, change password, logout
+- Job seeker profile management, work experience, education, skills, notification preferences
+- Company profile management
+- Direct job creation, publishing, pausing, closing, and company-side application review
+- Public job browsing across direct jobs and scraped jobs
+- Job bookmarks across both job sources
+- CV upload, confirmation, parsing, preview, and persistence
+- Skill-gap analysis queued in the background
+- Queued email workflows for account verification, password reset, and application status updates
+- Mintlify docs source under `docs/`
+
+## Core stack
+
+| Layer | Tooling | Notes |
+| --- | --- | --- |
+| HTTP API | NestJS 11 | Modular domain-based structure |
+| Database | PostgreSQL + Prisma 7 | Prisma client generated into `generated/prisma` |
+| Ephemeral state | Redis | Refresh token storage, OTP storage, BullMQ backend |
+| Background jobs | BullMQ | Processors run in the same Nest app process |
+| Email | Nodemailer | SMTP-backed email delivery |
+| CV storage | S3-compatible storage | Config uses `R2_*` environment variables |
+| CV parsing | External NLP service | Current code expects `http://localhost:8000/parse-cv` |
+| Validation | class-validator / class-transformer | Global Nest validation pipe |
+| Docs | Mintlify MDX | `docs/` + `docs.json` |
+
+## System overview
+
+```mermaid
+flowchart LR
+    Client[Web or mobile client] --> API[NestJS application]
+    API --> PG[(PostgreSQL)]
+    API --> Redis[(Redis)]
+    API --> Queue[BullMQ queues]
+    Queue --> Workers[In-process queue processors]
+    Workers --> SMTP[SMTP provider]
+    API --> Storage[R2 / S3-compatible storage]
+    API --> NLP[NLP service at localhost:8000]
+```
+
+## Important domain terms
+
+| Term | Meaning in this codebase |
+| --- | --- |
+| Direct job | A job created and owned by a company inside the platform |
+| Scraped job | An externally sourced job stored separately from direct jobs |
+| Application | A job seeker applying to a direct job |
+| Bookmark | A saved job reference that can point to either a direct or scraped job |
+| CV parse result | The structured output returned by the NLP service after CV upload confirmation |
+| Skill-gap analysis | A queued analysis job that compares a job seeker's profile against a target role |
+| Notification preference | Job seeker settings that control job-match and application-status emails |
+| Match tables | `direct_job_matches` and `scraped_job_matches`, which store precomputed matching results |
+
+
+## Project layout
+
+| Path | Owns |
+| --- | --- |
+| `src/modules/iam` | Auth, OTP, JWT, refresh-token rotation, password flows |
+| `src/modules/job-seeker` | Profile, skills, work experience, education, applications, notification preferences, skill-gap analysis |
+| `src/modules/company` | Company profile, direct jobs, company-side applications |
+| `src/modules/jobs` | Public job listing/detail and bookmarks |
+| `src/modules/cv` | CV upload, parse preview, parse confirmation |
+| `src/infrastructure/database` | PostgreSQL / Prisma wiring |
+| `src/infrastructure/redis` | Redis client wiring |
+| `src/infrastructure/queue` | BullMQ root configuration |
+| `src/infrastructure/email` | Email transport and HTML templates |
+| `src/infrastructure/cv-storage` | R2 / S3-compatible file operations |
+| `src/infrastructure/nlp` | Client for the external CV parsing service |
+| `prisma` | Schema and migrations |
+| `docs` | Mintlify documentation source |
+
+If you want the longer architectural explanation, read [Architecture.md](./Architecture.md).
+
+## Background work that already exists
+
+| Workflow | Trigger | Execution model |
+| --- | --- | --- |
+| Verification email | Registration / resend verification | BullMQ -> IAM email processor |
+| Password reset email | Forgot password | BullMQ -> IAM email processor |
+| Application status email | Company updates application status | BullMQ -> company application processor |
+| Skill-gap analysis | Job seeker starts analysis | BullMQ -> skill-gap analysis worker |
+
+A useful detail for local development: these processors are registered inside the Nest application, so `pnpm run start:dev` starts both the HTTP API and the workers.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+Use these versions unless you have a good reason not to:
 
-- **Node.js**: v18 or higher ([Download](https://nodejs.org/))
-- **pnpm**: v8 or higher
-  ```bash
-  npm install -g pnpm
-  ```
-- **Docker & Docker Compose**: For running PostgreSQL and Redis ([Download](https://www.docker.com/))
+- Node.js 20+ recommended
+- pnpm 8+
+- Docker with Compose support
+- PostgreSQL and Redis are expected locally unless you point the app elsewhere
 
----
+Optional but required for specific features:
 
-## Getting Started
+- SMTP credentials for verification / password-reset / application-status emails
+- R2-compatible object storage for CV upload/download
+- NLP service running at `http://localhost:8000` for CV parsing
 
-Follow these steps to set up the project locally:
+## Quick start
 
-### 1️⃣ Clone the Repository
-
-```bash
-git clone <repository-url>
-cd careerk
-```
-
-### 2️⃣ Install Dependencies
+### 1. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-### 3️⃣ Set Up Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-# PostgreSQL
-POSTGRES_DB=careerk_db
-POSTGRES_USER=careerk
-POSTGRES_PASSWORD=your_secure_postgres_password
-DATABASE_URL=postgresql://careerk:your_secure_postgres_password@localhost:5432/careerk_db
-
-# JWT
-JWT_SECRET=your_jwt_secret_key
-JWT_TOKEN_AUDIENCE=localhost:3000
-JWT_TOKEN_ISSUER=localhost:3000
-JWT_ACCESS_TOKEN_TTL=3600
-JWT_REFRESH_TOKEN_TTL=86400
-
-# Redis
-# Note: Wrap password in quotes if it contains special characters like # ! @
-REDIS_PASSWORD="your_secure_redis_password"
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# BullMQ Queue (uses Redis)
-QUEUE_HOST=localhost
-QUEUE_PORT=6379
-QUEUE_PASSWORD="your_secure_redis_password"
-
-# Email (Gmail SMTP)
-GMAIL_USER=your_email@gmail.com
-GMAIL_PASSWORD=your_gmail_app_password
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_SECURE=true
-```
-
-⚠️ **Important Notes:**
-- If your Redis/Queue password contains special characters (`#`, `!`, `@`, etc.), you **must** wrap it in double quotes, otherwise the `.env` parser will treat `#` as a comment.
-- For Gmail SMTP, you need to generate an [App Password](https://support.google.com/accounts/answer/185833) (not your regular Gmail password)
-- BullMQ uses the same Redis instance as your application (you can use the same password)
-
-### 4️⃣ Start Docker Services
-
-Start PostgreSQL and Redis using Docker Compose:
+### 2. Start infrastructure
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-This will:
-- Pull the PostgreSQL 18 Alpine image
-- Pull the Redis 7.4 Alpine image
-- Create containers named `careerk-postgres` and `careerk-redis`
-- Start the services on ports 5432 and 6379
-- Create persistent volumes for data
+This boots:
 
-**Verify services are running:**
+- PostgreSQL on `localhost:5432`
+- Redis on `localhost:6379`
+
+### 3. Generate the Prisma client
 
 ```bash
-docker ps
+pnpm exec prisma generate
 ```
 
-You should see both `careerk-postgres` and `careerk-redis` in the list.
-
-### 5️⃣ Generate Prisma Client
-
-Generate the Prisma Client based on your schema:
+### 4. Apply migrations
 
 ```bash
-npx prisma generate
+pnpm exec prisma migrate dev
 ```
 
-This creates the TypeScript types and client for your database models.
-
-### 6️⃣ Run Database Migrations
-
-Apply all pending migrations to create the database schema:
+### 5. Seed development data (optional, but useful)
 
 ```bash
-npx prisma migrate dev
+pnpm run seed:db
 ```
 
-### 7️⃣ Seed Database (Optional)
+The seed script reads `DATABASE_URL` from `.env` and inserts a deterministic sample dataset for local work.
 
-To populate the database with 30,000 job seekers and 30,000 companies:
-
-```bash
-# Copy SQL files to PostgreSQL container
-docker cp prisma/seed/seed-job-seekers.sql careerk-postgres:/tmp/
-docker cp prisma/seed/seed-companies.sql careerk-postgres:/tmp/
-
-# Execute seed scripts
-docker exec -it careerk-postgres psql -U careerk -d careerk_db -f /tmp/seed-job-seekers.sql
-docker exec -it careerk-postgres psql -U careerk -d careerk_db -f /tmp/seed-companies.sql
-```
-
-Default seeded credentials:
-- **Email:** Any seeded email (e.g., `john.smith123@gmail.com`)
-- **Password:** `password123`
-
-### 8️⃣ Start the Development Server
+### 6. Start the app
 
 ```bash
 pnpm run start:dev
 ```
 
-The API will be available at: **http://localhost:3000**
+The Nest app listens on `http://localhost:3000` by default.
 
-**You're ready to go! 🎉**
+## Common commands
 
----
+| Task | Command |
+| --- | --- |
+| Start in watch mode | `pnpm run start:dev` |
+| Start production build locally | `pnpm run build && pnpm run start:prod` |
+| Run unit tests | `pnpm run test` |
+| Run e2e tests | `pnpm run test:e2e` |
+| Run coverage | `pnpm run test:cov` |
+| Lint and autofix | `pnpm run lint` |
+| Seed development data | `pnpm run seed:db` |
 
-## Available Scripts
+## What you can work on immediately after boot
 
-```bash
-# Development mode with watch
-pnpm run start:dev
+Once Postgres, Redis, and the Nest app are up, you can work on:
 
-# Production mode
-pnpm run start:prod
+- auth and session flows
+- job seeker profiles, education, work experience, and skills
+- company profile and direct job management
+- public job browsing and bookmarks
+- company-side application review
+- notification preference APIs
+- skill-gap analysis queue flow
 
-# Unit tests
-pnpm run test
+You also need extra services for these features:
 
-# E2E tests
-pnpm run test:e2e
+- Email delivery: SMTP must be configured
+- CV upload/download: R2-compatible storage must be configured
+- CV parsing: NLP service must be running on `localhost:8000`
 
-# Test coverage
-pnpm run test:cov
-```
+## API docs in this repo
 
----
+The API reference is maintained as MDX under `docs/`.
 
-## API Documentation
+Useful entry points:
 
-### Authentication Endpoints
+- [docs/introduction.mdx](./docs/introduction.mdx)
+- [docs/job-seeker/introduction.mdx](./docs/job-seeker/introduction.mdx)
+- [docs/api-reference/auth/introduction.mdx](./docs/api-reference/auth/introduction.mdx)
+- [docs/api-reference/company/introduction.mdx](./docs/api-reference/company/introduction.mdx)
+- [docs/api-reference/jobs/introduction.mdx](./docs/api-reference/jobs/introduction.mdx)
+- [docs/job-matching-design.md](./docs/job-matching-design.md)
 
-- `POST /auth/register/job-seeker` - Register a new job seeker
-- `POST /auth/login` - Login (returns access + refresh tokens)
-- `POST /auth/refresh-token` - Get new tokens using refresh token
+Mintlify navigation is configured in [docs.json](./docs.json).
 
-### Features
+### Route prefix note
 
-- ✅ JWT Authentication (Access + Refresh tokens)
-- ✅ Refresh Token Rotation (Redis-based)
-- ✅ Password Hashing (bcrypt)
-- ✅ Role-based Authorization (Job Seeker / Company)
-- ✅ Token Type Validation (prevents refresh token misuse)
-- ✅ Secure token storage and invalidation
-- ✅ Email verification with OTP (Redis-based)
-- ✅ BullMQ job queue for async email sending
-- ✅ Email templates with Nodemailer
+The docs in `docs/` use `/api/v1` examples.
 
----
+The current Nest bootstrap in [src/main.ts](./src/main.ts) does not call `setGlobalPrefix()`. If you run the app directly from source without a proxy in front of it, verify which route prefix your environment is actually using before copy-pasting requests.
 
-## Docker Services
+## Storage, state, and queue notes
 
-### PostgreSQL
-- **Port:** 5432
-- **Database:** `careerk_db`
-- **User:** `careerk` (default)
-- **Container:** `careerk-postgres`
+- PostgreSQL is the source of truth for business data.
+- Redis is used for refresh token storage, OTP storage, and BullMQ queue state.
+- Email is intentionally off the request path; user-facing routes enqueue jobs instead of talking to SMTP directly.
+- CV upload uses presigned URLs, so the file does not pass through the Nest server.
+- Skill-gap analysis is queued; the request returns quickly and the result is fetched later.
 
-### Redis
-- **Port:** 6379
-- **Used for:** Refresh token rotation, OTP storage, BullMQ job queue, and session management
-- **Container:** `careerk-redis`
+## Development notes that save time
 
-### Managing Docker Services
+### 1. Prisma drift is a real thing in this repo
 
-```bash
-# Start services
-docker-compose up -d
+If `pnpm exec prisma migrate dev` complains about drift, do not blindly reset the database unless you are sure you can lose local data. First inspect what changed in your local schema versus `prisma/migrations`.
 
-# Stop services
-docker-compose down
+### 2. `direct_jobs` and `scraped_jobs` are separate tables
 
-# Stop services and remove volumes (⚠️ deletes all data)
-docker-compose down -v
+That matters when you touch:
 
-# View logs
-docker-compose logs -f
+- pagination
+- bookmarks
+- matching
+- list/query performance
 
-# View logs for specific service
-docker-compose logs -f postgres
-docker-compose logs -f redis
+If you are building a combined feed, keep in mind that it is not a single table.
 
-# Access PostgreSQL shell
-docker exec -it careerk-postgres psql -U careerk -d careerk_db
+### 3. The app has queue processors inside feature modules
 
-# Access Redis CLI
-docker exec -it careerk-redis redis-cli -a "your_redis_password"
+If a workflow "works" at the API layer but no email is delivered, check:
 
-# Test Redis connection
-docker exec -it careerk-redis redis-cli -a "your_redis_password" ping
-```
+- Redis connection
+- whether the relevant processor is registered in its module
+- SMTP credentials
 
----
+### 4. CV parsing failures usually mean integration failures
 
-## Project Architecture
+If `/cv/confirm` fails, the most likely causes are:
 
-See [Architecture.md](./Architecture.md) for detailed information about the project structure and design patterns.
+- object storage credentials are missing or wrong
+- the uploaded file does not exist in storage
+- the NLP service is not reachable at `http://localhost:8000`
 
-Key architectural principles:
-- Clean Architecture with separation of concerns
-- Repository pattern for data access
-- Dependency injection for loose coupling
-- Infrastructure layer for external services (PostgreSQL, Redis)
-- Domain-specific services in modules
+## A short map of the main modules
 
----
+### IAM
+
+Owns:
+
+- registration
+- verification OTP
+- login
+- refresh-token rotation
+- forgot/reset password
+- change password
+- logout
+
+### Job seeker
+
+Owns:
+
+- profile read/update
+- work experience
+- education
+- skills
+- notification preferences
+- job seeker applications
+- skill-gap analysis
+
+### Company
+
+Owns:
+
+- company profile
+- direct jobs
+- company-side application review
+- application status notification queueing
+
+### Jobs
+
+Owns:
+
+- public job listing
+- direct job details
+- scraped job details
+- bookmarks
+
+### CV
+
+Owns:
+
+- presigned upload URL generation
+- upload confirmation
+- CV metadata persistence
+- NLP parse result persistence
+- preview / confirm flow
+
+## If you are changing docs
+
+Keep these in sync:
+
+- `docs/` for the MDX page itself
+- `docs.json` for Mintlify navigation
+- `README.md` if the change affects setup, runtime dependencies, or major workflows
+
+## If you are changing notifications or queues
+
+The current code already has examples for both patterns:
+
+- IAM email queue for verification and password reset
+- company application status email queue for post-update notification
+
+Use those as the baseline instead of sending email directly inside request handlers.
 
 ## Troubleshooting
 
-### Redis Connection Issues
+### App boots, but email jobs fail
 
-**Error:** `WRONGPASS invalid username-password pair`
+Check:
 
-**Solutions:**
-1. Check your `.env` file - wrap Redis password in quotes if it contains special characters
-2. Restart Docker: `docker-compose down && docker-compose up -d`
-3. Verify password: `docker exec -it careerk-redis redis-cli -a "your_password" ping`
-4. Ensure `.env` file is in the same directory as `docker-compose.yml`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `GMAIL_USER`
+- `GMAIL_PASSWORD`
+- Redis availability for BullMQ
 
-### Database Connection Issues
+### App boots, but CV features fail
 
-**Error:** Prisma can't connect to database
+Check:
 
-**Solutions:**
-1. Verify Docker containers are running: `docker ps`
-2. Check `DATABASE_URL` in `.env` matches your PostgreSQL credentials
-3. Ensure PostgreSQL is healthy: `docker-compose ps`
-4. Check PostgreSQL logs: `docker-compose logs postgres`
+- `R2_ENDPOINT`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_BUCKET_NAME`
+- NLP service availability on `http://localhost:8000`
 
-### Tables Don't Exist
+### Prisma client types look stale
 
-**Error:** `table does not exist in the current database`
+Run:
 
-**Solutions:**
 ```bash
-# Reset database and run all migrations
-npx prisma migrate reset
-
-# Run pending migrations
-npx prisma migrate dev
-
-# Deploy migrations (production)
-npx prisma migrate deploy
+pnpm exec prisma generate
 ```
 
-### Port Already in Use
+### Local data is missing after restarting Postgres
 
-**Error:** Port 5432 or 6379 already in use
+Make sure you did not remove Docker volumes:
 
-**Solutions:**
-1. Check if PostgreSQL/Redis is already running locally
-2. Stop local services or change ports in `docker-compose.yml`
-3. Kill processes using the ports:
-   ```bash
-   # Windows
-   netstat -ano | findstr :5432
-   taskkill /PID <PID> /F
-   ```
+```bash
+docker compose down -v
+```
 
----
+That command deletes the local Postgres and Redis volumes.
 
-## Resources
+## Final note
 
-Check out a few resources that may come in handy when working with NestJS:
+This repo is easiest to work in if you treat it as four systems sharing one codebase:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- synchronous HTTP request handling
+- database-backed domain logic
+- queue-backed background work
+- external integrations (SMTP, storage, NLP)
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Most production bugs in this kind of codebase come from the boundaries between those systems, not from the controller methods themselves.
