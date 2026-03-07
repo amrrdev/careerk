@@ -44,6 +44,7 @@ model JobSeeker {
 
 
   @@index([isActive])
+  @@index([isActive, isVerified])
   @@map("job_seekers")
 }
 
@@ -79,6 +80,7 @@ model Company {
   directJobs DirectJob[]
 
   @@index([isActive])
+  @@index([isActive, createdAt])
   @@map("companies")
 }
 
@@ -129,6 +131,7 @@ model Education {
   jobSeeker       JobSeeker       @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
 
   @@index([jobSeekerId])
+  @@index([jobSeekerId, isCurrent, startDate])
   @@unique([jobSeekerId, institutionName, degreeType, fieldOfStudy])
   @@map("educations")
 }
@@ -150,6 +153,7 @@ model WorkExperience {
   jobSeeker       JobSeeker     @relation(fields: [jobSeekerId], references: [id], onDelete: Cascade)
 
   @@index([jobSeekerId])
+  @@index([jobSeekerId, isCurrent, startDate])
   @@unique([jobSeekerId, companyName, jobTitle, startDate])
   @@map("work_experiences")
 }
@@ -183,6 +187,7 @@ model JobSeekerSkill {
 
   @@unique([jobSeekerId, skillId])
   @@index([jobSeekerId])
+  @@index([jobSeekerId, createdAt])
   @@map("job_seeker_skills")
 }
 
@@ -240,6 +245,7 @@ model ScrapedJob {
 
   @@index([source])
   @@index([companyName])
+  @@index([postedAt])
   @@map("scraped_jobs")
 }
 
@@ -282,7 +288,9 @@ model DirectJob {
 
 
   @@index([companyId])
+  @@index([companyId, createdAt])
   @@index([status])
+  @@index([status, publishedAt])
   @@map("direct_jobs")
 }
 
@@ -372,6 +380,7 @@ model JobBookmark {
 
   @@unique([jobSeekerId, jobId, jobSource])
   @@index([jobSeekerId])
+  @@index([jobSeekerId, createdAt])
   @@map("job_bookmarks")
 }
 
@@ -390,7 +399,9 @@ model Application {
 
   @@unique([jobSeekerId, directJobId])
   @@index([directJobId])
+  @@index([directJobId, appliedAt])
   @@index([jobSeekerId])
+  @@index([jobSeekerId, updatedAt])
   @@index([status])
   @@map("applications")
 
