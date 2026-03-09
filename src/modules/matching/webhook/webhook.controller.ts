@@ -11,13 +11,12 @@ export class MatchingWebhookController {
   constructor(private readonly matchingWebhookService: MatchingWebhookService) {}
 
   @Post('direct/completed')
-  directJobCompleted(@Body() data: DirectJobWebhookBodyDto) {
-    return this.matchingWebhookService.handleDirectJobWebhook(data);
+  async directJobCompleted(@Body() data: DirectJobWebhookBodyDto) {
+    return await this.matchingWebhookService.handleDirectJobWebhook(data);
   }
 
   @Post('scraped/completed')
-  scrapedJobCompleted(@Body() data: ScrapedJobWebhookBodyDto) {
-    // TODO: send email for job seekers
-    return { status: 'received' };
+  async scrapedJobCompleted(@Body() data: ScrapedJobWebhookBodyDto) {
+    return await this.matchingWebhookService.handleScrapedJobWebhook(data);
   }
 }

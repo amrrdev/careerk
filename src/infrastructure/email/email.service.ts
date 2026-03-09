@@ -5,6 +5,10 @@ import type { ConfigType } from '@nestjs/config';
 import { SendEmailOptions } from './interfaces/email-options.interface';
 import { EmailTemplatesService } from './email-templates.service';
 import { ApplicationStatusEnum } from 'generated/prisma/enums';
+import {
+  DirectMatchingCompletedEmailOptions,
+  ScrapedMatchingCompletedEmailOptions,
+} from './interfaces/matching-email-options.interface';
 
 @Injectable()
 export class EmailService {
@@ -97,6 +101,26 @@ export class EmailService {
     return this.sendEmail({
       to,
       subject: 'Verify Your Email - CareerK',
+      html,
+    });
+  }
+
+  async sendDirectMatchingCompletedEmail(data: DirectMatchingCompletedEmailOptions) {
+    const html = this.emailTemplatesService.getDirectMatchingCompletedTemplate(data);
+
+    return this.sendEmail({
+      to: data.companyEmail,
+      subject: `Matching Completed for ${data.jobTitle} - CareerK`,
+      html,
+    });
+  }
+
+  async sendScrapedMatchingCompletedEmail(data: ScrapedMatchingCompletedEmailOptions) {
+    const html = this.emailTemplatesService.getScrapedMatchingCompletedTemplate(data);
+
+    return this.sendEmail({
+      to: data.email,
+      subject: `You Have ${data.totalMatches} New Job Match${data.totalMatches === 1 ? '' : 'es'} - CareerK`,
       html,
     });
   }

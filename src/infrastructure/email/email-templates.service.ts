@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ApplicationStatusEnum } from 'generated/prisma/client';
+import {
+  DirectMatchingCompletedEmailOptions,
+  ScrapedMatchingCompletedEmailOptions,
+} from './interfaces/matching-email-options.interface';
 
 @Injectable()
 export class EmailTemplatesService {
@@ -791,6 +795,197 @@ export class EmailTemplatesService {
     `.trim();
   }
 
+  getDirectMatchingCompletedTemplate(params: DirectMatchingCompletedEmailOptions): string {
+    const safeCompanyName = this.escapeHtml(params.companyName);
+    const safeJobTitle = this.escapeHtml(params.jobTitle);
+    const finishedAt = this.formatDateTime(params.finishedAt);
+    const matchedCandidatesLabel =
+      params.matchedCandidates === 1
+        ? '1 matched candidate'
+        : `${params.matchedCandidates} matched candidates`;
+    const processedCandidatesLabel =
+      params.processedCandidates === 1 ? '1 profile' : `${params.processedCandidates} profiles`;
+    const summary =
+      params.matchedCandidates > 0
+        ? `Matching has completed for ${safeJobTitle}. We identified ${matchedCandidatesLabel} after evaluating ${processedCandidatesLabel}.`
+        : `Matching has completed for ${safeJobTitle}. We evaluated ${processedCandidatesLabel}, but no candidates were matched in this run.`;
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Job Matching Completed</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #1f2937; background-color: #f3f4f6; }
+        .email-wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+        .email-container { background: #ffffff; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); }
+        .email-header { background: linear-gradient(135deg, #0f766e 0%, #2563eb 100%); padding: 36px 30px; text-align: center; }
+        .logo { font-size: 30px; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
+        .header-subtitle { color: rgba(255, 255, 255, 0.92); font-size: 15px; }
+        .email-body { padding: 42px 36px; }
+        .greeting { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 18px; }
+        .message { font-size: 16px; color: #4b5563; margin-bottom: 24px; }
+        .summary-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 24px; margin: 30px 0; }
+        .summary-label { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; margin-bottom: 14px; }
+        .summary-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+        .summary-text { font-size: 15px; color: #374151; }
+        .meta { background: #f9fafb; border-left: 4px solid #2563eb; border-radius: 10px; padding: 18px 20px; margin: 28px 0; }
+        .meta p { font-size: 14px; color: #4b5563; margin: 6px 0; }
+        .footer-message { font-size: 14px; color: #6b7280; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+        .email-footer { padding: 28px 36px; background: #f9fafb; text-align: center; font-size: 12px; color: #9ca3af; }
+        .divider { height: 1px; background: linear-gradient(to right, transparent, #d1d5db, transparent); margin: 18px 0; }
+        @media only screen and (max-width: 600px) {
+            .email-wrapper { padding: 20px 10px; }
+            .email-body { padding: 32px 24px; }
+            .greeting { font-size: 21px; }
+            .email-footer { padding: 22px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <div class="email-header">
+                <div class="logo">CareerK</div>
+                <div class="header-subtitle">Direct job matching completed</div>
+            </div>
+
+            <div class="email-body">
+                <div class="greeting">Hi ${safeCompanyName},</div>
+
+                <div class="message">
+                    The candidate matching run for your published job has finished.
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Job</div>
+                    <div class="summary-title">${safeJobTitle}</div>
+                    <div class="summary-text">${summary}</div>
+                </div>
+
+                <div class="meta">
+                    <p><strong>Processed at:</strong> ${finishedAt}</p>
+                    <p><strong>Request ID:</strong> ${this.escapeHtml(params.requestId)}</p>
+                </div>
+
+                <div class="footer-message">
+                    Open CareerK to review the matched candidates for this role.
+                </div>
+            </div>
+
+            <div class="email-footer">
+                <div class="divider"></div>
+                <p>&copy; ${new Date().getFullYear()} CareerK. All rights reserved.</p>
+                <p style="margin-top: 12px;">This is an automated email. Please do not reply to this message.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+  }
+
+  getScrapedMatchingCompletedTemplate(params: ScrapedMatchingCompletedEmailOptions): string {
+    const safeUserName = this.escapeHtml(params.firstName);
+    const windowLabel = `${this.formatDateTime(params.since)} to ${this.formatDateTime(params.until)}`;
+    const matchItems = params.topMatches
+      .map((match) => {
+        const scoreLabel = `${Math.round(match.matchScore)}% match`;
+        const location = match.location ? ` - ${this.escapeHtml(match.location)}` : '';
+
+        return `
+          <li style="margin-bottom: 14px;">
+              <strong>${this.escapeHtml(match.title)}</strong><br>
+              <span>${this.escapeHtml(match.companyName)}${location}</span><br>
+              <span style="color: #1d4ed8; font-weight: 700;">${scoreLabel}</span>
+          </li>
+        `;
+      })
+      .join('');
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Job Matches</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #1f2937; background-color: #f3f4f6; }
+        .email-wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+        .email-container { background: #ffffff; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); }
+        .email-header { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); padding: 36px 30px; text-align: center; }
+        .logo { font-size: 30px; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
+        .header-subtitle { color: rgba(255, 255, 255, 0.92); font-size: 15px; }
+        .email-body { padding: 42px 36px; }
+        .greeting { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 18px; }
+        .message { font-size: 16px; color: #4b5563; margin-bottom: 24px; }
+        .count-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 24px; margin: 30px 0; text-align: center; }
+        .count-number { font-size: 38px; font-weight: 700; color: #1d4ed8; margin-bottom: 10px; }
+        .count-text { font-size: 15px; color: #374151; }
+        .matches-card { background: #f9fafb; border-radius: 14px; padding: 24px; margin: 28px 0; }
+        .matches-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 16px; }
+        .meta { font-size: 14px; color: #6b7280; margin-top: 18px; }
+        .footer-message { font-size: 14px; color: #6b7280; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+        .email-footer { padding: 28px 36px; background: #f9fafb; text-align: center; font-size: 12px; color: #9ca3af; }
+        .divider { height: 1px; background: linear-gradient(to right, transparent, #d1d5db, transparent); margin: 18px 0; }
+        @media only screen and (max-width: 600px) {
+            .email-wrapper { padding: 20px 10px; }
+            .email-body { padding: 32px 24px; }
+            .greeting { font-size: 21px; }
+            .email-footer { padding: 22px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <div class="email-header">
+                <div class="logo">CareerK</div>
+                <div class="header-subtitle">New scraped-job matches are ready</div>
+            </div>
+
+            <div class="email-body">
+                <div class="greeting">Hi ${safeUserName},</div>
+
+                <div class="message">
+                    We found new job matches for you from the latest scraped-job matching run.
+                </div>
+
+                <div class="count-card">
+                    <div class="count-number">${params.totalMatches}</div>
+                    <div class="count-text">new matched job${params.totalMatches === 1 ? '' : 's'} found for your profile</div>
+                </div>
+
+                <div class="matches-card">
+                    <div class="matches-title">Top matches from this run</div>
+                    <ul style="padding-left: 18px;">
+                        ${matchItems}
+                    </ul>
+                    <div class="meta">Matching window: ${this.escapeHtml(windowLabel)}</div>
+                </div>
+
+                <div class="footer-message">
+                    This email was sent because job match notifications are enabled for your account.
+                </div>
+            </div>
+
+            <div class="email-footer">
+                <div class="divider"></div>
+                <p>&copy; ${new Date().getFullYear()} CareerK. All rights reserved.</p>
+                <p style="margin-top: 12px;">This is an automated email. Please do not reply to this message.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+  }
+
   private formatApplicationStatus(status: ApplicationStatusEnum): string {
     return status
       .toLowerCase()
@@ -855,6 +1050,19 @@ export class EmailTemplatesService {
           badgeText: '#1d4ed8',
         };
     }
+  }
+
+  private formatDateTime(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
   }
 
   private escapeHtml(value: string): string {
