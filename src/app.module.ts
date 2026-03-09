@@ -13,6 +13,7 @@ import { QueueModule } from './infrastructure/queue/queue.module';
 import { CvModule } from './modules/cv/cv.module';
 import { CvStorageModule } from './infrastructure/cv-storage/cv-storage.module';
 import { JobModule } from './modules/jobs/job.module';
+import { MatchingModule } from './modules/matching/matching.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { JobModule } from './modules/jobs/job.module';
     QueueModule,
     CvModule,
     CvStorageModule,
+    MatchingModule,
   ],
   providers: [
     {

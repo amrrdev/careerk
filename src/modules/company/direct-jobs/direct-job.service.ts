@@ -4,10 +4,17 @@ import { transformDirectJob, transformDirectJobs } from './types/direct-jobs.typ
 import { CreateDirectJobDto } from './dto/create-direct-job.dto';
 import { DirectJobStatusEnum } from 'generated/prisma/enums';
 import { UpdateDirectJobDto } from './dto/update-direct-job.dto';
+import { InjectQueue } from '@nestjs/bullmq';
+import { NLP_QUEUE, PROCESS_NLP } from './processor/nlp-service.jobs';
+import { Queue } from 'bullmq';
+import { DirectJobMacthingRequest } from 'src/infrastructure/nlp/interfaces/matching.interface';
 
 @Injectable()
 export class DirectJobService {
-  constructor(private readonly directJobRepository: DirectJobRepository) {}
+  constructor(
+    private readonly directJobRepository: DirectJobRepository,
+    @InjectQueue(NLP_QUEUE) private readonly nlpQueue: Queue,
+  ) {}
 
   async findAll(companyId: string) {
     const jobs = await this.directJobRepository.findAllByCompanyId(companyId);
@@ -59,6 +66,24 @@ export class DirectJobService {
       companyId,
       DirectJobStatusEnum.PUBLISHED,
     );
+
+    await this.nlpQueue.add(
+      PROCESS_NLP,
+      {
+        jobId,
+      } satisfies DirectJobMacthingRequest,
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+        removeOnComplete: true,
+      },
+    );
+
+    console.log('publish');
+
     return transformDirectJob(updatedJob);
   }
 
