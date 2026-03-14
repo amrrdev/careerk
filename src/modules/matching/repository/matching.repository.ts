@@ -1,3 +1,9 @@
+import {
+  RawDirectJobMatchForJobSeeker,
+  RawScrapedJobMatch,
+  RawDirectJobMatchForCompany,
+} from '../types/matching.types';
+
 export type DirectJobNotificationTarget = {
   companyEmail: string;
   companyName: string;
@@ -19,7 +25,8 @@ export type ScrapedJobNotificationTarget = {
 };
 
 export abstract class MatchingRepository {
-  // Notification targets
+  // ============= Notification targets =============
+
   abstract findDirectJobNotificationTarget(
     jobId: string,
   ): Promise<DirectJobNotificationTarget | null>;
@@ -29,11 +36,33 @@ export abstract class MatchingRepository {
     finishedAt: Date,
   ): Promise<ScrapedJobNotificationTarget[]>;
 
-  // Job matches for job seekers
-  abstract findDirectJobMatchesForJobSeeker(jobSeekerId: string): Promise<any[]>;
+  /**
+   * Find all direct job matches for a specific job seeker
+   *  Uses specific return type instead of any[]
+   * @param jobSeekerId - The ID of the job seeker
+   * @returns Array of raw direct job matches
+   */
+  abstract findDirectJobMatchesForJobSeeker(
+    jobSeekerId: string,
+  ): Promise<RawDirectJobMatchForJobSeeker[]>;
 
-  abstract findScrapedJobMatchesForJobSeeker(jobSeekerId: string): Promise<any[]>;
+  /**
+   * Find all scraped job matches for a specific job seeker
+   *  Uses specific return type instead of any[]
+   * @param jobSeekerId - The ID of the job seeker
+   * @returns Array of raw scraped job matches
+   */
+  abstract findScrapedJobMatchesForJobSeeker(jobSeekerId: string): Promise<RawScrapedJobMatch[]>;
 
-  // Job matches for companies
-  abstract findDirectJobMatchesForCompany(companyId: string, jobId: string): Promise<any[]>;
+  /**
+   * Find all candidate matches for a specific job posting
+   *  Uses specific return type instead of any[]
+   * @param companyId - The ID of the company
+   * @param jobId - The ID of the job posting
+   * @returns Array of raw candidate matches
+   */
+  abstract findDirectJobMatchesForCompany(
+    companyId: string,
+    jobId: string,
+  ): Promise<RawDirectJobMatchForCompany[]>;
 }

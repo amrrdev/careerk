@@ -1,7 +1,5 @@
 import { Prisma } from 'generated/prisma/client';
 
-// ---------------- Notification Selects ----------------
-
 export const directJobNotificationSelect = {
   select: {
     title: true,
@@ -41,49 +39,75 @@ export type ScrapedJobNotification = Prisma.ScrapedJobMatchGetPayload<
   typeof scrapedJobNotificationSelect
 >;
 
-// ---------------- Raw Prisma Result Types ----------------
+export const rawScrapedJobMatchSelect = {
+  select: {
+    id: true,
+    scrapedJobId: true,
+    matchScore: true,
+    createdAt: true,
+    scrapedJob: {
+      select: {
+        id: true,
+        title: true,
+        companyName: true,
+        location: true,
+      },
+    },
+  },
+} satisfies Prisma.ScrapedJobMatchDefaultArgs;
 
-export interface RawScrapedJobMatch {
-  id: string;
-  scrapedJobId: string;
-  matchScore: unknown;
-  createdAt: Date;
-  scrapedJob: {
-    id: string;
-    title: string;
-    companyName: string;
-    location: string | null;
-  };
-}
+export const rawDirectJobMatchForJobSeekerSelect = {
+  select: {
+    id: true,
+    directJobId: true,
+    matchScore: true,
+    createdAt: true,
+    directJob: {
+      select: {
+        id: true,
+        title: true,
+        location: true,
+        company: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    },
+  },
+} satisfies Prisma.DirectJobMatchDefaultArgs;
 
-export interface RawDirectJobMatchForJobSeeker {
-  id: string;
-  directJobId: string;
-  matchScore: unknown;
-  createdAt: Date;
-  directJob: {
-    id: string;
-    title: string;
-    location: string | null;
-    company: { name: string };
-  };
-}
+export const rawDirectJobMatchForCompanySelect = {
+  select: {
+    id: true,
+    matchScore: true,
+    createdAt: true,
+    jobSeeker: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        profile: {
+          select: {
+            title: true,
+            availabilityStatus: true,
+            location: true,
+          },
+        },
+      },
+    },
+  },
+} satisfies Prisma.DirectJobMatchDefaultArgs;
 
-export interface RawDirectJobMatchForCompany {
-  id: string;
-  matchScore: unknown;
-  createdAt: Date;
-  jobSeeker: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    profile: {
-      title: string;
-      availabilityStatus: string;
-      location: string | null;
-    } | null;
-  };
-}
+export type RawScrapedJobMatch = Prisma.ScrapedJobMatchGetPayload<typeof rawScrapedJobMatchSelect>;
+
+export type RawDirectJobMatchForJobSeeker = Prisma.DirectJobMatchGetPayload<
+  typeof rawDirectJobMatchForJobSeekerSelect
+>;
+
+export type RawDirectJobMatchForCompany = Prisma.DirectJobMatchGetPayload<
+  typeof rawDirectJobMatchForCompanySelect
+>;
 
 // ---------------- Response Types ----------------
 

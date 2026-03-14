@@ -1,4 +1,3 @@
-// matching.repository.impl.ts
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
 import type { MatchingRepository } from './matching.repository';
@@ -6,7 +5,19 @@ import type {
   DirectJobNotificationTarget,
   ScrapedJobNotificationTarget,
 } from './matching.repository';
-import { directJobNotificationSelect, scrapedJobNotificationSelect } from '../types/matching.types';
+import type {
+  RawDirectJobMatchForJobSeeker,
+  RawScrapedJobMatch,
+  RawDirectJobMatchForCompany,
+} from '../types/matching.types';
+import {
+  directJobNotificationSelect,
+  scrapedJobNotificationSelect,
+  // ✅ Import the select objects for matching
+  rawDirectJobMatchForJobSeekerSelect,
+  rawScrapedJobMatchSelect,
+  rawDirectJobMatchForCompanySelect,
+} from '../types/matching.types';
 
 @Injectable()
 export class MatchingRepositoryImpl implements MatchingRepository {
@@ -96,71 +107,34 @@ export class MatchingRepositoryImpl implements MatchingRepository {
 
   // ---------------- Matching Methods ----------------
 
-  async findDirectJobMatchesForJobSeeker(jobSeekerId: string): Promise<any[]> {
-    return await this.databaseService.directJobMatch.findMany({
+  async findDirectJobMatchesForJobSeeker(
+    jobSeekerId: string,
+  ): Promise<RawDirectJobMatchForJobSeeker[]> {
+    return this.databaseService.directJobMatch.findMany({
       where: { jobSeekerId },
-      include: {
-        directJob: {
-          select: {
-            id: true,
-            title: true,
-            location: true,
-            company: {
-              select: { name: true },
-            },
-          },
-        },
-      },
+      ...rawDirectJobMatchForJobSeekerSelect,
     });
   }
 
-  async findScrapedJobMatchesForJobSeeker(jobSeekerId: string): Promise<any[]> {
-    return await this.databaseService.scrapedJobMatch.findMany({
+  async findScrapedJobMatchesForJobSeeker(jobSeekerId: string): Promise<RawScrapedJobMatch[]> {
+    return this.databaseService.scrapedJobMatch.findMany({
       where: { jobSeekerId },
-      include: {
-        scrapedJob: {
-          select: {
-            id: true,
-            title: true,
-            companyName: true,
-            location: true,
-          },
-        },
-      },
+      ...rawScrapedJobMatchSelect,
     });
   }
 
-  async findDirectJobMatchesForCompany(companyId: string, jobId: string): Promise<any[]> {
-    return await this.databaseService.directJobMatch.findMany({
+  async findDirectJobMatchesForCompany(
+    companyId: string,
+    jobId: string,
+  ): Promise<RawDirectJobMatchForCompany[]> {
+    return this.databaseService.directJobMatch.findMany({
       where: {
         directJob: {
           id: jobId,
           companyId,
         },
       },
-      include: {
-        jobSeeker: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            profile: {
-              select: {
-                title: true,
-                availabilityStatus: true,
-                location: true,
-              },
-            },
-          },
-        },
-        directJob: {
-          select: {
-            id: true,
-            title: true,
-            company: { select: { name: true } },
-          },
-        },
-      },
+      ...rawDirectJobMatchForCompanySelect,
     });
   }
 }

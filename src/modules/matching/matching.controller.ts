@@ -9,14 +9,13 @@ import { Roles } from '../iam/authentication/decorators/roles.decorator';
 import { UserType } from '../iam/enums/user-type.enum';
 import { ResponseMessage } from 'src/core/decorators/response-message.decorator';
 
+@Auth(AuthType.Bearer)
 @Controller()
-@Auth(AuthType.None)
 export class MatchingController {
   constructor(private readonly matchingService: MatchingService) {}
 
   // ---------------- Job Seeker endpoint ----------------
   @Get('job-seekers/me/matches')
-  @Auth(AuthType.Bearer)
   @Roles(UserType.JOB_SEEKER)
   @ResponseMessage('Job seeker matches retrieved successfully')
   async getJobSeekerMatches(
@@ -28,7 +27,6 @@ export class MatchingController {
 
   // ---------------- Company endpoint ----------------
   @Get('companies/me/jobs/:jobId/matches')
-  @Auth(AuthType.Bearer)
   @Roles(UserType.COMPANY)
   @ResponseMessage('Company job matches retrieved successfully')
   async getCompanyJobMatches(

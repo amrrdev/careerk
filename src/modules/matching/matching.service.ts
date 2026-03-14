@@ -8,13 +8,15 @@ import {
   PaginatedResult,
   RawScrapedJobMatch,
   RawDirectJobMatchForJobSeeker,
-  RawDirectJobMatchForCompany,
 } from './types/matching.types';
 
 @Injectable()
 export class MatchingService {
   constructor(private readonly matchingRepository: MatchingRepository) {}
 
+  /**
+   * Convert raw scraped job match to unified MatchItem format
+   */
   private fromScrapedMatch(raw: RawScrapedJobMatch): MatchItem {
     return {
       id: raw.id,
@@ -28,6 +30,9 @@ export class MatchingService {
     };
   }
 
+  /**
+   * Convert raw direct job match to unified MatchItem format
+   */
   private fromDirectMatch(raw: RawDirectJobMatchForJobSeeker): MatchItem {
     return {
       id: raw.id,
@@ -52,6 +57,10 @@ export class MatchingService {
     };
   }
 
+  /**
+   * Get job matches for a job seeker with filtering and pagination
+   * Combines both direct and scraped job matches based on query type
+   */
   async getJobSeekerMatches(
     jobSeekerId: string,
     query: JobSeekerMatchesQueryDto,
@@ -64,16 +73,12 @@ export class MatchingService {
     let matches: MatchItem[] = [];
 
     if (type === 'all' || type === 'direct') {
-      const direct = (await this.matchingRepository.findDirectJobMatchesForJobSeeker(
-        jobSeekerId,
-      )) as RawDirectJobMatchForJobSeeker[];
+      const direct = await this.matchingRepository.findDirectJobMatchesForJobSeeker(jobSeekerId);
       matches.push(...direct.map((m) => this.fromDirectMatch(m)));
     }
 
     if (type === 'all' || type === 'scraped') {
-      const scraped = (await this.matchingRepository.findScrapedJobMatchesForJobSeeker(
-        jobSeekerId,
-      )) as RawScrapedJobMatch[];
+      const scraped = await this.matchingRepository.findScrapedJobMatchesForJobSeeker(jobSeekerId);
       matches.push(...scraped.map((m) => this.fromScrapedMatch(m)));
     }
 
@@ -85,6 +90,10 @@ export class MatchingService {
     return this.paginate(matches, page, limit);
   }
 
+  /**
+   * Get candidate matches for a company's job posting
+   * Includes filtering by availability status and minimum score
+   */
   async getCompanyJobMatches(
     companyId: string,
     jobId: string,
@@ -94,10 +103,7 @@ export class MatchingService {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
 
-    const raw = (await this.matchingRepository.findDirectJobMatchesForCompany(
-      companyId,
-      jobId,
-    )) as RawDirectJobMatchForCompany[];
+    const raw = await this.matchingRepository.findDirectJobMatchesForCompany(companyId, jobId);
 
     let matches: CompanyMatchItem[] = raw.map((m) => ({
       id: m.id,
