@@ -53,7 +53,6 @@ export const applicationDetailSelect = {
             id: true,
             name: true,
             logoUrl: true,
-            coverUrl: true,
             description: true,
             industry: true,
             size: true,

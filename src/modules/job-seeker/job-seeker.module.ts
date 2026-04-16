@@ -12,6 +12,7 @@ import { SkillGapAnalysisModule } from './skill-gap-analysis/skill-gap-analysis.
 import { SkillGapAnalysisController } from './skill-gap-analysis/skill-gap-analysis.controller';
 import { SkillGapAnalysisOrchestratorService } from './skill-gap-analysis/skill-gap-analysis-orchestrator.service';
 import { NotificationPreferenceModule } from './notification-preference/notification-preference.module';
+import { MediaStorageModule } from 'src/infrastructure/media-storage/media-storage.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { NotificationPreferenceModule } from './notification-preference/notifica
     JobSeekerApplicationModule,
     SkillGapAnalysisModule,
     NotificationPreferenceModule,
+    MediaStorageModule,
   ],
   controllers: [JobSeekerController, SkillGapAnalysisController],
   providers: [

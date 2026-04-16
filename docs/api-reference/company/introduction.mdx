@@ -15,6 +15,9 @@ The Company API allows companies to manage their profiles, job postings, and app
 | GET    | `/companies/{id}` | Get company by ID                 |
 | GET    | `/companies/me`   | Get authenticated company profile |
 | PATCH  | `/companies/me`   | Update company profile            |
+| POST   | `/companies/me/images/presigned-url` | Request company logo upload URL |
+| PUT    | `{uploadUrl}` | Upload company logo to storage |
+| POST   | `/companies/me/images/confirm` | Confirm company logo upload |
 | DELETE | `/companies/me`   | Deactivate company account        |
 
 ## Authentication

@@ -1,0 +1,133 @@
+---
+title: 'Request Company Logo Upload URL'
+api: 'POST /api/v1/companies/me/images/presigned-url'
+description: 'Request a presigned URL for uploading a company logo'
+---
+
+## Endpoint
+
+```http
+POST /api/v1/companies/me/images/presigned-url
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Requests a presigned URL for uploading a company logo directly to Cloudflare R2.
+
+## Request Body
+
+<ParamField body="fileName" type="string" required>
+  Original image file name, for example `logo.png`.
+</ParamField>
+
+<ParamField body="mimeType" type="string" required>
+  Image MIME type. Supported values: `image/jpeg`, `image/png`, `image/webp`.
+</ParamField>
+
+## Request Shape
+
+```typescript
+interface RequestCompanyImageUploadDto {
+  fileName: string;
+  mimeType: 'image/jpeg' | 'image/png' | 'image/webp';
+}
+```
+
+## Request Example
+
+```json
+{
+  "fileName": "logo.png",
+  "mimeType": "image/png"
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "uploadUrl": "https://careerk-media.c0485e90a90f9be9ecd4e72559fee834.r2.cloudflarestorage.com/company-logos/dfb97b50-e8ff-4fa4-a9d6-ae0e9d901234/1776332930558-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=a14238f39390c8c7f0581e7801787531%2F20260416%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260416T094850Z&X-Amz-Expires=3600&X-Amz-Signature=fd8f2606c79dc66b24a5b7ffffa07a9528217de6b00bc631cedc548f93173af6&X-Amz-SignedHeaders=host&x-id=PutObject",
+    "key": "company-logos/dfb97b50-e8ff-4fa4-a9d6-ae0e9d901234/1776332930558-logo.png",
+    "fileUrl": "https://pub-5c37ea83b99f48918e67ed5fdda1be98.r2.dev/company-logos/dfb97b50-e8ff-4fa4-a9d6-ae0e9d901234/1776332930558-logo.png"
+  },
+  "message": "Company image upload URL generated successfully",
+  "meta": {
+    "timestamp": "2026-04-16T10:10:00.000Z",
+    "path": "/companies/me/images/presigned-url",
+    "method": "POST"
+  }
+}
+```
+
+## Response Shape
+
+```typescript
+interface RequestCompanyImageUploadResponse {
+  success: true;
+  data: {
+    uploadUrl: string;
+    key: string;
+    fileUrl: string;
+  };
+  message: 'Company image upload URL generated successfully';
+  meta: {
+    timestamp: string;
+    path: '/companies/me/images/presigned-url';
+    method: 'POST';
+  };
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Invalid MIME Type
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": ["mimeType must be one of the following values: image/jpeg, image/png, image/webp"],
+    "statusCode": 400,
+    "timestamp": "2026-04-16T10:10:00.000Z",
+    "path": "/companies/me/images/presigned-url",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-16T10:10:00.000Z",
+    "path": "/companies/me/images/presigned-url",
+    "method": "POST"
+  }
+}
+```
+
+## Next Steps
+
+1. Upload the raw file to `uploadUrl` using `PUT` (see [Upload Company Image File](/api-reference/company/upload-image-file))
+2. Do not send a bearer token to the storage URL
+3. Confirm the upload using [Confirm Company Image Upload](/api-reference/company/confirm-image-upload)

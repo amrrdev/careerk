@@ -1,0 +1,159 @@
+---
+title: 'Request Profile Image Upload URL'
+api: 'POST /api/v1/job-seekers/me/profile-image/presigned-url'
+description: 'Request a presigned URL for uploading the authenticated job seeker profile image'
+---
+
+## Endpoint
+
+```http
+POST /api/v1/job-seekers/me/profile-image/presigned-url
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Requests a presigned URL for uploading a job seeker profile image directly to Cloudflare R2.
+
+This is step 1 of the image upload flow:
+
+1. Request presigned upload URL from API
+2. Upload file directly to storage with `PUT {uploadUrl}`
+3. Confirm upload with the API
+
+## Request Body
+
+<ParamField body="fileName" type="string" required>
+  Original image file name, for example `avatar.png`.
+</ParamField>
+
+<ParamField body="mimeType" type="string" required>
+  Image MIME type. Supported values: `image/jpeg`, `image/png`, `image/webp`.
+</ParamField>
+
+## Request Shape
+
+```typescript
+interface RequestProfileImageUploadDto {
+  fileName: string;
+  mimeType: 'image/jpeg' | 'image/png' | 'image/webp';
+}
+```
+
+## Request Example
+
+```json
+{
+  "fileName": "avatar.png",
+  "mimeType": "image/png"
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "uploadUrl": "https://careerk-media.c0485e90a90f9be9ecd4e72559fee834.r2.cloudflarestorage.com/profile-images/f35b1c20-b18e-4902-9461-23bb653ee5fa/1776332930558-avatar.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=a14238f39390c8c7f0581e7801787531%2F20260416%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260416T094850Z&X-Amz-Expires=3600&X-Amz-Signature=fd8f2606c79dc66b24a5b7ffffa07a9528217de6b00bc631cedc548f93173af6&X-Amz-SignedHeaders=host&x-id=PutObject",
+    "key": "profile-images/f35b1c20-b18e-4902-9461-23bb653ee5fa/1776332930558-avatar.png",
+    "fileUrl": "https://pub-5c37ea83b99f48918e67ed5fdda1be98.r2.dev/profile-images/f35b1c20-b18e-4902-9461-23bb653ee5fa/1776332930558-avatar.png"
+  },
+  "message": "Profile image upload URL generated successfully",
+  "meta": {
+    "timestamp": "2026-04-16T09:48:50.575Z",
+    "path": "/job-seekers/me/profile-image/presigned-url",
+    "method": "POST"
+  }
+}
+```
+
+## Response Shape
+
+```typescript
+interface RequestProfileImageUploadResponse {
+  success: true;
+  data: {
+    uploadUrl: string;
+    key: string;
+    fileUrl: string;
+  };
+  message: 'Profile image upload URL generated successfully';
+  meta: {
+    timestamp: string;
+    path: '/job-seekers/me/profile-image/presigned-url';
+    method: 'POST';
+  };
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Invalid MIME Type
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": ["mimeType must be one of the following values: image/jpeg, image/png, image/webp"],
+    "statusCode": 400,
+    "timestamp": "2026-04-16T10:00:00.000Z",
+    "path": "/job-seekers/me/profile-image/presigned-url",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-16T10:00:00.000Z",
+    "path": "/job-seekers/me/profile-image/presigned-url",
+    "method": "POST"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-16T10:00:00.000Z",
+    "path": "/job-seekers/me/profile-image/presigned-url",
+    "method": "POST"
+  }
+}
+```
+
+## Next Steps
+
+1. Upload the raw file to `uploadUrl` using `PUT` (see [Upload Profile Image File](/api-reference/job-seeker/upload-profile-image-file))
+2. Do not send a bearer token to the storage URL
+3. Confirm the upload using [Confirm Profile Image Upload](/api-reference/job-seeker/confirm-profile-image-upload)
+
+<Warning>
+  The direct upload request goes to storage, not to the CareerK API. Use the returned `uploadUrl`
+  exactly as-is.
+</Warning>

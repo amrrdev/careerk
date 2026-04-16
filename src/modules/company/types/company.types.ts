@@ -14,7 +14,6 @@ export const publicCompanySelect = {
     name: true,
     description: true,
     logoUrl: true,
-    coverUrl: true,
     industry: true,
     size: true,
     type: true,
@@ -36,7 +35,6 @@ export const publicCompanyDetailsSelect = {
     name: true,
     description: true,
     logoUrl: true,
-    coverUrl: true,
     industry: true,
     size: true,
     type: true,
@@ -73,7 +71,6 @@ export const myCompanyProfileSelect = {
     name: true,
     description: true,
     logoUrl: true,
-    coverUrl: true,
     industry: true,
     size: true,
     type: true,
@@ -109,7 +106,7 @@ export type CreateCompanyData = Omit<
 >;
 
 export type UpdateCompanyData = Partial<
-  Omit<Company, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt' | 'isActive'>
+  Omit<Company, 'id' | 'password' | 'email' | 'createdAt' | 'updatedAt' | 'isActive' | 'coverUrl'>
 >;
 
 export type CompanyFilters = {

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CompanyQueryDto } from './dto/company-query.dto';
 import { UpdateCompanyProfileDto } from './dto/update-company-profile.dto';
@@ -8,6 +8,8 @@ import { ActiveUser } from '../iam/decorators/active-user.decorator';
 import { Roles } from '../iam/authentication/decorators/roles.decorator';
 import { UserType } from '../iam/enums/user-type.enum';
 import { ResponseMessage } from 'src/core/decorators/response-message.decorator';
+import { RequestCompanyImageUploadDto } from './dto/request-company-image-upload.dto';
+import { ConfirmCompanyImageUploadDto } from './dto/confirm-company-image-upload.dto';
 
 @Controller('companies')
 @Auth(AuthType.None)
@@ -51,5 +53,27 @@ export class CompanyController {
     @Body() updateCompanyProfileDto: UpdateCompanyProfileDto,
   ) {
     return this.companyService.updateMyProfile(companyId, updateCompanyProfileDto);
+  }
+
+  @Post('/me/images/presigned-url')
+  @Auth(AuthType.Bearer)
+  @Roles(UserType.COMPANY)
+  @ResponseMessage('Company image upload URL generated successfully')
+  requestImageUploadUrl(
+    @ActiveUser('sub') companyId: string,
+    @Body() requestCompanyImageUploadDto: RequestCompanyImageUploadDto,
+  ) {
+    return this.companyService.requestImageUpload(companyId, requestCompanyImageUploadDto);
+  }
+
+  @Post('/me/images/confirm')
+  @Auth(AuthType.Bearer)
+  @Roles(UserType.COMPANY)
+  @ResponseMessage('Company image uploaded successfully')
+  confirmImageUpload(
+    @ActiveUser('sub') companyId: string,
+    @Body() confirmCompanyImageUploadDto: ConfirmCompanyImageUploadDto,
+  ) {
+    return this.companyService.confirmImageUpload(companyId, confirmCompanyImageUploadDto);
   }
 }

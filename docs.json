@@ -61,6 +61,9 @@
               "docs/api-reference/job-seeker/get-my-profile",
               "docs/api-reference/job-seeker/get-profile-by-id",
               "docs/api-reference/job-seeker/update-profile",
+              "docs/api-reference/job-seeker/request-profile-image-upload-url",
+              "docs/api-reference/job-seeker/upload-profile-image-file",
+              "docs/api-reference/job-seeker/confirm-profile-image-upload",
               "docs/api-reference/job-seeker/deactivate-account",
               "docs/api-reference/job-seeker/get-notification-preference",
               "docs/api-reference/job-seeker/update-notification-preference"
@@ -139,6 +142,9 @@
               "docs/api-reference/company/get-company-by-id",
               "docs/api-reference/company/get-my-profile",
               "docs/api-reference/company/update-profile",
+              "docs/api-reference/company/request-image-upload-url",
+              "docs/api-reference/company/upload-image-file",
+              "docs/api-reference/company/confirm-image-upload",
               "docs/api-reference/company/deactivate-account"
             ]
           },
