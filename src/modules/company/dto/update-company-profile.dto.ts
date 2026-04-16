@@ -25,10 +25,6 @@ export class UpdateCompanyProfileDto {
 
   @IsOptional()
   @IsString()
-  coverUrl?: string;
-
-  @IsOptional()
-  @IsString()
   industry?: string;
 
   @IsOptional()

@@ -17,11 +17,12 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async updateMyProfile(jobSeekerId: string, data: UpdateMyProfileData): Promise<void> {
-    const { firstName, lastName, ...profileData } = data;
+    const { firstName, lastName, profileImageUrl, ...profileData } = data;
 
     const jobSeekerData: Prisma.JobSeekerUpdateInput = {};
-    if (firstName) jobSeekerData.firstName = firstName;
-    if (lastName) jobSeekerData.lastName = lastName;
+    if (firstName !== undefined) jobSeekerData.firstName = firstName;
+    if (lastName !== undefined) jobSeekerData.lastName = lastName;
+    if (profileImageUrl !== undefined) jobSeekerData.profileImageUrl = profileImageUrl;
 
     const hasJobSeekerUpdate = Object.keys(jobSeekerData).length > 0;
     const hasProfileUpdate = Object.keys(profileData).length > 0;

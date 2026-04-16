@@ -54,4 +54,8 @@ export class UpdateJobSeekerProfileDto {
   @IsOptional()
   @IsString()
   githubUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  profileImageUrl?: string;
 }

@@ -71,7 +71,6 @@ interface CompanyVerifyResponse {
     name: string;
     description: string | null;
     logoUrl: string | null;
-    coverUrl: string | null;
     industry: string;
     size: CompanySize;
     type: CompanyType;
@@ -135,7 +134,6 @@ interface CompanyVerifyResponse {
     "name": "TechCorp Inc.",
     "description": null,
     "logoUrl": null,
-    "coverUrl": null,
     "industry": "Technology",
     "size": "SIZE_51_200",
     "type": "STARTUP",
@@ -232,10 +230,6 @@ interface CompanyVerifyResponse {
 
     <ResponseField name="logoUrl" type="string | null">
       URL to company logo. `null` if not set.
-    </ResponseField>
-
-    <ResponseField name="coverUrl" type="string | null">
-      URL to company cover image. `null` if not set.
     </ResponseField>
 
     <ResponseField name="industry" type="string">

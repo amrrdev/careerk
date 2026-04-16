@@ -1,0 +1,156 @@
+---
+title: 'Confirm Company Logo Upload'
+api: 'POST /api/v1/companies/me/images/confirm'
+description: 'Confirm a previously uploaded company logo'
+---
+
+## Endpoint
+
+```http
+POST /api/v1/companies/me/images/confirm
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Confirms that the company logo exists in storage and saves its public URL to `logoUrl`.
+
+## Request Body
+
+<ParamField body="key" type="string" required>
+  Storage object key returned by the presigned URL endpoint. It must start with
+  `company-logos/{companyId}/`.
+</ParamField>
+
+## Request Shape
+
+```typescript
+interface ConfirmCompanyImageUploadDto {
+  key: string;
+}
+```
+
+## Request Example
+
+```json
+{
+  "key": "company-logos/dfb97b50-e8ff-4fa4-a9d6-ae0e9d901234/1776332930558-logo.png"
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "fileUrl": "https://pub-5c37ea83b99f48918e67ed5fdda1be98.r2.dev/company-logos/dfb97b50-e8ff-4fa4-a9d6-ae0e9d901234/1776332930558-logo.png"
+  },
+  "message": "Company image uploaded successfully",
+  "meta": {
+    "timestamp": "2026-04-16T10:12:00.000Z",
+    "path": "/companies/me/images/confirm",
+    "method": "POST"
+  }
+}
+```
+
+## Response Shape
+
+```typescript
+interface ConfirmCompanyImageUploadResponse {
+  success: true;
+  data: {
+    fileUrl: string;
+  };
+  message: 'Company image uploaded successfully';
+  meta: {
+    timestamp: string;
+    path: '/companies/me/images/confirm';
+    method: 'POST';
+  };
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Invalid Key
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Invalid company image key",
+    "statusCode": 400,
+    "timestamp": "2026-04-16T10:12:00.000Z",
+    "path": "/companies/me/images/confirm",
+    "method": "POST"
+  }
+}
+```
+
+### 400 Bad Request - Missing File
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "File not found in storage, upload may have failed",
+    "statusCode": 400,
+    "timestamp": "2026-04-16T10:12:00.000Z",
+    "path": "/companies/me/images/confirm",
+    "method": "POST"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-16T10:12:00.000Z",
+    "path": "/companies/me/images/confirm",
+    "method": "POST"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Company not found",
+    "statusCode": 404,
+    "timestamp": "2026-04-16T10:12:00.000Z",
+    "path": "/companies/me/images/confirm",
+    "method": "POST"
+  }
+}
+```
+
+## Flow Summary
+
+<Steps>
+  <Step title="Request URL">Call POST /companies/me/images/presigned-url</Step>
+  <Step title="Upload File">Upload the image to the returned `uploadUrl` using PUT. See /api-reference/company/upload-image-file</Step>
+  <Step title="Confirm Upload">Call POST /companies/me/images/confirm with the returned `key`</Step>
+</Steps>

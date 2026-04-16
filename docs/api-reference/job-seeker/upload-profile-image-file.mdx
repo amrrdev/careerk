@@ -1,0 +1,77 @@
+---
+title: 'Upload Profile Image File'
+api: 'PUT {uploadUrl}'
+description: 'Upload the job seeker profile image directly to cloud storage using the presigned URL'
+---
+
+## Endpoint
+
+```http
+PUT {uploadUrl}
+```
+
+<Note>
+  The URL is obtained from the [Request Profile Image Upload URL](/api-reference/job-seeker/request-profile-image-upload-url) endpoint.
+</Note>
+
+## Description
+
+Upload the profile image directly to Cloudflare R2 using the presigned URL. This is step 2 of the
+profile image upload flow.
+
+## Request Headers
+
+<ParamField header="Content-Type" type="string" required>
+  The image MIME type. It must match the value used when requesting the presigned URL.
+</ParamField>
+
+## Request Body
+
+Send the raw image file as the binary request body.
+
+<Warning>
+  Do not send your bearer token to the storage URL. This request goes to R2, not to the CareerK
+  API.
+</Warning>
+
+## Request Example
+
+```bash
+PUT "https://careerk-media.c0485e90a90f9be9ecd4e72559fee834.r2.cloudflarestorage.com/profile-images/f35b1c20-b18e-4902-9461-23bb653ee5fa/1776332930558-avatar.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=a14238f39390c8c7f0581e7801787531%2F20260416%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260416T094850Z&X-Amz-Expires=3600&X-Amz-Signature=fd8f2606c79dc66b24a5b7ffffa07a9528217de6b00bc631cedc548f93173af6&X-Amz-SignedHeaders=host&x-id=PutObject" \
+  -H "Content-Type: image/png" \
+  --data-binary @avatar.png
+```
+
+## Response
+
+### Success Response (200 OK)
+
+The upload returns an empty body with HTTP 200 on success.
+
+```text
+(empty response body)
+```
+
+## Error Responses
+
+### 403 Forbidden - Invalid Signature
+
+```json
+{
+  "Code": "SignatureDoesNotMatch",
+  "Message": "The request signature we calculated does not match the signature you provided."
+}
+```
+
+### 410 Gone - URL Expired
+
+```json
+{
+  "Code": "ExpiredToken",
+  "Message": "The provided token has expired."
+}
+```
+
+## Next Steps
+
+After uploading the file, confirm the upload using [Confirm Profile Image Upload](/api-reference/job-seeker/confirm-profile-image-upload).

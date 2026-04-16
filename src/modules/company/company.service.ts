@@ -1,12 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { MediaStorageService } from 'src/infrastructure/media-storage/media-storage.service';
 import { CompanyRepository } from './repositories/company.repository';
 import { CompanyQueryDto } from './dto/company-query.dto';
 import { PublicCompanyDetails, MyCompanyProfile } from './types/company.types';
 import { UpdateCompanyProfileDto } from './dto/update-company-profile.dto';
+import { RequestCompanyImageUploadDto } from './dto/request-company-image-upload.dto';
+import { ConfirmCompanyImageUploadDto } from './dto/confirm-company-image-upload.dto';
 
 @Injectable()
 export class CompanyService {
-  constructor(private readonly companyRepository: CompanyRepository) {}
+  constructor(
+    private readonly companyRepository: CompanyRepository,
+    private readonly mediaStorageService: MediaStorageService,
+  ) {}
 
   async findAllCompanies(query: CompanyQueryDto) {
     const { page = 1, limit = 20 } = query;
@@ -46,5 +52,63 @@ export class CompanyService {
     const updated = await this.companyRepository.updateMyProfile(companyId, data);
     if (!updated) throw new NotFoundException('Failed to update company profile');
     return updated;
+  }
+
+  async requestImageUpload(
+    companyId: string,
+    requestCompanyImageUploadDto: RequestCompanyImageUploadDto,
+  ) {
+    const key = this.mediaStorageService.buildCompanyLogoKey(
+      companyId,
+      requestCompanyImageUploadDto.fileName,
+    );
+    const uploadUrl = await this.mediaStorageService.generateUploadUrl(
+      key,
+      requestCompanyImageUploadDto.mimeType,
+    );
+
+    return {
+      uploadUrl,
+      key,
+      fileUrl: this.mediaStorageService.buildFileUrl(key),
+    };
+  }
+
+  async confirmImageUpload(
+    companyId: string,
+    confirmCompanyImageUploadDto: ConfirmCompanyImageUploadDto,
+  ) {
+    const expectedPrefix = `company-logos/${companyId}/`;
+    if (!confirmCompanyImageUploadDto.key.startsWith(expectedPrefix)) {
+      throw new BadRequestException('Invalid company image key');
+    }
+
+    const exists = await this.mediaStorageService.fileExists(confirmCompanyImageUploadDto.key);
+    if (!exists) {
+      throw new BadRequestException('File not found in storage, upload may have failed');
+    }
+
+    const company = await this.companyRepository.findMyProfile(companyId);
+    if (!company) throw new NotFoundException('Company not found');
+
+    const fileUrl = this.mediaStorageService.buildFileUrl(confirmCompanyImageUploadDto.key);
+    const existingUrl = company.logoUrl;
+    const previousKey =
+      existingUrl &&
+      existingUrl !== fileUrl &&
+      this.mediaStorageService.extractKeyFromFileUrl(existingUrl);
+
+    if (previousKey) {
+      await this.mediaStorageService.deleteFile(previousKey);
+    }
+
+    const updated = await this.companyRepository.updateMyProfile(companyId, {
+      logoUrl: fileUrl,
+    });
+    if (!updated) throw new NotFoundException('Failed to update company profile');
+
+    return {
+      fileUrl,
+    };
   }
 }

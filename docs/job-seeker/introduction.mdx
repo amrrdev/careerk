@@ -21,6 +21,9 @@ http://localhost:3000/api/v1
 | GET    | `/job-seekers/me`  | Get current user's profile                | Yes (Job Seeker) |
 | GET    | `/job-seekers/:id` | Get job seeker profile by ID              | No               |
 | PATCH  | `/job-seekers/me`  | Update current user's profile             | Yes (Job Seeker) |
+| POST   | `/job-seekers/me/profile-image/presigned-url` | Request profile image upload URL | Yes (Job Seeker) |
+| PUT    | `{uploadUrl}` | Upload profile image to storage | No (signed URL) |
+| POST   | `/job-seekers/me/profile-image/confirm` | Confirm profile image upload | Yes (Job Seeker) |
 | DELETE | `/job-seekers/me`  | Deactivate current user's account         | Yes (Job Seeker) |
 | GET    | `/job-seekers/me/notification-preference` | Get current notification preferences | Yes (Job Seeker) |
 | PATCH  | `/job-seekers/me/notification-preference` | Update notification preferences      | Yes (Job Seeker) |
@@ -162,6 +165,27 @@ Content-Type: application/json
   "location": "Cairo, Egypt",
   "summary": "Experienced developer..."
 }
+```
+
+### 4. Upload Profile Image
+
+```bash
+POST /api/v1/job-seekers/me/profile-image/presigned-url
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "fileName": "avatar.png",
+  "mimeType": "image/png"
+}
+```
+
+Then upload the returned `uploadUrl` with:
+
+```bash
+PUT "{uploadUrl}"
+Content-Type: image/png
+(binary file body)
 ```
 
 ## Response Format
