@@ -1,4 +1,4 @@
-import { IsIn, IsNumber, IsOptional, Min } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class JobSeekerMatchesQueryDto {
@@ -21,5 +21,7 @@ export class JobSeekerMatchesQueryDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
+  @Min(0)
+  @Max(100)
   minScore?: number;
 }

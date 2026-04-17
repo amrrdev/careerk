@@ -1,0 +1,193 @@
+---
+title: 'Get My Matches'
+api: 'GET /api/v1/job-seekers/me/matches'
+description: 'Retrieve job matches for the authenticated job seeker with filtering and pagination'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/matches
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Query Parameters
+
+<ParamField query="type" type="string" optional default="all">
+  Filter matches by source type. Options: `all`, `direct`, `scraped`
+</ParamField>
+
+<ParamField query="minScore" type="number" optional>
+  Minimum match score threshold (0-100)
+</ParamField>
+
+<ParamField query="page" type="number" optional default="1" min="1">
+  Page number for pagination
+</ParamField>
+
+<ParamField query="limit" type="number" optional default="10" min="1">
+  Number of items per page
+</ParamField>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "matches": [
+      {
+        "id": "5f9f22ba-2d03-4e8e-a721-2243424f74d5",
+        "jobId": "1dce277f-4d30-4576-a8be-c636f0e85b7a",
+        "jobTitle": "Senior Platform Engineer",
+        "companyName": "TechCorp Solutions",
+        "location": "San Francisco, CA",
+        "matchScore": 62.5,
+        "jobSource": "DIRECT",
+        "createdAt": "2026-04-17T11:57:59.572Z"
+      },
+      {
+        "id": "b15de187-57e7-4701-a507-67f15a3f6ea5",
+        "jobId": "5cddf99c-b736-4920-a426-069327d59395",
+        "jobTitle": "Senior Data Scientist",
+        "companyName": "Wuzzuf Company",
+        "location": "Cairo, Egypt",
+        "matchScore": 61.54,
+        "jobSource": "SCRAPED",
+        "createdAt": "2026-04-15T15:18:33.981Z"
+      },
+      {
+        "id": "4d553091-738b-4a1b-80f7-005adb30e827",
+        "jobId": "4e5dcd57-9992-4738-ba20-b52bd155898b",
+        "jobTitle": "Full Stack JS Developer",
+        "companyName": "Wuzzuf Company",
+        "location": "Cairo, Egypt",
+        "matchScore": 52.94,
+        "jobSource": "SCRAPED",
+        "createdAt": "2026-04-15T14:44:14.375Z"
+      }
+    ],
+    "total": 30,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 3
+  },
+  "message": "Job seeker matches retrieved successfully",
+  "meta": {
+    "timestamp": "2026-04-17T12:00:29.120Z",
+    "path": "/job-seekers/me/matches",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="matches" type="array">
+  List of job matches sorted by match score (highest first).
+  <Expandable title="Match Properties">
+    <ResponseField name="id" type="string">
+      Unique match identifier (UUID).
+    </ResponseField>
+    <ResponseField name="jobId" type="string">
+      Unique job identifier (UUID).
+    </ResponseField>
+    <ResponseField name="jobTitle" type="string">
+      Job title.
+    </ResponseField>
+    <ResponseField name="companyName" type="string">
+      Company name.
+    </ResponseField>
+    <ResponseField name="location" type="string">
+      Job location.
+    </ResponseField>
+    <ResponseField name="matchScore" type="number">
+      Match score percentage (0-100). Higher scores indicate better compatibility.
+    </ResponseField>
+    <ResponseField name="jobSource" type="enum">
+      Source of the job. - `DIRECT` - Jobs posted directly by companies - `SCRAPED` - Jobs scraped
+      from external sources
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      Match creation date (ISO 8601 format).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Total number of matches available.
+</ResponseField>
+
+<ResponseField name="page" type="number">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="limit" type="number">
+  Number of items per page.
+</ResponseField>
+
+<ResponseField name="totalPages" type="number">
+  Total number of pages available.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-17T08:00:00.000Z",
+    "path": "/job-seekers/me/matches",
+    "method": "GET"
+  }
+}
+```
+
+### 403 Forbidden - Insufficient Permissions
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-17T08:00:00.000Z",
+    "path": "/job-seekers/me/matches",
+    "method": "GET"
+  }
+}
+```
+
+## Notes
+
+<Info>
+  **Match Score Calculation**: Matches are sorted by match score in descending order. Jobs with
+  higher scores appear first in the results.
+</Info>
+
+<Tip>
+  **Filtering by Source**: Use the `type` parameter to filter between direct jobs posted by
+  companies (`direct`) and jobs scraped from external sources (`scraped`).
+</Tip>
+
+<Tip>
+  **Minimum Score Filtering**: Use the `minScore` parameter to filter out low-quality matches. For
+  example, `?minScore=50` will only return matches with a score of 50 or higher.
+</Tip>

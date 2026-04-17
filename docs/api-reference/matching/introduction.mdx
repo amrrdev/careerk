@@ -1,0 +1,92 @@
+---
+title: 'Matching Overview'
+description: 'AI-powered job matching system for job seekers and companies'
+---
+
+## Overview
+
+The Matching API provides intelligent job matching capabilities using AI algorithms to connect job seekers with relevant opportunities and help companies find the best candidates for their job postings.
+
+## How It Works
+
+### For Job Seekers
+
+When your CV is processed, our AI system analyzes your skills, experience, and preferences to match you with relevant job opportunities from:
+
+- **Direct Jobs**: Positions posted directly by companies on CareerK
+- **Scraped Jobs**: Opportunities gathered from external job boards
+
+### For Companies
+
+When you post a job, our AI system matches your requirements against all job seeker profiles to find the most qualified candidates based on:
+
+- Skills and experience
+- Location preferences
+- Availability status
+- Job requirements compatibility
+
+## Match Score
+
+Each match includes a **match score** (0-100) representing the compatibility level:
+
+| Score Range | Compatibility Level |
+| ----------- | ------------------- |
+| 80-100      | Excellent Match     |
+| 60-79       | Good Match          |
+| 40-59       | Fair Match          |
+| 0-39        | Low Match           |
+
+## Available Endpoints
+
+### Job Seeker Endpoints
+
+<Card title="Get My Matches" href="/api-reference/matching/get-job-seeker-matches">
+  Retrieve job matches with filtering and pagination
+</Card>
+
+### Company Endpoints
+
+<Card title="Get Job Matches" href="/api-reference/matching/get-company-job-matches">
+  Retrieve candidate matches for a specific job posting
+</Card>
+
+## Notifications
+
+### For Job Seekers
+
+When new scraped job matches are found that meet your criteria, you'll receive an email notification with the top matching opportunities.
+
+### For Companies
+
+When the matching process completes for your direct job postings, you'll receive an email summary with the number of matched candidates.
+
+## Filtering Options
+
+### Job Seeker Filters
+
+- **Type**: Filter by job source (`all`, `direct`, `scraped`)
+- **Min Score**: Set minimum match score threshold
+- **Pagination**: Control results with `page` and `limit` parameters
+
+### Company Filters
+
+- **Min Score**: Set minimum match score threshold
+- **Availability Status**: Filter by candidate availability (`OPEN_TO_WORK`, `NOT_LOOKING`, `PASSIVELY_LOOKING`)
+- **Pagination**: Control results with `page` and `limit` parameters
+
+## Best Practices
+
+<Tip>
+  **Complete Your Profile**: Job seekers should complete their profile with detailed work
+  experience, education, and skills to improve match accuracy.
+</Tip>
+
+<Tip>
+  **Set Clear Requirements**: Companies should provide detailed job descriptions and requirements to
+  get better candidate matches.
+</Tip>
+
+<Tip>
+  **Use Minimum Score Filtering**: Filter matches with a minimum score of 50+ to focus on
+  high-quality matches.
+</Tip>

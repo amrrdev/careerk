@@ -3,6 +3,7 @@ import {
   RawScrapedJobMatch,
   RawDirectJobMatchForCompany,
 } from '../types/matching.types';
+import { AvailabilityStatusEnum } from 'generated/prisma/client';
 
 export type DirectJobNotificationTarget = {
   companyEmail: string;
@@ -65,4 +66,41 @@ export abstract class MatchingRepository {
     companyId: string,
     jobId: string,
   ): Promise<RawDirectJobMatchForCompany[]>;
+
+  /**
+   * Count direct job matches for a job seeker with minimum score filter
+   * @param jobSeekerId - The ID of the job seeker
+   * @param minScore - Minimum match score
+   * @returns Total count of matches
+   */
+  abstract countDirectJobMatchesForJobSeeker(
+    jobSeekerId: string,
+    minScore: number,
+  ): Promise<number>;
+
+  /**
+   * Count scraped job matches for a job seeker with minimum score filter
+   * @param jobSeekerId - The ID of the job seeker
+   * @param minScore - Minimum match score
+   * @returns Total count of matches
+   */
+  abstract countScrapedJobMatchesForJobSeeker(
+    jobSeekerId: string,
+    minScore: number,
+  ): Promise<number>;
+
+  /**
+   * Count candidate matches for a company's job posting
+   * @param companyId - The ID of the company
+   * @param jobId - The ID of the job posting
+   * @param minScore - Minimum match score
+   * @param availabilityStatus - Optional availability status filter
+   * @returns Total count of matches
+   */
+  abstract countDirectJobMatchesForCompany(
+    companyId: string,
+    jobId: string,
+    minScore: number,
+    availabilityStatus?: AvailabilityStatusEnum,
+  ): Promise<number>;
 }
