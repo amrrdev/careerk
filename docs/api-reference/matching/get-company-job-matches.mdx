@@ -1,0 +1,232 @@
+---
+title: 'Get Job Matches'
+api: 'GET /api/v1/companies/me/jobs/{jobId}/matches'
+description: 'Retrieve candidate matches for a specific job posting with filtering and pagination'
+---
+
+## Endpoint
+
+```
+GET /api/v1/companies/me/jobs/{jobId}/matches
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Path Parameters
+
+<ParamField path="jobId" type="string" required>
+  The unique identifier of the job posting (UUID)
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="minScore" type="number" optional>
+  Minimum match score threshold (0-100)
+</ParamField>
+
+<ParamField query="availabilityStatus" type="enum" optional>
+  Filter by candidate availability status. Options: `OPEN_TO_WORK`, `NOT_LOOKING`,
+  `PASSIVELY_LOOKING`
+</ParamField>
+
+<ParamField query="page" type="number" optional default="1" min="1">
+  Page number for pagination
+</ParamField>
+
+<ParamField query="limit" type="number" optional default="10" min="1">
+  Number of items per page
+</ParamField>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "matches": [
+      {
+        "id": "113f4d3d-120f-4e21-8d7a-1d825d748566",
+        "jobSeekerId": "20000000-0000-4000-8000-000000000004",
+        "jobSeekerName": "Youssef Khaled",
+        "jobSeekerTitle": "DevOps Engineer",
+        "availabilityStatus": "OPEN_TO_WORK",
+        "location": "Riyadh, Saudi Arabia",
+        "matchScore": 70,
+        "createdAt": "2026-04-17T11:57:59.572Z"
+      },
+      {
+        "id": "5f9f22ba-2d03-4e8e-a721-2243424f74d5",
+        "jobSeekerId": "f35b1c20-b18e-4902-9461-23bb653ee5fa",
+        "jobSeekerName": "Amr Mubarak",
+        "jobSeekerTitle": "Software Engineer",
+        "availabilityStatus": "OPEN_TO_WORK",
+        "location": "Egypt",
+        "matchScore": 62.5,
+        "createdAt": "2026-04-17T11:57:59.572Z"
+      },
+      {
+        "id": "9b3fa2e4-2aea-49e4-bdde-e3abf3b0da3e",
+        "jobSeekerId": "20000000-0000-4000-8000-000000000003",
+        "jobSeekerName": "Sara Nabil",
+        "jobSeekerTitle": "Product Designer",
+        "availabilityStatus": "PASSIVELY_LOOKING",
+        "location": "Alexandria, Egypt",
+        "matchScore": 58.33,
+        "createdAt": "2026-04-17T11:57:59.572Z"
+      }
+    ],
+    "total": 5,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 1
+  },
+  "message": "Company job matches retrieved successfully",
+  "meta": {
+    "timestamp": "2026-04-17T11:59:41.414Z",
+    "path": "/companies/me/jobs/1dce277f-4d30-4576-a8be-c636f0e85b7a/matches",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="matches" type="array">
+  List of candidate matches sorted by match score (highest first).
+  <Expandable title="Match Properties">
+    <ResponseField name="id" type="string">
+      Unique match identifier (UUID).
+    </ResponseField>
+
+    <ResponseField name="jobSeekerId" type="string">
+      Unique job seeker identifier (UUID).
+    </ResponseField>
+
+    <ResponseField name="jobSeekerName" type="string">
+      Candidate's full name.
+    </ResponseField>
+
+    <ResponseField name="jobSeekerTitle" type="string">
+      Candidate's current job title.
+    </ResponseField>
+
+    <ResponseField name="availabilityStatus" type="enum">
+      Candidate's availability status. - `OPEN_TO_WORK` - Actively looking for opportunities -
+      `NOT_LOOKING` - Not currently looking - `PASSIVELY_LOOKING` - Open to opportunities but not
+      actively searching
+    </ResponseField>
+
+    <ResponseField name="location" type="string">
+      Candidate's location.
+    </ResponseField>
+
+    <ResponseField name="matchScore" type="number">
+      Match score percentage (0-100). Higher scores indicate better compatibility with the job
+      requirements.
+    </ResponseField>
+
+    <ResponseField name="createdAt" type="string">
+      Match creation date (ISO 8601 format).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Total number of candidate matches available.
+</ResponseField>
+
+<ResponseField name="page" type="number">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="limit" type="number">
+  Number of items per page.
+</ResponseField>
+
+<ResponseField name="totalPages" type="number">
+  Total number of pages available.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized - Not Authenticated
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-17T08:00:00.000Z",
+    "path": "/companies/me/jobs/{jobId}/matches",
+    "method": "GET"
+  }
+}
+```
+
+### 403 Forbidden - Insufficient Permissions
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-17T08:00:00.000Z",
+    "path": "/companies/me/jobs/{jobId}/matches",
+    "method": "GET"
+  }
+}
+```
+
+### 404 Not Found - Job Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Job with ID {jobId} not found",
+    "statusCode": 404,
+    "timestamp": "2026-04-17T08:00:00.000Z",
+    "path": "/companies/me/jobs/{jobId}/matches",
+    "method": "GET"
+  }
+}
+```
+
+## Notes
+
+<Info>
+  **Match Score Calculation**: Candidates are sorted by match score in descending order. Candidates
+  with higher scores appear first in the results, indicating better compatibility with the job
+  requirements.
+</Info>
+
+<Tip>
+  **Availability Filtering**: Use the `availabilityStatus` parameter to filter candidates based on
+  their availability. `OPEN_TO_WORK` candidates are actively looking and may respond faster to
+  outreach.
+</Tip>
+
+<Tip>
+  **Minimum Score Filtering**: Use the `minScore` parameter to filter out low-quality matches. For
+  example, `?minScore=60` will only return candidates with a match score of 60 or higher, showing
+  only highly compatible candidates.
+</Tip>
+
+<Warning>
+  **Job Ownership**: You can only retrieve matches for jobs that belong to your company. Attempting
+  to access matches for jobs from other companies will result in a 404 error.
+</Warning>

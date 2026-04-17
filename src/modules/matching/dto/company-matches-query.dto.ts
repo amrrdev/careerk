@@ -1,5 +1,6 @@
-import { IsOptional, IsNumber, Min } from 'class-validator';
+import { IsOptional, IsNumber, Min, Max, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
+import { AvailabilityStatusEnum } from 'generated/prisma/client';
 
 export class CompanyMatchesQueryDto {
   @IsOptional()
@@ -17,8 +18,11 @@ export class CompanyMatchesQueryDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
+  @Min(0)
+  @Max(100)
   minScore?: number;
 
   @IsOptional()
-  availabilityStatus?: string;
+  @IsEnum(AvailabilityStatusEnum)
+  availabilityStatus?: AvailabilityStatusEnum;
 }

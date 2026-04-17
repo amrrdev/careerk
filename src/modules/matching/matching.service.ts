@@ -46,14 +46,14 @@ export class MatchingService {
     };
   }
 
-  private paginate<T>(items: T[], page: number, limit: number): PaginatedResult<T> {
+  private paginate<T>(items: T[], page: number, limit: number, total?: number): PaginatedResult<T> {
     const startIndex = (page - 1) * limit;
     return {
       matches: items.slice(startIndex, startIndex + limit),
-      total: items.length,
+      total: total ?? items.length,
       page,
       limit,
-      totalPages: Math.ceil(items.length / limit),
+      totalPages: Math.ceil((total ?? items.length) / limit),
     };
   }
 
@@ -70,24 +70,38 @@ export class MatchingService {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
 
-    let matches: MatchItem[] = [];
+    const matches: MatchItem[] = [];
+    let totalCount = 0;
 
     if (type === 'all' || type === 'direct') {
       const direct = await this.matchingRepository.findDirectJobMatchesForJobSeeker(jobSeekerId);
-      matches.push(...direct.map((m) => this.fromDirectMatch(m)));
+      const directFiltered = direct
+        .filter((m) => Number(m.matchScore ?? 0) >= minScore)
+        .map((m) => this.fromDirectMatch(m));
+      matches.push(...directFiltered);
+      totalCount += await this.matchingRepository.countDirectJobMatchesForJobSeeker(
+        jobSeekerId,
+        minScore,
+      );
     }
 
     if (type === 'all' || type === 'scraped') {
       const scraped = await this.matchingRepository.findScrapedJobMatchesForJobSeeker(jobSeekerId);
-      matches.push(...scraped.map((m) => this.fromScrapedMatch(m)));
+      const scrapedFiltered = scraped
+        .filter((m) => Number(m.matchScore ?? 0) >= minScore)
+        .map((m) => this.fromScrapedMatch(m));
+      matches.push(...scrapedFiltered);
+      totalCount += await this.matchingRepository.countScrapedJobMatchesForJobSeeker(
+        jobSeekerId,
+        minScore,
+      );
     }
 
-    matches = matches.filter((m) => m.matchScore >= minScore);
     matches.sort(
       (a, b) => b.matchScore - a.matchScore || b.createdAt.getTime() - a.createdAt.getTime(),
     );
 
-    return this.paginate(matches, page, limit);
+    return this.paginate(matches, page, limit, totalCount);
   }
 
   /**
@@ -102,6 +116,7 @@ export class MatchingService {
     const minScore = query.minScore ?? 0;
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
+    const availabilityStatus = query.availabilityStatus;
 
     const raw = await this.matchingRepository.findDirectJobMatchesForCompany(companyId, jobId);
 
@@ -116,8 +131,8 @@ export class MatchingService {
       createdAt: m.createdAt,
     }));
 
-    if (query.availabilityStatus) {
-      matches = matches.filter((m) => m.availabilityStatus === query.availabilityStatus);
+    if (availabilityStatus) {
+      matches = matches.filter((m) => m.availabilityStatus === availabilityStatus);
     }
 
     matches = matches.filter((m) => m.matchScore >= minScore);
@@ -125,6 +140,13 @@ export class MatchingService {
       (a, b) => b.matchScore - a.matchScore || b.createdAt.getTime() - a.createdAt.getTime(),
     );
 
-    return this.paginate(matches, page, limit);
+    const totalCount = await this.matchingRepository.countDirectJobMatchesForCompany(
+      companyId,
+      jobId,
+      minScore,
+      availabilityStatus,
+    );
+
+    return this.paginate(matches, page, limit, totalCount);
   }
 }

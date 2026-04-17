@@ -17,6 +17,7 @@ import {
   rawScrapedJobMatchSelect,
   rawDirectJobMatchForCompanySelect,
 } from '../types/matching.types';
+import { AvailabilityStatusEnum } from 'generated/prisma/client';
 
 @Injectable()
 export class MatchingRepositoryImpl implements MatchingRepository {
@@ -134,6 +135,48 @@ export class MatchingRepositoryImpl implements MatchingRepository {
         },
       },
       ...rawDirectJobMatchForCompanySelect,
+    });
+  }
+
+  async countDirectJobMatchesForJobSeeker(jobSeekerId: string, minScore: number): Promise<number> {
+    return this.databaseService.directJobMatch.count({
+      where: {
+        jobSeekerId,
+        matchScore: { gte: minScore },
+      },
+    });
+  }
+
+  async countScrapedJobMatchesForJobSeeker(jobSeekerId: string, minScore: number): Promise<number> {
+    return this.databaseService.scrapedJobMatch.count({
+      where: {
+        jobSeekerId,
+        matchScore: { gte: minScore },
+      },
+    });
+  }
+
+  async countDirectJobMatchesForCompany(
+    companyId: string,
+    jobId: string,
+    minScore: number,
+    availabilityStatus?: AvailabilityStatusEnum,
+  ): Promise<number> {
+    return this.databaseService.directJobMatch.count({
+      where: {
+        directJob: {
+          id: jobId,
+          companyId,
+        },
+        matchScore: { gte: minScore },
+        ...(availabilityStatus && {
+          jobSeeker: {
+            profile: {
+              availabilityStatus,
+            },
+          },
+        }),
+      },
     });
   }
 }

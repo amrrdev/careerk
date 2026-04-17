@@ -172,6 +172,14 @@
             ]
           },
           {
+            "group": "Matching",
+            "pages": [
+              "docs/api-reference/matching/introduction",
+              "docs/api-reference/matching/get-job-seeker-matches",
+              "docs/api-reference/matching/get-company-job-matches"
+            ]
+          },
+          {
             "group": "Jobs",
             "pages": [
               "docs/api-reference/jobs/introduction",
