@@ -66,7 +66,7 @@ export class MatchingService {
     query: JobSeekerMatchesQueryDto,
   ): Promise<PaginatedResult<MatchItem>> {
     const type = query.type ?? 'all';
-    const minScore = query.minScore ?? 0;
+    const minScore = Math.max(query.minScore ?? 0, 50);
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
 

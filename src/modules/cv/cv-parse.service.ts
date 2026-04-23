@@ -1,15 +1,21 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import { DegreeTypeEnum } from 'generated/prisma/enums';
 import { CvParseResultRepository } from './cv-parse-result/repository/cv-parse-result.repository';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
 import { ConfirmParsedDataRequestDto } from './dto/confirm-parsed-data.dto';
 import { NlpParseCvResponse } from './cv-parse-result/types/cv-parse-result.types';
+import { PROCESS_JOB_SEEKER_MATCHING, CV_MATCHING_QUEUE } from './processor/cv-matching.jobs';
 
 @Injectable()
 export class CvParseService {
+  private readonly logger = new Logger(CvParseService.name);
+
   constructor(
     private readonly cvParseResultRepository: CvParseResultRepository,
     private readonly databaseService: DatabaseService,
+    @InjectQueue(CV_MATCHING_QUEUE) private readonly cvMatchingQueue: Queue,
   ) {}
 
   async getPreview(jobSeekerId: string) {
@@ -212,6 +218,33 @@ export class CvParseService {
         data: { status: 'CONFIRMED', parsedAt: new Date() },
       });
     });
+
+    const defaultLookbackDays = Number(process.env.MATCHING_JOB_SEEKER_SCRAPED_LOOKBACK_DAYS ?? 7);
+    const maxLookbackDays = Number(process.env.MATCHING_JOB_SEEKER_SCRAPED_LOOKBACK_MAX_DAYS ?? 30);
+    const scrapedLookbackDays = Math.min(Math.max(defaultLookbackDays, 1), maxLookbackDays);
+
+    try {
+      await this.cvMatchingQueue.add(
+        PROCESS_JOB_SEEKER_MATCHING,
+        {
+          jobSeekerId,
+          scrapedLookbackDays,
+        },
+        {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+          removeOnComplete: true,
+        },
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to enqueue job seeker matching for ${jobSeekerId}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+    }
 
     return { message: 'Profile updated successfully from CV' };
   }

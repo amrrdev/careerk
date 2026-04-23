@@ -8,3 +8,18 @@ export interface DirectJobMatchingAcceptedResponse {
   jobId: string;
   acceptedAt: Date;
 }
+
+export interface JobSeekerMatchingRequest {
+  jobSeekerId: string;
+  requestId?: string;
+  scrapedLookbackDays?: number;
+}
+
+export interface JobSeekerMatchingAcceptedResponse {
+  type: 'job-seeker';
+  status: 'accepted';
+  requestId: string;
+  jobSeekerId: string;
+  scrapedLookbackDays: number;
+  acceptedAt: string;
+}
