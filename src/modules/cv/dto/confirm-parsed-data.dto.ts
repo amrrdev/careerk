@@ -1,17 +1,19 @@
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsBoolean,
   IsArray,
-  ValidateNested,
+  IsBoolean,
   IsDateString,
+  IsDefined,
   IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
 } from 'class-validator';
 import { AvailabilityStatusEnum, DegreeTypeEnum, WorkPreferenceEnum } from 'generated/prisma/enums';
 
-class PersonalInfoDto {
+export class PersonalInfoDto {
   @IsString()
   firstName: string;
 
@@ -41,7 +43,7 @@ class PersonalInfoDto {
   portfolioUrl?: string;
 }
 
-class EducationDto {
+export class EducationDto {
   @IsString()
   institutionName: string;
 
@@ -71,7 +73,7 @@ class EducationDto {
   description?: string;
 }
 
-class WorkExperienceDto {
+export class WorkExperienceDto {
   @IsString()
   companyName: string;
 
@@ -96,7 +98,7 @@ class WorkExperienceDto {
   description: string;
 }
 
-class SkillDto {
+export class SkillDto {
   @IsString()
   name: string;
 
@@ -104,7 +106,7 @@ class SkillDto {
   verified: boolean;
 }
 
-class ProfileDto {
+export class ProfileDto {
   @IsOptional()
   @IsNumber()
   expectedSalary?: number;
@@ -117,8 +119,7 @@ class ProfileDto {
   yearsOfExperience: number;
 
   @IsOptional()
-  @IsString()
-  @Transform(({ value }) => (value !== undefined && value !== null ? Number(value) : undefined))
+  @IsNumber()
   noticePeriod?: number;
 
   @IsString()
@@ -155,4 +156,90 @@ export class ConfirmParsedDataDto {
   @ValidateNested()
   @Type(() => ProfileDto)
   profile: ProfileDto;
+}
+
+export class ConfirmParsedDataPayloadDto {
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsString()
+  cvEmail?: string;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsString()
+  linkedinUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  githubUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  portfolioUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  summary?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => EducationDto)
+  education?: EducationDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => WorkExperienceDto)
+  workExperience?: WorkExperienceDto[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  skills?: string[];
+
+  @IsEnum(WorkPreferenceEnum)
+  workPreference: WorkPreferenceEnum;
+
+  @IsOptional()
+  @IsNumber()
+  expectedSalary?: number;
+
+  @IsOptional()
+  @IsNumber()
+  noticePeriod?: number;
+
+  @IsEnum(AvailabilityStatusEnum)
+  availabilityStatus: AvailabilityStatusEnum;
+}
+
+export class ConfirmParsedDataRequestDto {
+  @IsUUID()
+  parseResultId: string;
+
+  @IsDefined({
+    message:
+      'data is required. Required fields: workPreference, availabilityStatus. Optional: any CV field you want to override',
+  })
+  @ValidateNested()
+  @Type(() => ConfirmParsedDataPayloadDto)
+  data: ConfirmParsedDataPayloadDto;
 }

@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CvParseService } from './cv-parse.service';
-import { ConfirmParsedDataDto } from './dto/confirm-parsed-data.dto';
+import { ConfirmParsedDataRequestDto } from './dto/confirm-parsed-data.dto';
 import { ActiveUser } from '../iam/decorators/active-user.decorator';
 import { Roles } from '../iam/authentication/decorators/roles.decorator';
 import { UserType } from '../iam/enums/user-type.enum';
@@ -21,7 +21,7 @@ export class CvParseController {
   @Post('confirm')
   async confirmParsedData(
     @ActiveUser('sub') jobSeekerId: string,
-    @Body() dto: ConfirmParsedDataDto,
+    @Body() dto: ConfirmParsedDataRequestDto,
   ) {
     return this.cvParseService.confirmAndSave(jobSeekerId, dto);
   }

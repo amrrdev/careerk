@@ -77,7 +77,26 @@ export class CvService {
       return {
         status: 'COMPLETED',
         parseResultId: parseResult.id,
-        data: this.mapToPreviewFormat(nlpResponse.data),
+        data: {
+          firstName: nlpResponse.data.personalInfo?.firstName,
+          lastName: nlpResponse.data.personalInfo?.lastName,
+          cvEmail: nlpResponse.data.personalInfo?.email,
+          phone: nlpResponse.data.personalInfo?.phone,
+          location: nlpResponse.data.personalInfo?.location,
+          linkedinUrl: nlpResponse.data.personalInfo?.linkedinUrl,
+          githubUrl: nlpResponse.data.personalInfo?.githubUrl,
+          portfolioUrl: nlpResponse.data.personalInfo?.portfolioUrl,
+          title: nlpResponse.data.title,
+          summary: nlpResponse.data.professionalSummary,
+          education: nlpResponse.data.education || [],
+          workExperience: nlpResponse.data.workExperience || [],
+          skills: nlpResponse.data.skills || [],
+          expectedSalary: nlpResponse.data.expectedSalary,
+          workPreference: nlpResponse.data.workPreference,
+          yearsOfExperience: nlpResponse.data.yearsOfExperience,
+          noticePeriod: nlpResponse.data.noticePeriod,
+          availabilityStatus: nlpResponse.data.availabilityStatus,
+        },
         processingTime,
       };
     } catch (error: unknown) {
@@ -92,27 +111,6 @@ export class CvService {
         'Failed to parse CV. Please ensure the file is valid and try again.',
       );
     }
-  }
-
-  private mapToPreviewFormat(parsedData: NlpParseCvResponse['data']) {
-    return {
-      personalInfo: parsedData.personalInfo,
-      title: parsedData.title,
-      summary: parsedData.professionalSummary,
-      education: parsedData.education,
-      workExperience: parsedData.workExperience,
-      skills: parsedData.skills.map((s) => ({
-        name: s.name,
-        verified: true,
-      })),
-      profile: {
-        expectedSalary: parsedData.expectedSalary,
-        workPreference: parsedData.workPreference,
-        yearsOfExperience: parsedData.yearsOfExperience,
-        noticePeriod: parsedData.noticePeriod,
-        availabilityStatus: parsedData.availabilityStatus,
-      },
-    };
   }
 
   async getMyCvInfo(jobSeekerId: string) {
