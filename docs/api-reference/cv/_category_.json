@@ -1,1 +1,3 @@
-{ "items": ["introduction", "upload", "manage", "parse"] }
+{
+  "group": "CV"
+}
