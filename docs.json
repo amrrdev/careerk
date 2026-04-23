@@ -93,14 +93,14 @@
             "group": "CV",
             "pages": [
               "docs/api-reference/cv/introduction",
-              "docs/api-reference/cv/request-upload-url",
-              "docs/api-reference/cv/upload-cv-file",
-              "docs/api-reference/cv/confirm-upload",
-              "docs/api-reference/cv/get-cv-info",
-              "docs/api-reference/cv/get-download-url",
-              "docs/api-reference/cv/delete-cv",
-              "docs/api-reference/cv/preview-parsed-data",
-              "docs/api-reference/cv/confirm-parsed-data"
+              "docs/api-reference/cv/upload/request-upload-url",
+              "docs/api-reference/cv/upload/upload-cv-file",
+              "docs/api-reference/cv/upload/confirm-upload",
+              "docs/api-reference/cv/manage/get-cv-info",
+              "docs/api-reference/cv/manage/get-download-url",
+              "docs/api-reference/cv/manage/delete-cv",
+              "docs/api-reference/cv/parse/preview-parsed-data",
+              "docs/api-reference/cv/parse/confirm-parsed-data"
             ]
           },
           {
