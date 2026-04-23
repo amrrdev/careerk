@@ -3,6 +3,8 @@ import { NlpParseCvRequest, NlpParseCvResponse } from './interfaces/nlp.interfac
 import {
   DirectJobMacthingRequest,
   DirectJobMatchingAcceptedResponse,
+  JobSeekerMatchingAcceptedResponse,
+  JobSeekerMatchingRequest,
 } from './interfaces/matching.interface';
 
 @Injectable()
@@ -68,6 +70,33 @@ export class NlpService {
       return data as NlpParseCvResponse;
     } catch (error) {
       this.logger.error(`NLP API error for jobSeekerId: ${request.jobSeekerId}`, error);
+      throw error;
+    }
+  }
+
+  async jobSeekerMatch(
+    request: JobSeekerMatchingRequest,
+  ): Promise<JobSeekerMatchingAcceptedResponse> {
+    try {
+      this.logger.log(`Calling Matching api for job seeker: ${request.jobSeekerId}`);
+
+      const response = await fetch(`${this.nlpApiUrl}/match/job-seeker`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Matching Service returned ${response.status}: ${errorText}`);
+      }
+
+      const data: unknown = await response.json();
+      return data as JobSeekerMatchingAcceptedResponse;
+    } catch (error) {
+      this.logger.error(`Matching API error for jobSeekerId: ${request.jobSeekerId}`, error);
       throw error;
     }
   }

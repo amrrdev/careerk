@@ -19,6 +19,7 @@ export type ScrapedJobMatchPreview = {
 };
 
 export type ScrapedJobNotificationTarget = {
+  jobSeekerId: string;
   email: string;
   firstName: string;
   totalMatches: number;

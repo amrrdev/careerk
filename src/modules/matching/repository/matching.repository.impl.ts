@@ -52,6 +52,9 @@ export class MatchingRepositoryImpl implements MatchingRepository {
           gte: startedAt,
           lte: finishedAt,
         },
+        matchScore: {
+          gte: 50,
+        },
         jobSeeker: {
           isActive: true,
           isVerified: true,
@@ -76,6 +79,7 @@ export class MatchingRepositoryImpl implements MatchingRepository {
 
       if (!existing) {
         groupedTargets.set(match.jobSeekerId, {
+          jobSeekerId: match.jobSeekerId,
           email: match.jobSeeker.email,
           firstName: match.jobSeeker.firstName,
           totalMatches: 1,

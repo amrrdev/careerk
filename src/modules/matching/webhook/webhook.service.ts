@@ -23,6 +23,13 @@ import {
   ScrapedJobCompletedSuccess,
 } from '../types/scraped-job-webhook.types';
 import { ScrapedJobWebhookBodyDto } from '../dto/scraped-job-webhook.dto';
+import { JobSeekerWebhookBodyDto } from '../dto/job-seeker-webhook.dto';
+import {
+  isJobSeekerCompletedFailure,
+  isJobSeekerCompletedSuccess,
+  JobSeekerCompletedFailure,
+  JobSeekerCompletedSuccess,
+} from '../types/job-seeker-webhook.types';
 
 @Injectable()
 export class MatchingWebhookService {
@@ -59,6 +66,22 @@ export class MatchingWebhookService {
     }
 
     throw new Error('Unhandled scraped matching webhook payload');
+  }
+
+  handleJobSeekerWebhook(data: JobSeekerWebhookBodyDto) {
+    if (isJobSeekerCompletedSuccess(data)) {
+      this.logger.log(`Job seeker matching completed for jobSeekerId ${data.jobSeekerId}`);
+      return this.handleJobSeekerCompleted(data);
+    }
+
+    if (isJobSeekerCompletedFailure(data)) {
+      this.logger.warn(
+        `Job seeker matching failed for jobSeekerId ${data.jobSeekerId}: ${data.error}`,
+      );
+      return this.handleJobSeekerFailed(data);
+    }
+
+    throw new Error('Unhandled job seeker matching webhook payload');
   }
 
   private async handleDirectCompleted(data: DirectJobCompletedSuccess) {
@@ -156,6 +179,63 @@ export class MatchingWebhookService {
   private handleScrapedFailed(data: ScrapedJobCompletedFailure) {
     this.logger.warn(
       `Scraped matching failed. requestId=${data.requestId} since=${data.since} until=${data.until} error=${data.error}`,
+    );
+    return { status: 'received' };
+  }
+
+  private async handleJobSeekerCompleted(data: JobSeekerCompletedSuccess) {
+    this.logger.log(
+      `Job seeker matching callback received. requestId=${data.requestId} jobSeekerId=${data.jobSeekerId}`,
+    );
+
+    const startedAt = new Date(data.startedAt);
+    const finishedAt = new Date(data.finishedAt);
+
+    if (Number.isNaN(startedAt.getTime()) || Number.isNaN(finishedAt.getTime())) {
+      this.logger.warn(
+        `Skipping job seeker matching notification because timestamps are invalid. requestId=${data.requestId}`,
+      );
+      return { status: 'received' };
+    }
+
+    const targets = await this.matchingRepository.findScrapedJobNotificationTargets(
+      startedAt,
+      finishedAt,
+    );
+
+    const target = targets.find((item) => item.jobSeekerId === data.jobSeekerId);
+
+    if (!target) {
+      this.logger.log(`No job-seeker notification target found for requestId=${data.requestId}`);
+      return { status: 'received' };
+    }
+
+    await this.matchingEmailQueue.add(
+      SEND_SCRAPED_MATCHING_EMAIL_JOB,
+      {
+        email: target.email,
+        firstName: target.firstName,
+        totalMatches: target.totalMatches,
+        since: data.startedAt,
+        until: data.finishedAt,
+        topMatches: target.topMatches,
+      } satisfies SendScrapedMatchingEmailJob,
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+        removeOnComplete: true,
+      },
+    );
+
+    return { status: 'received' };
+  }
+
+  private handleJobSeekerFailed(data: JobSeekerCompletedFailure) {
+    this.logger.warn(
+      `Job seeker matching failed. requestId=${data.requestId} jobSeekerId=${data.jobSeekerId} error=${data.error}`,
     );
     return { status: 'received' };
   }
