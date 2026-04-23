@@ -82,7 +82,7 @@ interface RegisterCompanyResponse {
   },
   "message": "Company registration successful. Please check your email to verify your account.",
   "meta": {
-    "timestamp": "2026-04-23T19:22:10.000Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/register/company",
     "method": "POST"
   }
@@ -160,7 +160,7 @@ Returned when request validation fails.
       "type must be one of the following values: STARTUP, SCALE_UP, ENTERPRISE, NON_PROFIT, GOVERNMENT"
     ],
     "statusCode": 400,
-    "timestamp": "2026-04-23T19:12:03.701Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/register/company",
     "method": "POST",
     "details": "Bad Request"
@@ -187,7 +187,7 @@ Returned when the email is already registered.
   "error": {
     "message": "An account with this email already exists",
     "statusCode": 409,
-    "timestamp": "2026-04-23T19:15:10.000Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/register/company",
     "method": "POST",
     "details": "Conflict"
@@ -207,7 +207,7 @@ Returned when an unexpected error occurs.
   "error": {
     "message": "Failed to create company",
     "statusCode": 500,
-    "timestamp": "2026-04-23T19:16:42.000Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/register/company",
     "method": "POST",
     "details": "Internal Server Error"

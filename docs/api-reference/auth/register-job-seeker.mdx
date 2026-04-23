@@ -70,7 +70,7 @@ interface RegisterJobSeekerResponse {
   },
   "message": "Registration successful. Please check your email to verify your account.",
   "meta": {
-    "timestamp": "2026-04-23T19:22:10.100Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/register/job-seeker",
     "method": "POST"
   }
@@ -144,7 +144,7 @@ Returned when request validation fails.
   "error": {
     "message": ["email must be an email", "password must be longer than or equal to 6 characters"],
     "statusCode": 400,
-    "timestamp": "2026-04-23T19:12:03.701Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/register/job-seeker",
     "method": "POST",
     "details": "Bad Request"
@@ -169,7 +169,7 @@ Returned when the email is already registered.
   "error": {
     "message": "An account with this email already exists",
     "statusCode": 409,
-    "timestamp": "2026-04-23T19:15:10.000Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/register/job-seeker",
     "method": "POST",
     "details": "Conflict"
@@ -189,7 +189,7 @@ Returned when an unexpected error occurs.
   "error": {
     "message": "Failed to create job seeker",
     "statusCode": 500,
-    "timestamp": "2026-04-23T19:16:42.000Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/register/job-seeker",
     "method": "POST",
     "details": "Internal Server Error"
