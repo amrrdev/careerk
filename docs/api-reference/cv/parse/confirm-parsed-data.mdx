@@ -1,0 +1,276 @@
+---
+title: 'Confirm and Save Parsed CV'
+api: 'POST /api/v1/cv-parse/confirm'
+description: 'Confirm and save the parsed CV data to your profile'
+---
+
+## Endpoint
+
+```
+POST /api/v1/cv-parse/confirm
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Review the parsed CV data and confirm to save it to your profile. This creates or updates your JobSeekerProfile, Education, WorkExperience, and JobSeekerSkill records.
+
+The backend uses the stored parsed CV as the base version, then applies any fields you send in `data` before saving.
+
+<Warning>
+  **Arrays are full replacements**: If you send `education` or `workExperience`, the entire array **replaces** existing data (deleted and recreated). To add or update one entry, you must send the **complete array** from the preview response plus your changes.
+
+**Example**: To add a new work experience to 2 existing ones from the CV:
+
+1. Get preview to get the current `workExperience` array
+2. Add your new entry to that array
+3. Send the complete array in the confirm request
+
+For partial updates after confirmation, use dedicated endpoints:
+
+- [Education API](/docs/api-reference/education) - POST /education, PUT /education/:id
+- [Work Experience API](/docs/api-reference/work-experience) - POST /work-experience, PUT /work-experience/:id
+  </Warning>
+
+## Request Body
+
+<ParamField body="parseResultId" type="string" required>
+  The parse result identifier returned by `POST /cv/confirm` or `GET /cv-parse/preview`.
+</ParamField>
+
+<ParamField body="data" type="object" required>
+  CV data with optional overrides. All fields are optional except `workPreference` and
+  `availabilityStatus`.
+</ParamField>
+
+<ParamField body="data.firstName" type="string" optional>
+  First name override.
+</ParamField>
+
+<ParamField body="data.lastName" type="string" optional>
+  Last name override.
+</ParamField>
+
+<ParamField body="data.cvEmail" type="string" optional>
+  Email address override.
+</ParamField>
+
+<ParamField body="data.phone" type="string" optional>
+  Phone number override.
+</ParamField>
+
+<ParamField body="data.location" type="string" optional>
+  Location/address override.
+</ParamField>
+
+<ParamField body="data.linkedinUrl" type="string" optional>
+  LinkedIn profile URL override.
+</ParamField>
+
+<ParamField body="data.githubUrl" type="string" optional>
+  GitHub profile URL override.
+</ParamField>
+
+<ParamField body="data.portfolioUrl" type="string" optional>
+  Portfolio website URL override.
+</ParamField>
+
+<ParamField body="data.title" type="string" optional>
+  Job title override (e.g., "Software Engineer").
+</ParamField>
+
+<ParamField body="data.summary" type="string" optional>
+  Professional summary override.
+</ParamField>
+
+<ParamField body="data.education" type="array" optional>
+  Education array override. If sent, it replaces the stored education.
+</ParamField>
+
+<ParamField body="data.education[].institutionName" type="string" required>
+  Institution name.
+</ParamField>
+
+<ParamField body="data.education[].degreeType" type="string" required>
+  Degree type: ASSOCIATE, BACHELOR, MASTER, DOCTORATE.
+</ParamField>
+
+<ParamField body="data.education[].fieldOfStudy" type="string" required>
+  Field of study.
+</ParamField>
+
+<ParamField body="data.education[].startDate" type="string" required>
+  Start date (ISO 8601).
+</ParamField>
+
+<ParamField body="data.education[].endDate" type="string" optional>
+  End date (ISO 8601).
+</ParamField>
+
+<ParamField body="data.education[].isCurrent" type="boolean" required>
+  Currently studying here.
+</ParamField>
+
+<ParamField body="data.education[].gpa" type="number" optional>
+  GPA score.
+</ParamField>
+
+<ParamField body="data.workExperience" type="array" optional>
+  Work experience array override. If sent, it replaces the stored work experience.
+</ParamField>
+
+<ParamField body="data.workExperience[].companyName" type="string" required>
+  Company name.
+</ParamField>
+
+<ParamField body="data.workExperience[].jobTitle" type="string" required>
+  Job title.
+</ParamField>
+
+<ParamField body="data.workExperience[].location" type="string" optional>
+  Job location.
+</ParamField>
+
+<ParamField body="data.workExperience[].startDate" type="string" required>
+  Start date (ISO 8601).
+</ParamField>
+
+<ParamField body="data.workExperience[].endDate" type="string" optional>
+  End date (ISO 8601).
+</ParamField>
+
+<ParamField body="data.workExperience[].isCurrent" type="boolean" required>
+  Currently working here.
+</ParamField>
+
+<ParamField body="data.workExperience[].description" type="string" required>
+  Job description.
+</ParamField>
+
+<ParamField body="data.skills" type="array" optional>
+  Skills array. Skills from the parsed CV are kept (verified). User-added skills are appended
+  (unverified).
+</ParamField>
+
+<ParamField body="data.skills[]" type="string" optional>
+  Skill name. If skill already exists in parsed CV, it's marked as verified. New skills are
+  unverified.
+</ParamField>
+
+<ParamField body="data.expectedSalary" type="number" optional>
+  Expected salary.
+</ParamField>
+
+<ParamField body="data.workPreference" type="string" required>
+  Work preference: ONSITE, REMOTE, HYBRID, ANY.
+</ParamField>
+
+<ParamField body="data.noticePeriod" type="number" optional>
+  Notice period in days.
+</ParamField>
+
+<ParamField body="data.availabilityStatus" type="string" required>
+  Availability status: OPEN_TO_WORK, NOT_LOOKING, PASSIVELY_LOOKING.
+</ParamField>
+
+## Request Example
+
+```json
+{
+  "parseResultId": "9968ae8c-e8f4-4d36-a17a-79215cca669c",
+  "data": {
+    "cvEmail": "amrrdev@gmail.com",
+    "phone": "+20 120 456 2326",
+    "summary": "Software Engineer with 1+ year of experience building scalable APIs with Node.js and NestJS.",
+    "skills": ["TypeScript", "Node.js", "NestJS", "Docker"],
+    "workPreference": "REMOTE",
+    "availabilityStatus": "OPEN_TO_WORK"
+  }
+}
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Profile updated successfully from CV"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-02-20T14:47:55.971Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST"
+  }
+}
+```
+
+## Error Responses
+
+### 400 Bad Request - Validation Errors
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "workPreference and availabilityStatus are required in data object",
+    "errors": [
+      {
+        "field": "data",
+        "message": "workPreference and availabilityStatus are required in data object"
+      }
+    ],
+    "statusCode": 400,
+    "timestamp": "2026-02-20T14:47:55.971Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST"
+  }
+}
+```
+
+### 400 Bad Request - No Completed Parse Result
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "No completed parse result to confirm",
+    "statusCode": 400,
+    "timestamp": "2026-02-20T14:00:00.000Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST"
+  }
+}
+```
+
+## Complete CV Flow
+
+<Steps>
+  <Step title="Upload CV">Call POST /cv/presigned-url to get an upload URL</Step>
+  <Step title="Upload File">Upload the file using PUT with the upload URL</Step>
+  <Step title="Confirm Upload">Call POST /cv/confirm to trigger NLP parsing</Step>
+  <Step title="Preview Data">Call GET /cv-parse/preview to see parsed results</Step>
+  <Step title="Confirm & Save">Call POST /cv-parse/confirm to save to your profile</Step>
+</Steps>
+
+<Info>
+  **What gets saved**: - JobSeekerProfile: title, summary, phone, cvEmail, location, social links,
+  work preferences - Education: all education entries (full replacement if sent) - WorkExperience:
+  all work experience entries (full replacement if sent) - JobSeekerSkill: skills from parsed CV are
+  saved with `verified: true`; manually added skills are saved with `verified: false` -
+  `yearsOfExperience` is always taken from the parsed CV and cannot be modified
+</Info>
