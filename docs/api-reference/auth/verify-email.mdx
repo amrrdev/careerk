@@ -371,7 +371,7 @@ Returned when request validation fails.
   "error": {
     "message": ["Invalid email format", "OTP must be exactly 6 digits"],
     "statusCode": 400,
-    "timestamp": "2026-04-23T19:12:03.701Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/verify-email",
     "method": "POST",
     "details": "Bad Request"
@@ -395,7 +395,7 @@ Returned when OTP is incorrect or expired.
   "error": {
     "message": "Invalid or expired OTP code",
     "statusCode": 401,
-    "timestamp": "2026-04-23T19:12:03.701Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/verify-email",
     "method": "POST",
     "details": "Unauthorized"
@@ -421,7 +421,7 @@ Returned when no user exists with the provided email.
   "error": {
     "message": "User not found",
     "statusCode": 401,
-    "timestamp": "2026-04-23T19:12:03.701Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/verify-email",
     "method": "POST",
     "details": "Unauthorized"
@@ -439,7 +439,7 @@ Generic error for other verification issues.
   "error": {
     "message": "Email verification failed",
     "statusCode": 401,
-    "timestamp": "2026-04-23T19:12:03.701Z",
+    "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/auth/verify-email",
     "method": "POST",
     "details": "Unauthorized"
