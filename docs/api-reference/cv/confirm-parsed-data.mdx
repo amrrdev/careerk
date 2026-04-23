@@ -29,19 +29,15 @@ Review the parsed CV data and confirm to save it to your profile. This creates o
 The backend uses the stored parsed CV as the base version, then applies any fields you send in `data` before saving.
 
 <Warning>
-  **Arrays are full replacements**: If you send `education` or `workExperience`, the entire array **replaces** existing data (deleted and recreated). To add or update one entry, you must send the **complete array** from the preview response plus your changes.
+  Arrays are full replacements. If you send `education` or `workExperience`, the full array is
+  deleted and recreated.
 
-**Example**: To add a new work experience to 2 existing ones from the CV:
+To add or update one item, first get the current array from preview, then send the complete array
+with your change.
 
-1. Get preview to get the current `workExperience` array
-2. Add your new entry to that array
-3. Send the complete array in the confirm request
+For partial updates after confirmation, use the dedicated Education, Work Experience, etc... APIs.
 
-For partial updates after confirmation, use dedicated endpoints:
-
-- [Education API](/docs/api-reference/education) - POST /education, PUT /education/:id
-- [Work Experience API](/docs/api-reference/work-experience) - POST /work-experience, PUT /work-experience/:id
-  </Warning>
+</Warning>
 
 ## Request Body
 
@@ -268,9 +264,13 @@ For partial updates after confirmation, use dedicated endpoints:
 </Steps>
 
 <Info>
-  **What gets saved**: - JobSeekerProfile: title, summary, phone, cvEmail, location, social links,
-  work preferences - Education: all education entries (full replacement if sent) - WorkExperience:
-  all work experience entries (full replacement if sent) - JobSeekerSkill: skills from parsed CV are
-  saved with `verified: true`; manually added skills are saved with `verified: false` -
-  `yearsOfExperience` is always taken from the parsed CV and cannot be modified
+  What gets saved:
+  JobSeekerProfile (title, summary, phone, cvEmail, location, links, preferences), Education,
+  WorkExperience, and JobSeekerSkill.
+
+Skills from parsed CV are saved with `verified: true`; manually added skills are saved with
+`verified: false`.
+
+`yearsOfExperience` is always taken from the parsed CV and cannot be modified.
+
 </Info>
