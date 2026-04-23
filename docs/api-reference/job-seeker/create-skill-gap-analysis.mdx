@@ -30,6 +30,10 @@ This endpoint does not require a request body. It automatically uses the authent
 
 ### Success Response (201 Created)
 
+<Info>
+  Endpoint returns HTTP `201` by default because there is no explicit `@HttpCode(200)` override.
+</Info>
+
 ```json
 {
   "success": true,
@@ -73,7 +77,8 @@ This endpoint does not require a request body. It automatically uses the authent
     "statusCode": 400,
     "timestamp": "2026-02-26T17:30:00.000Z",
     "path": "/job-seekers/me/skill-analysis",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -88,7 +93,8 @@ This endpoint does not require a request body. It automatically uses the authent
     "statusCode": 400,
     "timestamp": "2026-02-26T17:30:00.000Z",
     "path": "/job-seekers/me/skill-analysis",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -103,7 +109,8 @@ This endpoint does not require a request body. It automatically uses the authent
     "statusCode": 401,
     "timestamp": "2026-02-26T17:30:00.000Z",
     "path": "/job-seekers/me/skill-analysis",
-    "method": "POST"
+    "method": "POST",
+    "details": "Unauthorized"
   }
 }
 ```
@@ -118,7 +125,8 @@ This endpoint does not require a request body. It automatically uses the authent
     "statusCode": 403,
     "timestamp": "2026-02-26T17:30:00.000Z",
     "path": "/job-seekers/me/skill-analysis",
-    "method": "POST"
+    "method": "POST",
+    "details": "Forbidden"
   }
 }
 ```
@@ -140,6 +148,3 @@ This endpoint does not require a request body. It automatically uses the authent
   **Profile Required**: Ensure your profile is complete with skills, work experience, and a target
   job title before creating an analysis for the best results.
 </Tip>
-
-
-

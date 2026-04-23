@@ -54,13 +54,13 @@ interface JobSeekerLoginResponse {
     createdAt: string;
     updatedAt: string;
     accessToken: string;
-    meta: {
-      timestamp: string;
-      path: string;
-      method: string;
-    };
   };
   message: string;
+  meta: {
+    timestamp: string;
+    path: string;
+    method: string;
+  };
 }
 
 interface CompanyLoginResponse {
@@ -86,13 +86,13 @@ interface CompanyLoginResponse {
     createdAt: string;
     updatedAt: string;
     accessToken: string;
-    meta: {
-      timestamp: string;
-      path: string;
-      method: string;
-    };
   };
   message: string;
+  meta: {
+    timestamp: string;
+    path: string;
+    method: string;
+  };
 }
 ```
 
@@ -112,12 +112,12 @@ interface CompanyLoginResponse {
     "lastLoginAt": "2024-01-15T10:30:00.000Z",
     "createdAt": "2024-01-15T10:00:00.000Z",
     "updatedAt": "2024-01-15T10:30:00.000Z",
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwidHlwZSI6IkpPQl9TRUVLRVIiLCJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MDUzMTU4MDAsImV4cCI6MTcwNTMxOTQwMCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.signature",
-    "meta": {
-      "timestamp": "2024-01-15T10:30:00.000Z",
-      "path": "/auth/login",
-      "method": "POST"
-    }
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwidHlwZSI6IkpPQl9TRUVLRVIiLCJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3MDUzMTU4MDAsImV4cCI6MTcwNTMxOTQwMCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.signature"
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "path": "/auth/login",
+    "method": "POST"
   },
   "message": "Login successfully"
 }
@@ -148,12 +148,12 @@ interface CompanyLoginResponse {
     "isVerified": true,
     "createdAt": "2024-01-15T10:00:00.000Z",
     "updatedAt": "2024-01-15T10:30:00.000Z",
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjBmOTUwMC1mMzljLTUyZTUtYjgyNy01NTc3NjY1NTExMTEiLCJlbWFpbCI6ImhyQHRlY2hjb3JwLmNvbSIsInR5cGUiOiJDT01QQU5ZIiwidG9rZW5UeXBlIjoiQUNDRVNTIiwiaWF0IjoxNzA1MzE1ODAwLCJleHAiOjE3MDUzMTk0MDAsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.signature",
-    "meta": {
-      "timestamp": "2024-01-15T10:30:00.000Z",
-      "path": "/auth/login",
-      "method": "POST"
-    }
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjBmOTUwMC1mMzljLTUyZTUtYjgyNy01NTc3NjY1NTExMTEiLCJlbWFpbCI6ImhyQHRlY2hjb3JwLmNvbSIsInR5cGUiOiJDT01QQU5ZIiwidG9rZW5UeXBlIjoiQUNDRVNTIiwiaWF0IjoxNzA1MzE1ODAwLCJleHAiOjE3MDUzMTk0MDAsImF1ZCI6ImxvY2FsaG9zdDozMDAwIiwiaXNzIjoibG9jYWxob3N0OjMwMDAifQ.signature"
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "path": "/auth/login",
+    "method": "POST"
   },
   "message": "Login successfully"
 }
@@ -299,6 +299,10 @@ interface CompanyLoginResponse {
   Human-readable success message.
 </ResponseField>
 
+<ResponseField name="meta" type="object">
+  Request metadata from global response interceptor.
+</ResponseField>
+
 ## Important: Refresh Token Cookie
 
 <Warning>
@@ -329,8 +333,6 @@ The server sets a cookie with these properties:
 
 <Step title="Refresh Token Storage">Stores refresh token in Redis and sets HTTP-only cookie</Step>
 
-<Step title="Last Login Update">Updates lastLoginAt timestamp (Job Seekers only)</Step>
-
   <Step title="Response">Returns user data with access token</Step>
 </Steps>
 
@@ -342,9 +344,15 @@ Returned when request validation fails.
 
 ```json
 {
-  "statusCode": 400,
-  "message": ["email must be an email", "password must be longer than or equal to 6 characters"],
-  "error": "Bad Request"
+  "success": false,
+  "error": {
+    "message": ["email must be an email", "password must be longer than or equal to 6 characters"],
+    "statusCode": 400,
+    "timestamp": "2026-04-23T19:12:03.701Z",
+    "path": "/auth/login",
+    "method": "POST",
+    "details": "Bad Request"
+  }
 }
 ```
 
@@ -354,9 +362,15 @@ Returned when email or password is incorrect.
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Invalid credentials",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Invalid credentials",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:12:03.701Z",
+    "path": "/auth/login",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
 }
 ```
 
@@ -372,9 +386,15 @@ Returned when user hasn't verified their email yet.
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Please verify your email before logging in",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Please verify your email before logging in",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:12:03.701Z",
+    "path": "/auth/login",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
 }
 ```
 
@@ -386,9 +406,15 @@ Returned when an unexpected error occurs.
 
 ```json
 {
-  "statusCode": 500,
-  "message": "Login failed",
-  "error": "Internal Server Error"
+  "success": false,
+  "error": {
+    "message": "Login failed",
+    "statusCode": 500,
+    "timestamp": "2026-04-23T19:12:03.701Z",
+    "path": "/auth/login",
+    "method": "POST",
+    "details": "Internal Server Error"
+  }
 }
 ```
 
@@ -435,13 +461,13 @@ interface JobSeekerLoginResponse {
     createdAt: string;
     updatedAt: string;
     accessToken: string;
-    meta: {
-      timestamp: string;
-      path: string;
-      method: string;
-    };
   };
   message: string;
+  meta: {
+    timestamp: string;
+    path: string;
+    method: string;
+  };
 }
 
 // Response - Company
@@ -468,13 +494,13 @@ interface CompanyLoginResponse {
     createdAt: string;
     updatedAt: string;
     accessToken: string;
-    meta: {
-      timestamp: string;
-      path: string;
-      method: string;
-    };
   };
   message: string;
+  meta: {
+    timestamp: string;
+    path: string;
+    method: string;
+  };
 }
 ```
 

@@ -1,13 +1,13 @@
 ---
 title: 'Get CV Download URL'
-api: 'GET /api/v1/cv/me/downoad-url'
+api: 'GET /api/v1/cv/me/download-url'
 description: 'Get a presigned URL to download your uploaded CV'
 ---
 
 ## Endpoint
 
 ```
-GET /api/v1/cv/me/downoad-url
+GET /api/v1/cv/me/download-url
 ```
 
 **Base URL**: `http://localhost:3000/api/v1`
@@ -39,7 +39,7 @@ Get a presigned URL to download your uploaded CV. The download URL is valid for 
   "message": "Success",
   "meta": {
     "timestamp": "2026-02-17T08:46:09.285Z",
-    "path": "/cv/me/downoad-url",
+    "path": "/cv/me/download-url",
     "method": "GET"
   }
 }
@@ -53,7 +53,7 @@ Get a presigned URL to download your uploaded CV. The download URL is valid for 
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -62,13 +62,14 @@ Get a presigned URL to download your uploaded CV. The download URL is valid for 
     "message": "Unauthorized",
     "statusCode": 401,
     "timestamp": "2026-02-17T08:00:00.000Z",
-    "path": "/cv/me/downoad-url",
-    "method": "GET"
+    "path": "/cv/me/download-url",
+    "method": "GET",
+    "details": "Unauthorized"
   }
 }
 ```
 
-### 403 Forbidden - Insufficient Permissions
+### 403 Forbidden
 
 ```json
 {
@@ -77,8 +78,9 @@ Get a presigned URL to download your uploaded CV. The download URL is valid for 
     "message": "Forbidden resource",
     "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
-    "path": "/cv/me/downoad-url",
-    "method": "GET"
+    "path": "/cv/me/download-url",
+    "method": "GET",
+    "details": "Forbidden"
   }
 }
 ```
@@ -89,11 +91,12 @@ Get a presigned URL to download your uploaded CV. The download URL is valid for 
 {
   "success": false,
   "error": {
-    "message": "CV not found",
+    "message": "No CV uploaded yet",
     "statusCode": 404,
     "timestamp": "2026-02-17T08:00:00.000Z",
-    "path": "/cv/me/downoad-url",
-    "method": "GET"
+    "path": "/cv/me/download-url",
+    "method": "GET",
+    "details": "Not Found"
   }
 }
 ```
@@ -104,6 +107,3 @@ Get a presigned URL to download your uploaded CV. The download URL is valid for 
   **URL Expiration**: The download URL expires after 1 hour. If you need to download the file after
   this time, request a new URL.
 </Warning>
-
-
-

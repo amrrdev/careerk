@@ -39,6 +39,7 @@ Delete an education entry. This action cannot be undone.
 ```json
 {
   "success": true,
+  "data": {},
   "message": "Success",
   "meta": {
     "timestamp": "2026-02-18T10:00:00.000Z",
@@ -50,7 +51,7 @@ Delete an education entry. This action cannot be undone.
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -60,25 +61,40 @@ Delete an education entry. This action cannot be undone.
     "statusCode": 401,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Unauthorized"
   }
 }
 ```
 
-
-### 404 Not Found
-
-Returned when the education doesn't exist or doesn't belong to the user.
+### 403 Forbidden
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Education not found",
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "DELETE",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Education entry not found",
     "statusCode": 404,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Not Found"
   }
 }
 ```
@@ -101,7 +117,3 @@ curl -X DELETE http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uu
   **Re-add Deleted Entry**: If you accidentally delete an education, you can create a new one using
   the create endpoint.
 </Tip>
-
-
-
-

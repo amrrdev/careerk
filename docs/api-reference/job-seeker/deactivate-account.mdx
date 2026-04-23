@@ -63,7 +63,8 @@ This endpoint deactivates (soft delete) the current job seeker's account. The ac
     "statusCode": 401,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Unauthorized"
   }
 }
 ```
@@ -78,22 +79,8 @@ This endpoint deactivates (soft delete) the current job seeker's account. The ac
     "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "DELETE"
-  }
-}
-```
-
-### 500 Internal Server Error
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Failed to deactivate account",
-    "statusCode": 500,
-    "timestamp": "2026-02-17T08:00:00.000Z",
-    "path": "/job-seekers/me",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Forbidden"
   }
 }
 ```
@@ -132,6 +119,3 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
   **Consider Before Deactivating**: If you're just taking a break from job hunting, consider
   updating your availability status to "NOT_LOOKING" instead of deactivating your account.
 </Tip>
-
-
-

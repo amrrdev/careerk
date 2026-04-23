@@ -73,22 +73,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Error Responses
 
-### 400 Bad Request - Job Not Found
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Record not found",
-    "statusCode": 400,
-    "timestamp": "2026-02-22T15:01:29.639Z",
-    "path": "/companies/me/jobs/{jobId}",
-    "method": "GET"
-  }
-}
-```
-
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -98,7 +83,40 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     "statusCode": 401,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/companies/me/jobs/{jobId}",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}",
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Job not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}",
+    "method": "GET",
+    "details": "Not Found"
   }
 }
 ```

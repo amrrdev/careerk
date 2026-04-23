@@ -41,7 +41,12 @@ GET /api/v1/jobs/bookmark
       }
     }
   ],
-  "message": "Bookmarks retrieved successfully"
+  "message": "Bookmarks retrieved successfully",
+  "meta": {
+    "timestamp": "2026-02-22T22:34:05.491Z",
+    "path": "/jobs/bookmark",
+    "method": "GET"
+  }
 }
 ```
 
@@ -69,8 +74,6 @@ GET /api/v1/jobs/bookmark
 
 ### 401 Unauthorized
 
-Returned when authentication is missing.
-
 ```json
 {
   "success": false,
@@ -79,7 +82,24 @@ Returned when authentication is missing.
     "statusCode": 401,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/jobs/bookmark",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmark",
+    "method": "GET",
+    "details": "Forbidden"
   }
 }
 ```

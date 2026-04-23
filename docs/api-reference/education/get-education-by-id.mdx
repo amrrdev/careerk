@@ -101,7 +101,7 @@ Retrieve a specific education entry by its ID. Only returns educations belonging
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -111,25 +111,40 @@ Retrieve a specific education entry by its ID. Only returns educations belonging
     "statusCode": 401,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
   }
 }
 ```
 
-
-### 404 Not Found
-
-Returned when the education doesn't exist or doesn't belong to the user.
+### 403 Forbidden
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Education not found",
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Education entry not found",
     "statusCode": 404,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "GET"
+    "method": "GET",
+    "details": "Not Found"
   }
 }
 ```
@@ -140,7 +155,3 @@ Returned when the education doesn't exist or doesn't belong to the user.
 curl -X GET http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uuid \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
-
-
-
-

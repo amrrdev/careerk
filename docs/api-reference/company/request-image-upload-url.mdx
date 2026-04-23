@@ -106,7 +106,8 @@ interface RequestCompanyImageUploadResponse {
     "statusCode": 400,
     "timestamp": "2026-04-16T10:10:00.000Z",
     "path": "/companies/me/images/presigned-url",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -121,7 +122,24 @@ interface RequestCompanyImageUploadResponse {
     "statusCode": 401,
     "timestamp": "2026-04-16T10:10:00.000Z",
     "path": "/companies/me/images/presigned-url",
-    "method": "POST"
+    "method": "POST",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-16T10:10:00.000Z",
+    "path": "/companies/me/images/presigned-url",
+    "method": "POST",
+    "details": "Forbidden"
   }
 }
 ```

@@ -33,6 +33,7 @@ Delete your current CV from your profile. This removes the CV file from storage 
 ```json
 {
   "success": true,
+  "data": {},
   "message": "Success",
   "meta": {
     "timestamp": "2026-02-16T15:09:36.452Z",
@@ -44,7 +45,7 @@ Delete your current CV from your profile. This removes the CV file from storage 
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -54,12 +55,13 @@ Delete your current CV from your profile. This removes the CV file from storage 
     "statusCode": 401,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Unauthorized"
   }
 }
 ```
 
-### 403 Forbidden - Insufficient Permissions
+### 403 Forbidden
 
 ```json
 {
@@ -69,7 +71,8 @@ Delete your current CV from your profile. This removes the CV file from storage 
     "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Forbidden"
   }
 }
 ```
@@ -80,11 +83,12 @@ Delete your current CV from your profile. This removes the CV file from storage 
 {
   "success": false,
   "error": {
-    "message": "CV not found",
+    "message": "No CV to delete",
     "statusCode": 404,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Not Found"
   }
 }
 ```
@@ -97,6 +101,3 @@ Delete your current CV from your profile. This removes the CV file from storage 
 </Info>
 
 <Tip>**Re-upload Available**: You can upload a new CV at any time after deleting the old one.</Tip>
-
-
-

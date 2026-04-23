@@ -30,8 +30,8 @@ Confirms that the profile image was uploaded successfully to storage and saves i
 ## Request Body
 
 <ParamField body="key" type="string" required>
-  Storage object key returned by the presigned URL endpoint. It must start with
-  `profile-images/{jobSeekerId}/`.
+  Storage object key returned by the presigned URL endpoint. It must start with `profile-images/
+  {jobSeekerId}/`.
 </ParamField>
 
 ## Request Shape
@@ -98,7 +98,8 @@ interface ConfirmProfileImageUploadResponse {
     "statusCode": 400,
     "timestamp": "2026-04-16T10:05:00.000Z",
     "path": "/job-seekers/me/profile-image/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -113,7 +114,8 @@ interface ConfirmProfileImageUploadResponse {
     "statusCode": 400,
     "timestamp": "2026-04-16T10:05:00.000Z",
     "path": "/job-seekers/me/profile-image/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -128,7 +130,8 @@ interface ConfirmProfileImageUploadResponse {
     "statusCode": 401,
     "timestamp": "2026-04-16T10:05:00.000Z",
     "path": "/job-seekers/me/profile-image/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Unauthorized"
   }
 }
 ```
@@ -143,7 +146,8 @@ interface ConfirmProfileImageUploadResponse {
     "statusCode": 404,
     "timestamp": "2026-04-16T10:05:00.000Z",
     "path": "/job-seekers/me/profile-image/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Not Found"
   }
 }
 ```
@@ -152,6 +156,11 @@ interface ConfirmProfileImageUploadResponse {
 
 <Steps>
   <Step title="Request URL">Call POST /job-seekers/me/profile-image/presigned-url</Step>
-  <Step title="Upload File">Upload the image to the returned `uploadUrl` using PUT. See /api-reference/job-seeker/upload-profile-image-file</Step>
-  <Step title="Confirm Upload">Call POST /job-seekers/me/profile-image/confirm with the returned `key`</Step>
+  <Step title="Upload File">
+    Upload the image to the returned `uploadUrl` using PUT. See
+    /api-reference/job-seeker/upload-profile-image-file
+  </Step>
+  <Step title="Confirm Upload">
+    Call POST /job-seekers/me/profile-image/confirm with the returned `key`
+  </Step>
 </Steps>

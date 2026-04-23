@@ -92,7 +92,7 @@ All fields are optional for updates:
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -102,15 +102,29 @@ All fields are optional for updates:
     "statusCode": 401,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/work-experiences/exp-123-uuid",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Unauthorized"
   }
 }
 ```
 
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences/exp-123-uuid",
+    "method": "PATCH",
+    "details": "Forbidden"
+  }
+}
+```
 
 ### 404 Not Found
-
-Returned when the work experience doesn't exist or doesn't belong to the user.
 
 ```json
 {
@@ -120,7 +134,8 @@ Returned when the work experience doesn't exist or doesn't belong to the user.
     "statusCode": 404,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/work-experiences/exp-123-uuid",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Not Found"
   }
 }
 ```
@@ -135,7 +150,8 @@ Returned when the work experience doesn't exist or doesn't belong to the user.
     "statusCode": 400,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/work-experiences/exp-123-uuid",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Bad Request"
   }
 }
 ```
@@ -163,7 +179,3 @@ curl -X PATCH http://localhost:3000/api/v1/job-seekers/me/work-experiences/exp-1
   **Updating Current Job**: To mark a past job as current, set `isCurrent` to `true` and remove
   `endDate`.
 </Tip>
-
-
-
-

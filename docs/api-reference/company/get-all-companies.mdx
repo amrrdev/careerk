@@ -78,10 +78,29 @@ GET /api/v1/companies
     "limit": 20,
     "totalPages": 3
   },
-  "message": "Company profiles retrieved successfully"
+  "message": "Company profiles retrieved successfully",
+  "meta": {
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies",
+    "method": "GET"
+  }
 }
 ```
 
 ## Error Responses
 
-<Error statusCode="500">Internal server error</Error>
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": ["page must not be less than 1"],
+    "statusCode": 400,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies",
+    "method": "GET",
+    "details": "Bad Request"
+  }
+}
+```

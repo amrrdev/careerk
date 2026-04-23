@@ -54,13 +54,13 @@ interface JobSeekerVerifyResponse {
     createdAt: string;
     updatedAt: string;
     accessToken: string;
-    meta: {
-      timestamp: string;
-      path: string;
-      method: string;
-    };
   };
   message: string;
+  meta: {
+    timestamp: string;
+    path: string;
+    method: string;
+  };
 }
 
 interface CompanyVerifyResponse {
@@ -86,13 +86,13 @@ interface CompanyVerifyResponse {
     createdAt: string;
     updatedAt: string;
     accessToken: string;
-    meta: {
-      timestamp: string;
-      path: string;
-      method: string;
-    };
   };
   message: string;
+  meta: {
+    timestamp: string;
+    path: string;
+    method: string;
+  };
 }
 ```
 
@@ -112,12 +112,12 @@ interface CompanyVerifyResponse {
     "lastLoginAt": "2024-01-15T10:30:00.000Z",
     "createdAt": "2024-01-15T10:00:00.000Z",
     "updatedAt": "2024-01-15T10:30:00.000Z",
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "meta": {
-      "timestamp": "2024-01-15T10:30:00.000Z",
-      "path": "/auth/verify-email",
-      "method": "POST"
-    }
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "path": "/auth/verify-email",
+    "method": "POST"
   },
   "message": "Email verified successfully. You are now logged in."
 }
@@ -148,12 +148,12 @@ interface CompanyVerifyResponse {
     "isVerified": true,
     "createdAt": "2024-01-15T10:00:00.000Z",
     "updatedAt": "2024-01-15T10:30:00.000Z",
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "meta": {
-      "timestamp": "2024-01-15T10:30:00.000Z",
-      "path": "/auth/verify-email",
-      "method": "POST"
-    }
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "path": "/auth/verify-email",
+    "method": "POST"
   },
   "message": "Email verified successfully. You are now logged in."
 }
@@ -299,6 +299,21 @@ interface CompanyVerifyResponse {
   Success message: "Email verified successfully. You are now logged in."
 </ResponseField>
 
+<ResponseField name="meta" type="object">
+  Request metadata from global response interceptor.
+  <Expandable title="properties">
+    <ResponseField name="timestamp" type="string">
+      ISO timestamp of the response.
+    </ResponseField>
+    <ResponseField name="path" type="string">
+      Request path.
+    </ResponseField>
+    <ResponseField name="method" type="string">
+      HTTP method.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
 ## Important: Refresh Token Cookie
 
 <Warning>
@@ -352,9 +367,15 @@ Returned when request validation fails.
 
 ```json
 {
-  "statusCode": 400,
-  "message": ["Invalid email format", "OTP must be exactly 6 digits"],
-  "error": "Bad Request"
+  "success": false,
+  "error": {
+    "message": ["Invalid email format", "OTP must be exactly 6 digits"],
+    "statusCode": 400,
+    "timestamp": "2026-04-23T19:12:03.701Z",
+    "path": "/auth/verify-email",
+    "method": "POST",
+    "details": "Bad Request"
+  }
 }
 ```
 
@@ -370,9 +391,15 @@ Returned when OTP is incorrect or expired.
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Invalid or expired OTP code",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Invalid or expired OTP code",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:12:03.701Z",
+    "path": "/auth/verify-email",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
 }
 ```
 
@@ -390,9 +417,15 @@ Returned when no user exists with the provided email.
 
 ```json
 {
-  "statusCode": 401,
-  "message": "User not found",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "User not found",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:12:03.701Z",
+    "path": "/auth/verify-email",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
 }
 ```
 
@@ -402,11 +435,22 @@ Generic error for other verification issues.
 
 ```json
 {
-  "statusCode": 401,
-  "message": "Email verification failed",
-  "error": "Unauthorized"
+  "success": false,
+  "error": {
+    "message": "Email verification failed",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:12:03.701Z",
+    "path": "/auth/verify-email",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
 }
 ```
+
+<Info>
+  Error responses follow the global API envelope: `success: false` and an `error` object containing
+  `message`, `statusCode`, `timestamp`, `path`, `method`, and `details`.
+</Info>
 
 ## Validation Rules
 

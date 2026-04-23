@@ -44,7 +44,7 @@ All fields are optional. Only provide fields you want to update.
 
 <ParamField body="availabilityStatus" type="enum">
   Current availability status. - `OPEN_TO_WORK` - Actively looking - `NOT_LOOKING` - Not looking -
-  `EMPLOYED` - Currently employed - `UNAVAILABLE` - Not available
+  `PASSIVELY_LOOKING` - Open to opportunities
 </ParamField>
 
 <ParamField body="workPreference" type="enum">
@@ -88,7 +88,7 @@ interface UpdateJobSeekerProfileDto {
   lastName?: string;
   title?: string;
   location?: string;
-  availabilityStatus?: 'OPEN_TO_WORK' | 'NOT_LOOKING' | 'EMPLOYED' | 'UNAVAILABLE';
+  availabilityStatus?: 'OPEN_TO_WORK' | 'NOT_LOOKING' | 'PASSIVELY_LOOKING';
   workPreference?: 'REMOTE' | 'ONSITE' | 'HYBRID' | 'ANY';
   preferredJobTypes?: ('FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP' | 'FREELANCE')[];
   yearsOfExperience?: number;
@@ -97,6 +97,7 @@ interface UpdateJobSeekerProfileDto {
   linkedinUrl?: string;
   portfolioUrl?: string;
   githubUrl?: string;
+  profileImageUrl?: string;
 }
 ```
 
@@ -128,8 +129,7 @@ Content-Type: application/json
   "workPreference": "REMOTE",
   "preferredJobTypes": ["FULL_TIME", "CONTRACT"],
   "yearsOfExperience": 6,
-  "expectedSalary": 6000,
-  "noticePeriod": 30
+  "expectedSalary": 6000
 }
 ```
 
@@ -212,7 +212,8 @@ Content-Type: application/json
     "statusCode": 400,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Bad Request"
   }
 }
 ```
@@ -227,7 +228,8 @@ Content-Type: application/json
     "statusCode": 401,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Unauthorized"
   }
 }
 ```
@@ -242,7 +244,8 @@ Content-Type: application/json
     "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Forbidden"
   }
 }
 ```
@@ -259,43 +262,30 @@ Returned when the job seeker hasn't completed onboarding yet.
     "statusCode": 404,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "PATCH"
-  }
-}
-```
-
-### 500 Internal Server Error
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Failed to update profile",
-    "statusCode": 500,
-    "timestamp": "2026-02-17T08:00:00.000Z",
-    "path": "/job-seekers/me",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Not Found"
   }
 }
 ```
 
 ## Validation Rules
 
-| Field              | Rules                       |
-| ------------------ | --------------------------- |
-| firstName          | String, max 100 characters  |
-| lastName           | String, max 100 characters  |
-| title              | String, max 200 characters  |
-| location           | String, max 200 characters  |
-| availabilityStatus | Must be valid enum value    |
-| workPreference     | Must be valid enum value    |
-| preferredJobTypes  | Array of valid enum values  |
-| yearsOfExperience  | Number, min 0, max 50       |
-| summary            | String, max 2000 characters |
-| expectedSalary     | Number, min 0               |
-| linkedinUrl        | Valid URL format            |
-| portfolioUrl       | Valid URL format            |
-| githubUrl          | Valid URL format            |
+| Field              | Rules                      |
+| ------------------ | -------------------------- |
+| firstName          | String                     |
+| lastName           | String                     |
+| title              | String                     |
+| location           | String                     |
+| availabilityStatus | Must be valid enum value   |
+| workPreference     | Must be valid enum value   |
+| preferredJobTypes  | Array of valid enum values |
+| yearsOfExperience  | Number                     |
+| summary            | String                     |
+| expectedSalary     | Number                     |
+| linkedinUrl        | String                     |
+| portfolioUrl       | String                     |
+| githubUrl          | String                     |
+| profileImageUrl    | String                     |
 
 ## Notes
 
@@ -318,6 +308,3 @@ Returned when the job seeker hasn't completed onboarding yet.
   **Add Links**: Including LinkedIn, portfolio, and GitHub links increases your visibility and helps
   companies learn more about you.
 </Tip>
-
-
-

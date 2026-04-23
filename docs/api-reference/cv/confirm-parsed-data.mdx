@@ -217,23 +217,18 @@ For partial updates after confirmation, use the dedicated Education, Work Experi
 
 ## Error Responses
 
-### 400 Bad Request - Validation Errors
+### 400 Bad Request - Validation Error (missing required fields)
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "workPreference and availabilityStatus are required in data object",
-    "errors": [
-      {
-        "field": "data",
-        "message": "workPreference and availabilityStatus are required in data object"
-      }
-    ],
+    "message": "data must be defined, workPreference must be a valid enum value, availabilityStatus must be a valid enum value",
     "statusCode": 400,
     "timestamp": "2026-02-20T14:47:55.971Z",
     "path": "/cv-parse/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -248,7 +243,56 @@ For partial updates after confirmation, use the dedicated Education, Work Experi
     "statusCode": 400,
     "timestamp": "2026-02-20T14:00:00.000Z",
     "path": "/cv-parse/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-20T14:00:00.000Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-20T14:00:00.000Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found - Parse Result Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Parse result not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-20T14:00:00.000Z",
+    "path": "/cv-parse/confirm",
+    "method": "POST",
+    "details": "Not Found"
   }
 }
 ```

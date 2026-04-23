@@ -272,7 +272,8 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     "statusCode": 401,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
   }
 }
 ```
@@ -287,7 +288,8 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "GET"
+    "method": "GET",
+    "details": "Forbidden"
   }
 }
 ```
@@ -302,7 +304,8 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     "statusCode": 404,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/me",
-    "method": "GET"
+    "method": "GET",
+    "details": "Not Found"
   }
 }
 ```
@@ -319,6 +322,3 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
   **Profile Completeness**: Ensure your profile is complete with education, work experience, and
   skills to increase visibility to employers.
 </Tip>
-
-
-
