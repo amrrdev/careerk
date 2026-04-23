@@ -101,18 +101,81 @@ PATCH /api/v1/companies/me
     "description": "Updated description",
     "industry": "Software",
     "size": "SIZE_51_200",
-    ...
+    "twitter": "https://twitter.com/techcorp"
   },
-  "message": "Company profile updated successfully"
+  "message": "Company profile updated successfully",
+  "meta": {
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "PATCH"
+  }
 }
 ```
 
 ## Error Responses
 
-<Error statusCode="400">Invalid request body or validation error</Error>
+### 400 Bad Request - Validation Error
 
-<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": [
+      "size must be one of the following values: SIZE_1_50, SIZE_51_200, SIZE_201_1000, SIZE_1000_PLUS"
+    ],
+    "statusCode": 400,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "PATCH",
+    "details": "Bad Request"
+  }
+}
+```
 
-<Error statusCode="404">Company not found</Error>
+### 401 Unauthorized
 
-<Error statusCode="500">Internal server error</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "PATCH",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "PATCH",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Failed to update company profile",
+    "statusCode": 404,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "PATCH",
+    "details": "Not Found"
+  }
+}
+```

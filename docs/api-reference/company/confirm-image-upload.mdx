@@ -29,8 +29,8 @@ Confirms that the company logo exists in storage and saves its public URL to `lo
 ## Request Body
 
 <ParamField body="key" type="string" required>
-  Storage object key returned by the presigned URL endpoint. It must start with
-  `company-logos/{companyId}/`.
+  Storage object key returned by the presigned URL endpoint. It must start with `company-logos/
+  {companyId}/`.
 </ParamField>
 
 ## Request Shape
@@ -97,7 +97,8 @@ interface ConfirmCompanyImageUploadResponse {
     "statusCode": 400,
     "timestamp": "2026-04-16T10:12:00.000Z",
     "path": "/companies/me/images/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -112,7 +113,8 @@ interface ConfirmCompanyImageUploadResponse {
     "statusCode": 400,
     "timestamp": "2026-04-16T10:12:00.000Z",
     "path": "/companies/me/images/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -127,7 +129,24 @@ interface ConfirmCompanyImageUploadResponse {
     "statusCode": 401,
     "timestamp": "2026-04-16T10:12:00.000Z",
     "path": "/companies/me/images/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-16T10:12:00.000Z",
+    "path": "/companies/me/images/confirm",
+    "method": "POST",
+    "details": "Forbidden"
   }
 }
 ```
@@ -142,7 +161,8 @@ interface ConfirmCompanyImageUploadResponse {
     "statusCode": 404,
     "timestamp": "2026-04-16T10:12:00.000Z",
     "path": "/companies/me/images/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Not Found"
   }
 }
 ```
@@ -151,6 +171,9 @@ interface ConfirmCompanyImageUploadResponse {
 
 <Steps>
   <Step title="Request URL">Call POST /companies/me/images/presigned-url</Step>
-  <Step title="Upload File">Upload the image to the returned `uploadUrl` using PUT. See /api-reference/company/upload-image-file</Step>
+  <Step title="Upload File">
+    Upload the image to the returned `uploadUrl` using PUT. See
+    /api-reference/company/upload-image-file
+  </Step>
   <Step title="Confirm Upload">Call POST /companies/me/images/confirm with the returned `key`</Step>
 </Steps>

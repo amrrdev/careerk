@@ -106,7 +106,7 @@ Retrieve all work experience entries for the authenticated job seeker. The resul
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -116,11 +116,27 @@ Retrieve all work experience entries for the authenticated job seeker. The resul
     "statusCode": 401,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/work-experiences",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
   }
 }
 ```
 
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/work-experiences",
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```
 
 ## Notes
 
@@ -130,7 +146,3 @@ Retrieve all work experience entries for the authenticated job seeker. The resul
   **Sorting**: Results are automatically sorted by start date in descending order (most recent
   first).
 </Tip>
-
-
-
-

@@ -32,14 +32,61 @@ This endpoint deactivates the company account. The account and all associated da
   "data": {
     "id": "uuid"
   },
-  "message": "Company deactivated successfully"
+  "message": "Company deactivated successfully",
+  "meta": {
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "DELETE"
+  }
 }
 ```
 
 ## Error Responses
 
-<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+### 401 Unauthorized
 
-<Error statusCode="404">Company not found or already deactivated</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "DELETE",
+    "details": "Unauthorized"
+  }
+}
+```
 
-<Error statusCode="500">Internal server error</Error>
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "DELETE",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Company not found or already deactivated",
+    "statusCode": 404,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "DELETE",
+    "details": "Not Found"
+  }
+}
+```

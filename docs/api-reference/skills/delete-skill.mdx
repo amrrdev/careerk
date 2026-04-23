@@ -39,7 +39,7 @@ Remove a specific skill from your profile.
 ```json
 {
   "success": true,
-  "data": null,
+  "data": {},
   "message": "Success",
   "meta": {
     "timestamp": "2026-02-21T12:25:00.000Z",
@@ -51,6 +51,38 @@ Remove a specific skill from your profile.
 
 ## Error Responses
 
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-21T12:25:00.000Z",
+    "path": "/job-seekers/me/skills/:skillId",
+    "method": "DELETE",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-21T12:25:00.000Z",
+    "path": "/job-seekers/me/skills/:skillId",
+    "method": "DELETE",
+    "details": "Forbidden"
+  }
+}
+```
+
 ### 404 Not Found - Skill Not in Profile
 
 ```json
@@ -61,22 +93,8 @@ Remove a specific skill from your profile.
     "statusCode": 404,
     "timestamp": "2026-02-21T12:25:00.000Z",
     "path": "/job-seekers/me/skills/:skillId",
-    "method": "DELETE"
-  }
-}
-```
-
-### 401 Unauthorized - Not Authenticated
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Unauthorized",
-    "statusCode": 401,
-    "timestamp": "2026-02-21T12:25:00.000Z",
-    "path": "/job-seekers/me/skills/:skillId",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Not Found"
   }
 }
 ```

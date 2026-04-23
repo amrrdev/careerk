@@ -77,7 +77,39 @@ Temporarily pause a published job posting. Paused jobs are hidden from candidate
 
 ## Error Responses
 
-### 404 Not Found - Job Not Found
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/pause",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}/pause",
+    "method": "POST",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
 
 ```json
 {
@@ -87,7 +119,8 @@ Temporarily pause a published job posting. Paused jobs are hidden from candidate
     "statusCode": 404,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/companies/me/jobs/{jobId}/pause",
-    "method": "POST"
+    "method": "POST",
+    "details": "Not Found"
   }
 }
 ```
@@ -102,22 +135,8 @@ Temporarily pause a published job posting. Paused jobs are hidden from candidate
     "statusCode": 400,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/companies/me/jobs/{jobId}/pause",
-    "method": "POST"
-  }
-}
-```
-
-### 401 Unauthorized - Not Authenticated
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Unauthorized",
-    "statusCode": 401,
-    "timestamp": "2026-02-22T15:01:29.639Z",
-    "path": "/companies/me/jobs/{jobId}/pause",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```

@@ -105,7 +105,7 @@ All fields are optional for updates:
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -115,25 +115,40 @@ All fields are optional for updates:
     "statusCode": 401,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Unauthorized"
   }
 }
 ```
 
-
-### 404 Not Found
-
-Returned when the education doesn't exist or doesn't belong to the user.
+### 403 Forbidden
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Education not found",
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations/edu-123-uuid",
+    "method": "PATCH",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Education entry not found",
     "statusCode": 404,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Not Found"
   }
 }
 ```
@@ -151,7 +166,8 @@ Returned when the education doesn't exist or doesn't belong to the user.
     "statusCode": 400,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations/edu-123-uuid",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Bad Request"
   }
 }
 ```
@@ -179,7 +195,3 @@ curl -X PATCH http://localhost:3000/api/v1/job-seekers/me/educations/edu-123-uui
   **Updating Current Status**: To mark a completed education as currently studying, set `isCurrent`
   to `true` and remove `endDate`.
 </Tip>
-
-
-
-

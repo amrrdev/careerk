@@ -116,7 +116,7 @@ Or for currently studying:
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -126,11 +126,27 @@ Or for currently studying:
     "statusCode": 401,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations",
-    "method": "POST"
+    "method": "POST",
+    "details": "Unauthorized"
   }
 }
 ```
 
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-18T10:00:00.000Z",
+    "path": "/job-seekers/me/educations",
+    "method": "POST",
+    "details": "Forbidden"
+  }
+}
+```
 
 ### 400 Bad Request - Validation Error
 
@@ -147,7 +163,8 @@ Or for currently studying:
     "statusCode": 400,
     "timestamp": "2026-02-18T10:00:00.000Z",
     "path": "/job-seekers/me/educations",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -179,7 +196,3 @@ curl -X POST http://localhost:3000/api/v1/job-seekers/me/educations \
 <Warning>**Date Format**: Dates must be in ISO 8601 format (YYYY-MM-DD).</Warning>
 
 <Tip>**GPA**: GPA must be between 0 and 4.</Tip>
-
-
-
-

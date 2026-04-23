@@ -272,11 +272,12 @@ GET /api/v1/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00
 {
   "success": false,
   "error": {
-    "message": "Invalid UUID",
+    "message": "Validation failed (uuid is expected)",
     "statusCode": 400,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/123",
-    "method": "GET"
+    "method": "GET",
+    "details": "Bad Request"
   }
 }
 ```
@@ -291,7 +292,8 @@ GET /api/v1/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00
     "statusCode": 404,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00",
-    "method": "GET"
+    "method": "GET",
+    "details": "Not Found"
   }
 }
 ```
@@ -299,9 +301,8 @@ GET /api/v1/job-seekers/fe721809-a9da-4301-a8fe-9d3373dced00
 ## Notes
 
 <Info>
-  **Public Profile**: This endpoint returns public profile information. It includes education, work
-  experience, and skills. Some sensitive data like phone and expected salary may be hidden based on
-  the profile owner's privacy settings.
+  **Public Profile**: This endpoint currently returns the same profile shape as `GET
+  /job-seekers/me` from backend service mapping.
 </Info>
 
 <Tip>

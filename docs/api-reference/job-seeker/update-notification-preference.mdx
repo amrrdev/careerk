@@ -107,13 +107,12 @@ Content-Type: application/json
 {
   "success": false,
   "error": {
-    "message": [
-      "applicationStatusNotificationsEnabled must be a boolean value"
-    ],
+    "message": ["applicationStatusNotificationsEnabled must be a boolean value"],
     "statusCode": 400,
     "timestamp": "2026-03-07T20:20:00.000Z",
     "path": "/job-seekers/me/notification-preference",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Bad Request"
   }
 }
 ```
@@ -128,7 +127,8 @@ Content-Type: application/json
     "statusCode": 401,
     "timestamp": "2026-03-07T20:20:00.000Z",
     "path": "/job-seekers/me/notification-preference",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Unauthorized"
   }
 }
 ```
@@ -143,7 +143,8 @@ Content-Type: application/json
     "statusCode": 403,
     "timestamp": "2026-03-07T20:20:00.000Z",
     "path": "/job-seekers/me/notification-preference",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Forbidden"
   }
 }
 ```

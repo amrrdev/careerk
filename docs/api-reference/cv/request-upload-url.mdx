@@ -78,7 +78,7 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -88,12 +88,13 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
     "statusCode": 401,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/presigned-url",
-    "method": "POST"
+    "method": "POST",
+    "details": "Unauthorized"
   }
 }
 ```
 
-### 403 Forbidden - Insufficient Permissions
+### 403 Forbidden
 
 ```json
 {
@@ -103,7 +104,8 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
     "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/presigned-url",
-    "method": "POST"
+    "method": "POST",
+    "details": "Forbidden"
   }
 }
 ```
@@ -114,11 +116,14 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
 {
   "success": false,
   "error": {
-    "message": "Invalid file type. Only PDF, DOC, and DOCX files are allowed.",
+    "message": [
+      "mimeType must be one of: application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
     "statusCode": 400,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/presigned-url",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -132,6 +137,3 @@ Request a presigned URL for uploading your CV file to cloud storage. This is the
   **URL Expiration**: The presigned URL expires after 1 hour. If you don't upload the file within
   this time, you'll need to request a new URL.
 </Warning>
-
-
-

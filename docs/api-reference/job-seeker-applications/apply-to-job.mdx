@@ -42,18 +42,93 @@ POST /api/v1/job-seekers/me/applications
   "data": {
     "id": "uuid"
   },
-  "message": "Application submitted successfully"
+  "message": "Application submitted successfully",
+  "meta": {
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications",
+    "method": "POST"
+  }
 }
 ```
 
 ## Error Responses
 
-<Error statusCode="400">Invalid request - Job ID is required or already applied</Error>
+### 400 Bad Request - Validation Error
 
-<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": ["jobId must be a UUID"],
+    "statusCode": 400,
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications",
+    "method": "POST",
+    "details": "Bad Request"
+  }
+}
+```
 
-<Error statusCode="404">Job not found</Error>
+### 401 Unauthorized
 
-<Error statusCode="409">Conflict - Already applied to this job</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
+}
+```
 
-<Error statusCode="500">Internal server error</Error>
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications",
+    "method": "POST",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Job not found",
+    "statusCode": 404,
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications",
+    "method": "POST",
+    "details": "Not Found"
+  }
+}
+```
+
+### 409 Conflict
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "You have already applied to this job",
+    "statusCode": 409,
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications",
+    "method": "POST",
+    "details": "Conflict"
+  }
+}
+```

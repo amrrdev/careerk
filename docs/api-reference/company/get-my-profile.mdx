@@ -40,19 +40,63 @@ GET /api/v1/companies/me
     "benefits": "Health insurance, remote work",
     "linkedIn": "https://linkedin.com/company/techcorp",
     "facebook": "https://facebook.com/techcorp",
-    "twitter": "https://twitter.com/techcorp",
-    "isVerified": true,
-    "createdAt": "2025-01-15T10:00:00Z",
-    "updatedAt": "2025-02-20T15:30:00Z"
+    "twitter": "https://twitter.com/techcorp"
   },
-  "message": "Company profile retrieved successfully"
+  "message": "Company profile retrieved successfully",
+  "meta": {
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "GET"
+  }
 }
 ```
 
 ## Error Responses
 
-<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+### 401 Unauthorized
 
-<Error statusCode="404">Company not found</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "GET",
+    "details": "Unauthorized"
+  }
+}
+```
 
-<Error statusCode="500">Internal server error</Error>
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Company not found",
+    "statusCode": 404,
+    "timestamp": "2026-04-23T19:20:00.000Z",
+    "path": "/companies/me",
+    "method": "GET",
+    "details": "Not Found"
+  }
+}
+```

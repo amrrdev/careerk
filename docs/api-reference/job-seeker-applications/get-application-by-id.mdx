@@ -64,14 +64,61 @@ GET /api/v1/job-seekers/me/applications/:id
       ]
     }
   },
-  "message": "Application retrieved successfully"
+  "message": "Application retrieved successfully",
+  "meta": {
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "GET"
+  }
 }
 ```
 
 ## Error Responses
 
-<Error statusCode="401">Unauthorized - Invalid or missing authentication token</Error>
+### 401 Unauthorized
 
-<Error statusCode="404">Application not found</Error>
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "GET",
+    "details": "Unauthorized"
+  }
+}
+```
 
-<Error statusCode="500">Internal server error</Error>
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Application not found",
+    "statusCode": 404,
+    "timestamp": "2026-04-23T19:30:00.000Z",
+    "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
+    "method": "GET",
+    "details": "Not Found"
+  }
+}
+```

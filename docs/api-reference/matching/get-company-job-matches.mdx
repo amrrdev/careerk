@@ -140,6 +140,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     <ResponseField name="createdAt" type="string">
       Match creation date (ISO 8601 format).
     </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -161,7 +162,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -171,12 +172,13 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     "statusCode": 401,
     "timestamp": "2026-04-17T08:00:00.000Z",
     "path": "/companies/me/jobs/{jobId}/matches",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
   }
 }
 ```
 
-### 403 Forbidden - Insufficient Permissions
+### 403 Forbidden
 
 ```json
 {
@@ -186,22 +188,24 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     "statusCode": 403,
     "timestamp": "2026-04-17T08:00:00.000Z",
     "path": "/companies/me/jobs/{jobId}/matches",
-    "method": "GET"
+    "method": "GET",
+    "details": "Forbidden"
   }
 }
 ```
 
-### 404 Not Found - Job Not Found
+### 400 Bad Request - Validation Error
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Job with ID {jobId} not found",
-    "statusCode": 404,
+    "message": ["availabilityStatus must be a valid enum value"],
+    "statusCode": 400,
     "timestamp": "2026-04-17T08:00:00.000Z",
     "path": "/companies/me/jobs/{jobId}/matches",
-    "method": "GET"
+    "method": "GET",
+    "details": "Bad Request"
   }
 }
 ```

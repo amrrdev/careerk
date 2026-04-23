@@ -224,22 +224,8 @@ GET /api/v1/job-seekers?location=Berlin&workPreference=REMOTE&availabilityStatus
     "statusCode": 400,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/job-seekers",
-    "method": "GET"
-  }
-}
-```
-
-### 500 Internal Server Error
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Failed to retrieve job seekers",
-    "statusCode": 500,
-    "timestamp": "2026-02-17T08:00:00.000Z",
-    "path": "/job-seekers",
-    "method": "GET"
+    "method": "GET",
+    "details": "Bad Request"
   }
 }
 ```

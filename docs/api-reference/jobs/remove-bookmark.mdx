@@ -25,7 +25,13 @@ DELETE /api/v1/jobs/bookmarks/:id
 ```json
 {
   "success": true,
-  "message": "Bookmark removed successfully"
+  "data": {},
+  "message": "Bookmark removed successfully",
+  "meta": {
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmarks/:id",
+    "method": "DELETE"
+  }
 }
 ```
 
@@ -38,8 +44,6 @@ DELETE /api/v1/jobs/bookmarks/:id
 
 ### 401 Unauthorized
 
-Returned when authentication is missing.
-
 ```json
 {
   "success": false,
@@ -48,7 +52,24 @@ Returned when authentication is missing.
     "statusCode": 401,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/jobs/bookmarks/:id",
-    "method": "DELETE"
+    "method": "DELETE",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmarks/:id",
+    "method": "DELETE",
+    "details": "Forbidden"
   }
 }
 ```

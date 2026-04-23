@@ -80,7 +80,7 @@ Retrieve all skills associated with the authenticated job seeker, including veri
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -90,11 +90,27 @@ Retrieve all skills associated with the authenticated job seeker, including veri
     "statusCode": 401,
     "timestamp": "2026-02-21T12:15:44.969Z",
     "path": "/job-seekers/me/skills",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
   }
 }
 ```
 
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-21T12:15:44.969Z",
+    "path": "/job-seekers/me/skills",
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```
 
 ## Notes
 
@@ -104,7 +120,3 @@ Retrieve all skills associated with the authenticated job seeker, including veri
   **Verification Status**: Skills parsed from CV are marked as `verified: true`. Manually added
   skills are marked as `verified: false`.
 </Tip>
-
-
-
-

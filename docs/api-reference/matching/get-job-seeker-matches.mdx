@@ -145,7 +145,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -155,12 +155,13 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     "statusCode": 401,
     "timestamp": "2026-04-17T08:00:00.000Z",
     "path": "/job-seekers/me/matches",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
   }
 }
 ```
 
-### 403 Forbidden - Insufficient Permissions
+### 403 Forbidden
 
 ```json
 {
@@ -170,7 +171,24 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     "statusCode": 403,
     "timestamp": "2026-04-17T08:00:00.000Z",
     "path": "/job-seekers/me/matches",
-    "method": "GET"
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": ["type must be one of: all, direct, scraped"],
+    "statusCode": 400,
+    "timestamp": "2026-04-17T08:00:00.000Z",
+    "path": "/job-seekers/me/matches",
+    "method": "GET",
+    "details": "Bad Request"
   }
 }
 ```

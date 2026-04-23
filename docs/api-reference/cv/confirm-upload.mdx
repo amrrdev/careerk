@@ -123,7 +123,7 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -133,12 +133,13 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
     "statusCode": 401,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Unauthorized"
   }
 }
 ```
 
-### 403 Forbidden - Insufficient Permissions
+### 403 Forbidden
 
 ```json
 {
@@ -148,22 +149,24 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
     "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Forbidden"
   }
 }
 ```
 
-### 400 Bad Request - Missing File
+### 400 Bad Request - File Not Found
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "File not found in storage",
+    "message": "File not found in storage, upload may have failed",
     "statusCode": 400,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/confirm",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
@@ -178,9 +181,6 @@ Confirm the CV upload after the file has been uploaded to cloud storage. This fi
 
 <Info>
   **CV Upload Complete**: After confirmation, your CV will be available via GET /cv/me and can be
-  downloaded using GET /cv/me/download-url. The NLP parsing starts automatically and you can
-  preview results using GET /cv-parse/preview.
+  downloaded using GET /cv/me/download-url. The NLP parsing starts automatically and you can preview
+  results using GET /cv-parse/preview.
 </Info>
-
-
-

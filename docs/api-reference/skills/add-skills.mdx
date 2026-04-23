@@ -139,7 +139,40 @@ You can provide a single skill or multiple skills (bulk).
     "statusCode": 400,
     "timestamp": "2026-02-21T12:20:00.000Z",
     "path": "/job-seekers/me/skills",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-02-21T12:20:00.000Z",
+    "path": "/job-seekers/me/skills",
+    "method": "POST",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-21T12:20:00.000Z",
+    "path": "/job-seekers/me/skills",
+    "method": "POST",
+    "details": "Forbidden"
   }
 }
 ```
@@ -154,22 +187,8 @@ You can provide a single skill or multiple skills (bulk).
     "statusCode": 404,
     "timestamp": "2026-02-21T12:20:00.000Z",
     "path": "/job-seekers/me/skills",
-    "method": "POST"
-  }
-}
-```
-
-### 401 Unauthorized - Not Authenticated
-
-```json
-{
-  "success": false,
-  "error": {
-    "message": "Unauthorized",
-    "statusCode": 401,
-    "timestamp": "2026-02-21T12:20:00.000Z",
-    "path": "/job-seekers/me/skills",
-    "method": "POST"
+    "method": "POST",
+    "details": "Not Found"
   }
 }
 ```

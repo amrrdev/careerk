@@ -41,7 +41,12 @@ POST /api/v1/jobs/bookmark
   "data": {
     "id": "b61168e1-abf0-4bce-ab53-41392825aaa5"
   },
-  "message": "Job bookmarked successfully"
+  "message": "Job bookmarked successfully",
+  "meta": {
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmark",
+    "method": "POST"
+  }
 }
 ```
 
@@ -56,26 +61,23 @@ POST /api/v1/jobs/bookmark
 
 ## Error Responses
 
-### 404 Not Found
-
-Returned when the job does not exist.
+### 400 Bad Request - Validation Error
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Job not found",
-    "statusCode": 404,
+    "message": ["jobId must be a UUID"],
+    "statusCode": 400,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/jobs/bookmark",
-    "method": "POST"
+    "method": "POST",
+    "details": "Bad Request"
   }
 }
 ```
 
 ### 401 Unauthorized
-
-Returned when authentication is missing.
 
 ```json
 {
@@ -85,7 +87,40 @@ Returned when authentication is missing.
     "statusCode": 401,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/jobs/bookmark",
-    "method": "POST"
+    "method": "POST",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmark",
+    "method": "POST",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Job not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/jobs/bookmark",
+    "method": "POST",
+    "details": "Not Found"
   }
 }
 ```

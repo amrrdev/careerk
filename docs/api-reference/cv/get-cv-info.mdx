@@ -63,7 +63,7 @@ Retrieve your current CV details including file name, MIME type, and upload time
 
 ## Error Responses
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -73,12 +73,13 @@ Retrieve your current CV details including file name, MIME type, and upload time
     "statusCode": 401,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me",
-    "method": "GET"
+    "method": "GET",
+    "details": "Unauthorized"
   }
 }
 ```
 
-### 403 Forbidden - Insufficient Permissions
+### 403 Forbidden
 
 ```json
 {
@@ -88,7 +89,8 @@ Retrieve your current CV details including file name, MIME type, and upload time
     "statusCode": 403,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me",
-    "method": "GET"
+    "method": "GET",
+    "details": "Forbidden"
   }
 }
 ```
@@ -99,11 +101,12 @@ Retrieve your current CV details including file name, MIME type, and upload time
 {
   "success": false,
   "error": {
-    "message": "CV not found",
+    "message": "No CV uploaded yet",
     "statusCode": 404,
     "timestamp": "2026-02-17T08:00:00.000Z",
     "path": "/cv/me",
-    "method": "GET"
+    "method": "GET",
+    "details": "Not Found"
   }
 }
 ```
@@ -115,6 +118,3 @@ Retrieve your current CV details including file name, MIME type, and upload time
 </Info>
 
 <Tip>**Get Download URL**: Use GET /cv/me/downoad-url to get a download URL for the CV file.</Tip>
-
-
-

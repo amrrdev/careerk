@@ -136,22 +136,23 @@ All fields are optional - only provide the fields you want to update.
 
 ## Error Responses
 
-### 400 Bad Request - Job Not Found
+### 400 Bad Request - Validation Error
 
 ```json
 {
   "success": false,
   "error": {
-    "message": "Record not found",
+    "message": ["title must be a string"],
     "statusCode": 400,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/companies/me/jobs/{jobId}",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Bad Request"
   }
 }
 ```
 
-### 401 Unauthorized - Not Authenticated
+### 401 Unauthorized
 
 ```json
 {
@@ -161,7 +162,40 @@ All fields are optional - only provide the fields you want to update.
     "statusCode": 401,
     "timestamp": "2026-02-22T15:01:29.639Z",
     "path": "/companies/me/jobs/{jobId}",
-    "method": "PATCH"
+    "method": "PATCH",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}",
+    "method": "PATCH",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Job not found",
+    "statusCode": 404,
+    "timestamp": "2026-02-22T15:01:29.639Z",
+    "path": "/companies/me/jobs/{jobId}",
+    "method": "PATCH",
+    "details": "Not Found"
   }
 }
 ```
