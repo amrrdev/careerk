@@ -1,13 +1,13 @@
 ---
 title: 'Withdraw Application'
-api: 'DELETE /api/v1/job-seekers/me/applications/:id'
+api: 'PATCH /api/v1/job-seekers/me/applications/:id'
 description: 'Withdraw from a job application'
 ---
 
 ## Endpoint
 
 ```
-DELETE /api/v1/job-seekers/me/applications/:id
+PATCH /api/v1/job-seekers/me/applications/:id
 ```
 
 **Base URL**: `http://localhost:3000/api/v1`
@@ -40,7 +40,7 @@ This endpoint withdraws the application from a job. The application status will 
   "meta": {
     "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
-    "method": "DELETE"
+    "method": "PATCH"
   }
 }
 ```
@@ -57,7 +57,7 @@ This endpoint withdraws the application from a job. The application status will 
     "statusCode": 401,
     "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
-    "method": "DELETE",
+    "method": "PATCH",
     "details": "Unauthorized"
   }
 }
@@ -73,7 +73,7 @@ This endpoint withdraws the application from a job. The application status will 
     "statusCode": 403,
     "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
-    "method": "DELETE",
+    "method": "PATCH",
     "details": "Forbidden"
   }
 }
@@ -89,7 +89,7 @@ This endpoint withdraws the application from a job. The application status will 
     "statusCode": 404,
     "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
-    "method": "DELETE",
+    "method": "PATCH",
     "details": "Not Found"
   }
 }
@@ -105,7 +105,7 @@ This endpoint withdraws the application from a job. The application status will 
     "statusCode": 400,
     "timestamp": "2026-04-23T20:00:00.000Z",
     "path": "/job-seekers/me/applications/5d524fd9-8ea1-4c4f-bc15-b32072c144a1",
-    "method": "DELETE",
+    "method": "PATCH",
     "details": "Bad Request"
   }
 }
