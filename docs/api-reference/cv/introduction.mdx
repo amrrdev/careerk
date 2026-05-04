@@ -15,16 +15,17 @@ http://localhost:3000/api/v1
 
 ## Endpoints Overview
 
-| Method | Endpoint              | Description                 | Auth Required    |
-| ------ | --------------------- | --------------------------- | ---------------- |
-| POST   | `/cv/presigned-url`   | Request CV upload URL       | Yes (Job Seeker) |
-| PUT    | `{uploadUrl}`         | Upload CV file to storage   | No (signed URL)  |
-| POST   | `/cv/confirm`         | Confirm CV upload and parse | Yes (Job Seeker) |
-| GET    | `/cv/me`              | Get current CV info         | Yes (Job Seeker) |
-| GET    | `/cv/me/download-url` | Get CV download URL         | Yes (Job Seeker) |
-| DELETE | `/cv/me`              | Delete current CV           | Yes (Job Seeker) |
-| GET    | `/cv-parse/preview`   | Preview parsed CV data      | Yes (Job Seeker) |
-| POST   | `/cv-parse/confirm`   | Confirm and save to profile | Yes (Job Seeker) |
+| Method | Endpoint                        | Description                 | Auth Required    |
+| ------ | ------------------------------- | --------------------------- | ---------------- |
+| POST   | `/cv/presigned-url`             | Request CV upload URL       | Yes (Job Seeker) |
+| PUT    | `{uploadUrl}`                   | Upload CV file to storage   | No (signed URL)  |
+| POST   | `/cv/confirm`                   | Confirm CV upload and parse | Yes (Job Seeker) |
+| GET    | `/cv/me`                        | Get current CV info         | Yes (Job Seeker) |
+| GET    | `/cv/me/download-url`           | Get CV download URL         | Yes (Job Seeker) |
+| GET    | `/cv/download-url/:jobSeekerId` | Get candidate CV URL        | Yes (Company)    |
+| DELETE | `/cv/me`                        | Delete current CV           | Yes (Job Seeker) |
+| GET    | `/cv-parse/preview`             | Preview parsed CV data      | Yes (Job Seeker) |
+| POST   | `/cv-parse/confirm`             | Confirm and save to profile | Yes (Job Seeker) |
 
 ## Key Documentation
 
@@ -33,6 +34,7 @@ http://localhost:3000/api/v1
 - **[Confirm Upload](/api-reference/cv/confirm-upload)** - Confirm upload and trigger parsing
 - **[Preview Parsed Data](/api-reference/cv/preview-parsed-data)** - Review parsed data before saving
 - **[Confirm Parsed Data](/api-reference/cv/confirm-parsed-data)** - Save parsed data to profile
+- **[Get Candidate CV URL](/api-reference/cv/get-candidate-cv-url)** - Get candidate CV download URL (Company)
 
 ## CV Upload Flow
 

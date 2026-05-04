@@ -1,0 +1,108 @@
+---
+title: 'Get Candidate CV Download URL'
+api: 'GET /api/v1/cv/download-url/:jobSeekerId'
+description: 'Get the CV download URL for a job seeker candidate'
+---
+
+## Endpoint
+
+```
+GET /api/v1/cv/download-url/:jobSeekerId
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Company role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Get a time-limited download URL for a job seeker's CV. The URL expires after 1 hour.
+
+## Parameters
+
+<ParamField path="jobSeekerId" type="string" required>
+  The job seeker ID (UUID)
+</ParamField>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "downloadUrl": "https://careerk-cv-storage.example.com/cvs/..."
+  },
+  "message": "CV download URL retrieved successfully",
+  "meta": {
+    "timestamp": "2026-04-23T20:00:00.000Z",
+    "path": "/cv/download-url/:jobSeekerId",
+    "method": "GET"
+  }
+}
+```
+
+## Error Responses
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-04-23T20:00:00.000Z",
+    "path": "/cv/download-url/:jobSeekerId",
+    "method": "GET",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-04-23T20:00:00.000Z",
+    "path": "/cv/download-url/:jobSeekerId",
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```
+
+### 404 Not Found
+
+Returned when the job seeker has no CV uploaded:
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "CV not found for this candidate",
+    "statusCode": 404,
+    "timestamp": "2026-04-23T20:00:00.000Z",
+    "path": "/cv/download-url/:jobSeekerId",
+    "method": "GET",
+    "details": "Not Found"
+  }
+}
+```
+
+<Info>
+  **URL Expiration**: The download URL is valid for 1 hour. After expiration, request a new URL.
+</Info>

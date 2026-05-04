@@ -7,6 +7,7 @@ import { DatabaseService } from 'src/infrastructure/database/database.service';
 import { ConfirmParsedDataRequestDto } from './dto/confirm-parsed-data.dto';
 import { NlpParseCvResponse } from './cv-parse-result/types/cv-parse-result.types';
 import { PROCESS_JOB_SEEKER_MATCHING, CV_MATCHING_QUEUE } from './processor/cv-matching.jobs';
+import { mapParsedCvToJobSeekerProfileShape } from './utils/cv-profile-response.util';
 
 @Injectable()
 export class CvParseService {
@@ -47,26 +48,7 @@ export class CvParseService {
     return {
       status: 'COMPLETED',
       parseResultId: result.id,
-      data: {
-        firstName: nlpData.personalInfo?.firstName,
-        lastName: nlpData.personalInfo?.lastName,
-        cvEmail: nlpData.personalInfo?.email,
-        phone: nlpData.personalInfo?.phone,
-        location: nlpData.personalInfo?.location,
-        linkedinUrl: nlpData.personalInfo?.linkedinUrl,
-        githubUrl: nlpData.personalInfo?.githubUrl,
-        portfolioUrl: nlpData.personalInfo?.portfolioUrl,
-        title: nlpData.title,
-        summary: nlpData.professionalSummary || nlpData.title,
-        education: nlpData.education || [],
-        workExperience: nlpData.workExperience || [],
-        skills: nlpData.skills || [],
-        expectedSalary: nlpData.expectedSalary,
-        workPreference: nlpData.workPreference,
-        yearsOfExperience: nlpData.yearsOfExperience,
-        noticePeriod: nlpData.noticePeriod,
-        availabilityStatus: nlpData.availabilityStatus,
-      },
+      ...mapParsedCvToJobSeekerProfileShape(jobSeekerId, nlpData),
     };
   }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { JobSeekerApplicationService } from './application.service';
 import { ActiveUser } from 'src/modules/iam/decorators/active-user.decorator';
 import { ApplicationQueryDto } from './dto/application-query.dto';
@@ -33,7 +33,7 @@ export class JobSeekerApplicationController {
     return this.applicationService.getApplicationById(jobSeekerId, applicationId);
   }
 
-  @Delete(':id')
+  @Patch(':id')
   @ResponseMessage('Application withdrawn successfully')
   withdrawApplication(@ActiveUser('sub') jobSeekerId: string, @Param('id') applicationId: string) {
     return this.applicationService.withdrawApplication(jobSeekerId, applicationId);
