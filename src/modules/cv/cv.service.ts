@@ -114,8 +114,14 @@ export class CvService {
     };
   }
 
-  // TODO: companies download the cv for seekers they apply on
-  // async getCandidateCvDownloadUrl(employerId: string, jobSeekerId: string) {}
+  async getCandidateCvDownloadUrl(jobSeekerId: string) {
+    const cv = await this.cvRepository.findKeyByJobSeekerId(jobSeekerId);
+    if (!cv) {
+      throw new NotFoundException('CV not found for this candidate');
+    }
+    const downloadUrl = await this.cvStorageService.generateDownloadUrl(cv.key);
+    return { downloadUrl };
+  }
 
   async deleteCv(jobSeekerId: string): Promise<void> {
     const cv = await this.cvRepository.findKeyByJobSeekerId(jobSeekerId);
