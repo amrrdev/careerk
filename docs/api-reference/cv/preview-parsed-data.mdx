@@ -24,7 +24,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Description
 
-Get the latest parsed CV data from the most recent upload. Returns status and parsed data if completed. This endpoint allows you to review the NLP-parsed CV data before saving it to your profile.
+Get the latest parsed CV data from the most recent upload. Response shape matches `GET /job-seekers/me` when parse is complete.
 
 ## Response
 
@@ -36,51 +36,54 @@ Get the latest parsed CV data from the most recent upload. Returns status and pa
   "data": {
     "status": "COMPLETED",
     "parseResultId": "9968ae8c-e8f4-4d36-a17a-79215cca669c",
-    "data": {
-      "firstName": "Amr",
-      "lastName": "Ashraf Mubarak",
-      "cvEmail": "amrrdev@gmail.com",
-      "phone": "+20 120 456 2326",
-      "location": "Egypt",
-      "linkedinUrl": "linkedin.com/in/amramubarak",
-      "githubUrl": "github.com/amrrdev",
-      "portfolioUrl": null,
+    "firstName": "Amr",
+    "lastName": "Ashraf Mubarak",
+    "profileImageUrl": null,
+    "profile": {
+      "jobSeekerId": "a9ff20fb-8010-4a22-8873-344c103726af",
       "title": "Software Engineer",
-      "summary": "Software Engineer with 1+ year of experience building scalable microservices...",
-      "education": [
-        {
-          "institutionName": "Benha University",
-          "degreeType": "BACHELOR",
-          "fieldOfStudy": "Science in Computer Science",
-          "startDate": "2022",
-          "endDate": "2026",
-          "isCurrent": false,
-          "gpa": 3.6,
-          "description": null
-        }
-      ],
-      "workExperience": [
-        {
-          "companyName": "Linux Foundation Decentralized Trust",
-          "jobTitle": "Software Engineer",
-          "location": "Remote",
-          "startDate": "2025-05-01",
-          "endDate": "2025-07-01",
-          "isCurrent": false,
-          "description": "Developed a testing strategy for a decentralized trust solution..."
-        }
-      ],
-      "skills": [
-        { "name": "typescript", "verified": true },
-        { "name": "node.js", "verified": true },
-        { "name": "nestjs", "verified": true }
-      ],
-      "expectedSalary": null,
+      "location": "Egypt",
+      "availabilityStatus": "OPEN_TO_WORK",
       "workPreference": "REMOTE",
+      "preferredJobTypes": null,
       "yearsOfExperience": 0.3,
+      "linkedinUrl": "linkedin.com/in/amramubarak",
+      "portfolioUrl": null,
+      "githubUrl": "github.com/amrrdev",
+      "cvEmail": "amrrdev@gmail.com",
       "noticePeriod": null,
-      "availabilityStatus": null
-    }
+      "phone": "+20 120 456 2326",
+      "expectedSalary": null,
+      "summary": "Software Engineer with 1+ year of experience building scalable microservices..."
+    },
+    "educations": [
+      {
+        "degreeType": "BACHELOR",
+        "description": null,
+        "institutionName": "Benha University",
+        "isCurrent": false,
+        "fieldOfStudy": "Science in Computer Science",
+        "endDate": "2026-01-01",
+        "gpa": 3.6,
+        "startDate": "2022-01-01"
+      }
+    ],
+    "workExperiences": [
+      {
+        "companyName": "Linux Foundation Decentralized Trust",
+        "description": "Developed a testing strategy for a decentralized trust solution...",
+        "isCurrent": false,
+        "startDate": "2025-05-01",
+        "jobTitle": "Software Engineer",
+        "location": "Remote",
+        "endDate": "2025-07-01"
+      }
+    ],
+    "skills": [
+      { "name": "typescript", "verified": true },
+      { "name": "node.js", "verified": true },
+      { "name": "nestjs", "verified": true }
+    ]
   },
   "message": "Success",
   "meta": {
@@ -101,6 +104,12 @@ Returned when CV is still being processed by NLP service:
   "data": {
     "status": "PENDING",
     "message": "Your CV is being processed. Please wait..."
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-04-23T20:00:00.000Z",
+    "path": "/cv-parse/preview",
+    "method": "GET"
   }
 }
 ```
@@ -115,6 +124,12 @@ Returned when NLP parsing failed:
   "data": {
     "status": "FAILED",
     "message": "Failed to parse CV"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-04-23T20:00:00.000Z",
+    "path": "/cv-parse/preview",
+    "method": "GET"
   }
 }
 ```
@@ -129,6 +144,12 @@ Returned when CV data has already been saved to profile:
   "data": {
     "status": "CONFIRMED",
     "message": "CV data has already been saved to your profile"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-04-23T20:00:00.000Z",
+    "path": "/cv-parse/preview",
+    "method": "GET"
   }
 }
 ```
@@ -153,27 +174,17 @@ Returned when no CV has been uploaded:
 
 ## Data Fields
 
-| Field                     | Type   | Description                                                       |
-| ------------------------- | ------ | ----------------------------------------------------------------- |
-| `status`                  | string | Status: PENDING, COMPLETED, FAILED, CONFIRMED                     |
-| `parseResultId`           | string | Unique identifier for this parse result                           |
-| `data.firstName`          | string | First name extracted from CV                                      |
-| `data.lastName`           | string | Last name extracted from CV                                       |
-| `data.cvEmail`            | string | Email extracted from CV                                           |
-| `data.phone`              | string | Phone number extracted from CV                                    |
-| `data.location`           | string | Location extracted from CV                                        |
-| `data.linkedinUrl`        | string | LinkedIn URL extracted from CV                                    |
-| `data.githubUrl`          | string | GitHub URL extracted from CV                                      |
-| `data.portfolioUrl`       | string | Portfolio URL extracted from CV                                   |
-| `data.title`              | string | Job title extracted from CV                                       |
-| `data.summary`            | string | Professional summary extracted from CV                            |
-| `data.education`          | array  | Array of education entries                                        |
-| `data.workExperience`     | array  | Array of work experience entries                                  |
-| `data.skills`             | array  | Array of skills with `name` and `verified` flag                   |
-| `data.workPreference`     | string | Work preference: ONSITE, REMOTE, HYBRID, ANY                      |
-| `data.yearsOfExperience`  | number | Years of experience (from CV, cannot be modified)                 |
-| `data.noticePeriod`       | number | Notice period in days                                             |
-| `data.availabilityStatus` | string | Availability status: OPEN_TO_WORK, NOT_LOOKING, PASSIVELY_LOOKING |
+| Field             | Type           | Description                                                |
+| ----------------- | -------------- | ---------------------------------------------------------- |
+| `status`          | string         | Status: PENDING, COMPLETED, FAILED, CONFIRMED              |
+| `parseResultId`   | string         | Parse result identifier (present for COMPLETED only)       |
+| `firstName`       | string         | First name (present for COMPLETED only)                    |
+| `lastName`        | string         | Last name (present for COMPLETED only)                     |
+| `profileImageUrl` | string or null | Profile image URL (present for COMPLETED only)             |
+| `profile`         | object         | Profile object in `/job-seekers/me` shape (COMPLETED only) |
+| `educations`      | array          | Education array (COMPLETED only)                           |
+| `workExperiences` | array          | Work experience array (COMPLETED only)                     |
+| `skills`          | array          | Skills array with `name` and `verified` (COMPLETED only)   |
 
 ## Complete CV Flow
 
@@ -182,10 +193,10 @@ Returned when no CV has been uploaded:
   <Step title="Upload File">Upload the file using PUT with the upload URL</Step>
   <Step title="Confirm Upload">Call POST /cv/confirm to trigger NLP parsing</Step>
   <Step title="Preview Data">Call GET /cv-parse/preview to see parsed results</Step>
-  <Step title="Confirm & Save">Call POST /cv-parse/confirm to save to your profile</Step>
+  <Step name="Confirm & Save">Call POST /cv-parse/confirm to save to your profile</Step>
 </Steps>
 
 <Info>
-  **Skills Verification**: Skills are marked as verified during the confirm-and-save step. In
-  preview, skills are shown from the parser output and may not all be verified.
+  **Skills Verification**: Skills are marked as `verified: true` when parsed from CV. Manual skills
+  added during confirm are `verified: false`.
 </Info>

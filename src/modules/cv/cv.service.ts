@@ -7,6 +7,7 @@ import { CreateCvData } from './types/cv.types';
 import { CvParseResultRepository } from './cv-parse-result/repository/cv-parse-result.repository';
 import { NlpService } from 'src/infrastructure/nlp/nlp.service';
 import { NlpParseCvResponse } from './cv-parse-result/types/cv-parse-result.types';
+import { mapParsedCvToJobSeekerProfileShape } from './utils/cv-profile-response.util';
 
 @Injectable()
 export class CvService {
@@ -77,26 +78,7 @@ export class CvService {
       return {
         status: 'COMPLETED',
         parseResultId: parseResult.id,
-        data: {
-          firstName: nlpResponse.data.personalInfo?.firstName,
-          lastName: nlpResponse.data.personalInfo?.lastName,
-          cvEmail: nlpResponse.data.personalInfo?.email,
-          phone: nlpResponse.data.personalInfo?.phone,
-          location: nlpResponse.data.personalInfo?.location,
-          linkedinUrl: nlpResponse.data.personalInfo?.linkedinUrl,
-          githubUrl: nlpResponse.data.personalInfo?.githubUrl,
-          portfolioUrl: nlpResponse.data.personalInfo?.portfolioUrl,
-          title: nlpResponse.data.title,
-          summary: nlpResponse.data.professionalSummary,
-          education: nlpResponse.data.education || [],
-          workExperience: nlpResponse.data.workExperience || [],
-          skills: nlpResponse.data.skills || [],
-          expectedSalary: nlpResponse.data.expectedSalary,
-          workPreference: nlpResponse.data.workPreference,
-          yearsOfExperience: nlpResponse.data.yearsOfExperience,
-          noticePeriod: nlpResponse.data.noticePeriod,
-          availabilityStatus: nlpResponse.data.availabilityStatus,
-        },
+        ...mapParsedCvToJobSeekerProfileShape(jobSeekerId, nlpResponse.data),
         processingTime,
       };
     } catch (error: unknown) {
