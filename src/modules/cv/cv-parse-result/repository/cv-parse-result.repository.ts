@@ -10,6 +10,10 @@ export abstract class CvParseResultRepository {
   abstract create(data: CreateCvParseResultData): Promise<CvParseResult>;
   abstract findById(id: string): Promise<CvParseResult | null>;
   abstract findByJobSeekerId(jobSeekerId: string): Promise<CvParseResult | null>;
+  abstract findByCvKeyAndStatus(
+    cvKey: string,
+    status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'CONFIRMED',
+  ): Promise<CvParseResult | null>;
   abstract update(id: string, data: UpdateCvParseResultData): Promise<CvParseResult>;
   abstract deleteByJobSeekerId(jobSeekerId: string): Promise<void>;
 }

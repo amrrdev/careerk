@@ -1,0 +1,126 @@
+---
+title: 'Delete Parsed CV Result'
+api: 'DELETE /api/v1/cv-parse'
+description: 'Delete the current CV parse result without saving to profile'
+---
+
+## Endpoint
+
+```
+DELETE /api/v1/cv-parse
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Description
+
+Delete the current CV parse result without saving to your profile. This is useful when:
+
+- You uploaded a new CV but don't like the parsed results
+- You want to discard the current parse and keep your existing profile data
+- You want to re-upload a new CV
+
+<Warning>
+  This deletes the parsed CV data only. Your existing profile data (JobSeekerProfile, Education,
+  WorkExperience, Skills) remains unchanged.
+</Warning>
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Parse result deleted successfully"
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-05-07T12:00:00.000Z",
+    "path": "/cv-parse",
+    "method": "DELETE"
+  }
+}
+```
+
+### Error Response (404 Not Found)
+
+Returned when there's no parse result to delete:
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "No parse result to delete",
+    "statusCode": 404,
+    "timestamp": "2026-05-07T12:00:00.000Z",
+    "path": "/cv-parse",
+    "method": "DELETE",
+    "details": "Not Found"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-05-07T12:00:00.000Z",
+    "path": "/cv-parse",
+    "method": "DELETE",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-05-07T12:00:00.000Z",
+    "path": "/cv-parse",
+    "method": "DELETE",
+    "details": "Forbidden"
+  }
+}
+```
+
+## Complete CV Flow
+
+<Steps>
+  <Step title="Upload CV">Call POST /cv/presigned-url to get an upload URL</Step>
+  <Step title="Upload File">Upload the file using PUT with the upload URL</Step>
+  <Step title="Confirm Upload">Call POST /cv/confirm to trigger NLP parsing</Step>
+  <Step title="Preview Data">Call GET /cv-parse/preview to see parsed results</Step>
+  <Step title="Delete (Optional)">Call DELETE /cv-parse if you don't like the results</Step>
+  <Step title="Confirm & Save">Call POST /cv-parse/confirm to save to your profile</Step>
+</Steps>
+
+<Info>
+  **State after each step:**
+  - After upload: CvParseResult exists with PENDING status
+  - After parsing: CvParseResult exists with COMPLETED or FAILED status
+  - After delete: No CvParseResult (profile data unchanged)
+  - After confirm: No CvParseResult (profile data updated)
+
+  A user should always have **0 or 1** CvParseResult record at any time.
+</Info>

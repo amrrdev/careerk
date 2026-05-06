@@ -312,9 +312,11 @@ For partial updates after confirmation, use the dedicated Education, Work Experi
   JobSeekerProfile (title, summary, phone, cvEmail, location, links, preferences), Education,
   WorkExperience, and JobSeekerSkill.
 
-Skills from parsed CV are saved with `verified: true`; manually added skills are saved with
-`verified: false`.
+  Skills from parsed CV are saved with `verified: true`; manually added skills are saved with
+  `verified: false`.
 
-`yearsOfExperience` is always taken from the parsed CV and cannot be modified.
+  `yearsOfExperience` is always taken from the parsed CV and cannot be modified.
 
+  **After confirmation, the CvParseResult record is deleted from the database.** Calling
+  `GET /cv-parse/preview` will return a 404 after confirmation.
 </Info>
