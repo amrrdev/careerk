@@ -48,6 +48,21 @@ export class CvService {
 
     await this.cvRepository.upsert(data);
 
+    const existingCompletedParse = await this.cvParseResultRepository.findByCvKeyAndStatus(
+      confirmUploadDto.key,
+      'COMPLETED',
+    );
+    if (existingCompletedParse) {
+      return {
+        status: 'COMPLETED',
+        parseResultId: existingCompletedParse.id,
+        ...mapParsedCvToJobSeekerProfileShape(
+          jobSeekerId,
+          existingCompletedParse.parsedData as NlpParseCvResponse['data'],
+        ),
+      };
+    }
+
     const existingParseResult = await this.cvParseResultRepository.findByJobSeekerId(jobSeekerId);
     if (existingParseResult) {
       await this.cvParseResultRepository.deleteByJobSeekerId(jobSeekerId);

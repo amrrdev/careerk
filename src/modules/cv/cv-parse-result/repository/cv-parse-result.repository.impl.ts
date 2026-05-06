@@ -33,6 +33,16 @@ export class CvParseResultRepositoryImpl implements CvParseResultRepository {
     });
   }
 
+  async findByCvKeyAndStatus(
+    cvKey: string,
+    status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'CONFIRMED',
+  ): Promise<CvParseResult | null> {
+    return this.databaseService.cvParseResult.findFirst({
+      where: { cvKey, status },
+      ...cvParseResultSelect,
+    });
+  }
+
   async update(id: string, data: UpdateCvParseResultData): Promise<CvParseResult> {
     return this.databaseService.cvParseResult.update({
       where: { id },

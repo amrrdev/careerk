@@ -228,6 +228,17 @@ export class CvParseService {
       );
     }
 
+    await this.cvParseResultRepository.deleteByJobSeekerId(jobSeekerId);
+
     return { message: 'Profile updated successfully from CV' };
+  }
+
+  async deleteParseResult(jobSeekerId: string) {
+    const existing = await this.cvParseResultRepository.findByJobSeekerId(jobSeekerId);
+    if (!existing) {
+      throw new NotFoundException('No parse result to delete');
+    }
+    await this.cvParseResultRepository.deleteByJobSeekerId(jobSeekerId);
+    return { message: 'Parse result deleted successfully' };
   }
 }

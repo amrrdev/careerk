@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 import { CvParseService } from './cv-parse.service';
 import { ConfirmParsedDataRequestDto } from './dto/confirm-parsed-data.dto';
 import { ActiveUser } from '../iam/decorators/active-user.decorator';
@@ -24,5 +24,10 @@ export class CvParseController {
     @Body() dto: ConfirmParsedDataRequestDto,
   ) {
     return this.cvParseService.confirmAndSave(jobSeekerId, dto);
+  }
+
+  @Delete()
+  async deleteParseResult(@ActiveUser('sub') jobSeekerId: string) {
+    return this.cvParseService.deleteParseResult(jobSeekerId);
   }
 }
