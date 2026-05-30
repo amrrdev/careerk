@@ -56,8 +56,8 @@ export class DirectJobController {
     return this.directJobService.pause(jobId, companyId);
   }
 
-  @Post(':jobId/close')
+  /* @Post(':jobId/close')
   async close(@ActiveUser('sub') companyId: string, @Param('jobId') jobId: string) {
     return this.directJobService.close(jobId, companyId);
-  }
+  } */
 }

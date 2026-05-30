@@ -10,6 +10,8 @@ export abstract class SkillsRepository {
   abstract createSkill(name: string): Promise<{ id: string; name: string }>;
   abstract create(data: CreateJobSeekerSkillData): Promise<JobSeekerSkillWithName>;
   abstract delete(skillId: string, jobSeekerId: string): Promise<void>;
+  // Deletes multiple skills for a job seeker and returns the count of deleted records
+  abstract deleteMany(jobSeekerId: string, skillIds: string[]): Promise<{ count: number }>;
   abstract findExisting(
     jobSeekerId: string,
     skillId: string,

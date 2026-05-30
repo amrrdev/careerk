@@ -9,10 +9,17 @@ export type JobSeekerProfile = Prisma.JobSeekerProfileGetPayload<object>;
 /**
  * JobSeekerProfile without sensitive fields (for public list)
  */
+
+// Added missing public candidate fields for GET /job-seekers response
 export const publicProfileSelect = {
   select: {
     firstName: true,
     lastName: true,
+    profileImageUrl: true,
+
+    // ADDED: email from JobSeeker table
+    email: true,
+
     profile: {
       select: {
         jobSeekerId: true,
@@ -25,6 +32,39 @@ export const publicProfileSelect = {
         linkedinUrl: true,
         portfolioUrl: true,
         githubUrl: true,
+        summary: true,
+        expectedSalary: true,
+        cvEmail: true,
+      },
+    },
+
+    // ADDED: CV relation
+    cv: {
+      select: {
+        key: true,
+      },
+    },
+
+    // ADDED: latest CV score
+    skillGapAnalyses: {
+      take: 1,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        cvScore: true,
+      },
+    },
+
+    // ADDED: skills relation
+    jobSeekerSkills: {
+      select: {
+        verified: true,
+        skill: {
+          select: {
+            name: true,
+          },
+        },
       },
     },
   },
@@ -57,6 +97,8 @@ export const publicJobSeekerProfileDetails = {
     },
     educations: {
       select: {
+        //Added
+        id: true,
         degreeType: true,
         description: true,
         institutionName: true,
@@ -80,6 +122,8 @@ export const publicJobSeekerProfileDetails = {
     },
     jobSeekerSkills: {
       select: {
+        //Added
+        skillId: true,
         verified: true,
         skill: {
           select: {

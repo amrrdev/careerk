@@ -38,9 +38,16 @@ export class JobService {
 
     const total = directJobs.total + scrapedJobs.total;
     const mergedJobs: Job[] = [...directJobs.jobs, ...scrapedJobs.jobs]
+      // NOTE: Handling union type (DirectJob | ScrapedJob)
+      // DirectJob -> publishedAt, ScrapedJob -> postedAt
+      // We normalize both to avoid TypeScript unsafe access and sorting errors
       .sort((a, b) => {
-        const dateA = a.postedAt?.getTime() ?? 0;
-        const dateB = b.postedAt?.getTime() ?? 0;
+        const dateA =
+          'publishedAt' in a ? (a.publishedAt?.getTime() ?? 0) : (a.postedAt?.getTime() ?? 0);
+
+        const dateB =
+          'publishedAt' in b ? (b.publishedAt?.getTime() ?? 0) : (b.postedAt?.getTime() ?? 0);
+
         return dateB - dateA;
       })
       .slice(start, end);
@@ -87,7 +94,10 @@ export class JobService {
     await this.jobRepository.deleteBookmark(jobSeekerId, bookmarkId);
   }
 
-  async getMyBookmarks(jobSeekerId: string) {
+  /**
+   * Edited to Get  bookmarks with pagination
+   */
+  async getMyBookmarks(jobSeekerId: string, page = 1, limit = 10) {
     const bookmarks = await this.jobRepository.findBookmarksByJobSeeker(jobSeekerId);
 
     const scrappedJobsIds = bookmarks
@@ -106,13 +116,14 @@ export class JobService {
     const directJobMap = new Map<string, DirectJob>(directJobs.map((job) => [job.id, job]));
     const scrapedJobMap = new Map<string, ScrapedJob>(scrappedJobs.map((job) => [job.id, job]));
 
-    return bookmarks.flatMap((bookmark) => {
+    const result = bookmarks.flatMap((bookmark) => {
       const job =
         bookmark.jobSource === 'DIRECT'
           ? directJobMap.get(bookmark.jobId)
           : scrapedJobMap.get(bookmark.jobId);
 
       if (!job) return [];
+
       return [
         {
           bookmarkId: bookmark.id,
@@ -121,5 +132,20 @@ export class JobService {
         },
       ];
     });
+
+    // pagination
+    const total = result.length;
+    const totalPages = Math.ceil(total / limit);
+    const start = (page - 1) * limit;
+
+    const paginated = result.slice(start, start + limit);
+
+    return {
+      jobs: paginated,
+      total,
+      totalPages,
+      page,
+      limit,
+    };
   }
 }

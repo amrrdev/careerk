@@ -37,4 +37,11 @@ export abstract class JobSeekerRepository {
   abstract findMyProfile(jobSeekerId: string): Promise<MyJobSeekerProfileDetails | null>;
 
   abstract updateMyProfile(jobSeekerId: string, data: UpdateMyProfileData): Promise<void>;
+
+  //Added - new methods for job seeker overview
+  abstract countSavedJobs(jobSeekerId: string): Promise<number>;
+
+  abstract countDirectMatches(jobSeekerId: string): Promise<number>;
+
+  abstract countScrapedMatches(jobSeekerId: string): Promise<number>;
 }

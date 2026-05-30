@@ -21,4 +21,10 @@ export class SkillsController {
   async delete(@ActiveUser('sub') jobSeekerId: string, @Param('skillId') skillId: string) {
     return this.skillsService.delete(skillId, jobSeekerId);
   }
+
+  //Edited to support bulk delete of skills instead of single delete, expects an array of skill ids in the request body
+  @Delete()
+  deleteSkills(@ActiveUser('sub') jobSeekerId: string, @Body() body: { ids: string[] }) {
+    return this.skillsService.deleteMany(jobSeekerId, body.ids);
+  }
 }

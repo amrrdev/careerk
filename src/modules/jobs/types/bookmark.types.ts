@@ -24,3 +24,12 @@ export type BookmarkedJob = {
   bookmarkedAt: Date;
   job: Job;
 };
+
+//Added pagination metadata to the response type for bookmarked jobs
+export type PaginatedBookmarkedJobs = {
+  jobs: BookmarkedJob[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};

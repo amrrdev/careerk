@@ -1,7 +1,13 @@
 import { ExperienceLevelEnum, JobTypeEnum, WorkPreferenceEnum } from 'generated/prisma/enums';
 
+//Edited to extract the source from the URL
+export type JobSource = 'LinkedIn' | 'Indeed' | 'Glassdoor' | 'Bayt' | 'Wuzzuf' | 'Unknown';
 export type DirectJob = {
   id: string;
+
+  /* ADDED */
+  type: 'direct';
+
   title: string;
   description: string;
   requirements: string | null;
@@ -12,24 +18,38 @@ export type DirectJob = {
   jobType: JobTypeEnum;
   workPreference: WorkPreferenceEnum;
   experienceLevel: ExperienceLevelEnum | null;
-  companyName: string | null;
-  companyLogoUrl: string | null;
-  postedAt: Date | null;
-  source: 'direct';
+
+  /* CHANGED: replaced companyName + companyLogoUrl with company object */
+  company: {
+    id: string | null;
+    name: string | null;
+    logoUrl: string | null;
+    industry?: string | null;
+  } | null;
+
+  publishedAt: Date | null;
   skills: { skillId: string; name: string }[];
+  applicants?: number;
 };
 
 export type ScrapedJob = {
   id: string;
   title: string;
+
   description: string | null;
   location: string | null;
   salary: string | null;
   jobType: JobTypeEnum | null;
+
   companyName: string | null;
+
   sourceUrl: string | null;
   postedAt: Date | null;
-  source: 'scraped';
+
+  /* ADDED */
+  type: 'scraped';
+
+  source: JobSource;
   skills: { skillId: string; name: string }[];
 };
 

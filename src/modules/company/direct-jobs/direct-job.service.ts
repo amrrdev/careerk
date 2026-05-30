@@ -7,7 +7,7 @@ import { UpdateDirectJobDto } from './dto/update-direct-job.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { NLP_QUEUE, PROCESS_NLP } from './processor/nlp-service.jobs';
 import { Queue } from 'bullmq';
-import { DirectJobMacthingRequest } from 'src/infrastructure/nlp/interfaces/matching.interface';
+//import { DirectJobMacthingRequest } from 'src/infrastructure/nlp/interfaces/matching.interface';
 
 @Injectable()
 export class DirectJobService {
@@ -29,12 +29,26 @@ export class DirectJobService {
     return transformDirectJob(job);
   }
 
-  async create(companyId: string, dto: CreateDirectJobDto) {
+  /*   async create(companyId: string, dto: CreateDirectJobDto) {
     const job = await this.directJobRepository.create(companyId, {
       ...dto,
       status: DirectJobStatusEnum.DRAFT,
       deadline: dto.deadline ? new Date(dto.deadline) : undefined,
     });
+    return transformDirectJob(job);
+  } */
+
+  async create(companyId: string, dto: CreateDirectJobDto) {
+    const job = await this.directJobRepository.create(companyId, {
+      ...dto,
+      status: DirectJobStatusEnum.PUBLISHED,
+      deadline: dto.deadline ? new Date(dto.deadline) : undefined,
+    });
+
+    await this.nlpQueue.add(PROCESS_NLP, {
+      jobId: job.id,
+    });
+
     return transformDirectJob(job);
   }
 
@@ -50,7 +64,7 @@ export class DirectJobService {
     return transformDirectJob(job);
   }
 
-  async publish(jobId: string, companyId: string) {
+  /* async publish(jobId: string, companyId: string) {
     const job = await this.directJobRepository.findByIdWithStatus(jobId, companyId);
 
     if (!job) {
@@ -86,8 +100,30 @@ export class DirectJobService {
 
     return transformDirectJob(updatedJob);
   }
+ */
 
-  async pause(jobId: string, companyId: string) {
+  async publish(jobId: string, companyId: string) {
+    const job = await this.directJobRepository.findByIdWithStatus(jobId, companyId);
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    if (job.status !== DirectJobStatusEnum.PAUSED) {
+      throw new BadRequestException('Only paused jobs can be published');
+    }
+
+    const updatedJob = await this.directJobRepository.updateStatus(
+      jobId,
+      companyId,
+      DirectJobStatusEnum.PUBLISHED,
+    );
+
+    await this.nlpQueue.add(PROCESS_NLP, { jobId });
+
+    return transformDirectJob(updatedJob);
+  }
+  /* async pause(jobId: string, companyId: string) {
     const job = await this.directJobRepository.findByIdWithStatus(jobId, companyId);
 
     if (!job) {
@@ -104,9 +140,27 @@ export class DirectJobService {
       DirectJobStatusEnum.PAUSED,
     );
     return transformDirectJob(updatedJob);
-  }
+  } */
+  async pause(jobId: string, companyId: string) {
+    const job = await this.directJobRepository.findByIdWithStatus(jobId, companyId);
 
-  async close(jobId: string, companyId: string) {
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    if (job.status !== DirectJobStatusEnum.PUBLISHED) {
+      throw new BadRequestException('Only published jobs can be paused');
+    }
+
+    const updatedJob = await this.directJobRepository.updateStatus(
+      jobId,
+      companyId,
+      DirectJobStatusEnum.PAUSED,
+    );
+
+    return transformDirectJob(updatedJob);
+  }
+  /*  async close(jobId: string, companyId: string) {
     const job = await this.directJobRepository.findByIdWithStatus(jobId, companyId);
 
     if (!job) {
@@ -123,5 +177,5 @@ export class DirectJobService {
       DirectJobStatusEnum.CLOSED,
     );
     return transformDirectJob(updatedJob);
-  }
+  } */
 }
