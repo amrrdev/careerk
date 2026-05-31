@@ -93,41 +93,28 @@ export class JobSeekerService {
 
     await this.jobSeekerRepository.updateMyProfile(jobSeekerId, dto);
 
-    const updated = await this.jobSeekerRepository.findProfileById(jobSeekerId);
-
-    if (!updated) {
-      throw new NotFoundException('Profile not found');
-    }
-
     const changedFields: Record<string, unknown> = {};
 
     // JobSeeker fields
+    const rootFields: (keyof UpdateJobSeekerProfileDto)[] = [
+      'firstName',
+      'lastName',
+      'profileImageUrl',
+    ];
 
-    if (dto.firstName !== undefined && dto.firstName !== oldProfile.firstName) {
-      changedFields.firstName = updated.firstName;
+    for (const field of rootFields) {
+      if (dto[field] !== undefined && dto[field] !== oldProfile[field as keyof typeof oldProfile]) {
+        changedFields[field] = dto[field];
+      }
     }
-
-    if (dto.lastName !== undefined && dto.lastName !== oldProfile.lastName) {
-      changedFields.lastName = updated.lastName;
-    }
-
-    if (dto.profileImageUrl !== undefined && dto.profileImageUrl !== oldProfile.profileImageUrl) {
-      changedFields.profileImageUrl = updated.profileImageUrl;
-    }
-
-    // Profile fields
 
     const oldP = oldProfile.profile;
-    const newP = updated.profile;
 
-    if (!oldP || !newP) {
-      return {
-        success: true,
-        data: changedFields,
-      };
+    if (!oldP) {
+      throw new NotFoundException('Profile not found, please complete your onboarding first');
     }
 
-    const fields: (keyof UpdateJobSeekerProfileDto)[] = [
+    const profileFields: (keyof UpdateJobSeekerProfileDto)[] = [
       'title',
       'location',
       'summary',
@@ -138,21 +125,18 @@ export class JobSeekerService {
       'yearsOfExperience',
       'availabilityStatus',
       'workPreference',
+      'preferredJobTypes',
     ];
 
-    for (const field of fields) {
-      if (dto[field] !== undefined && dto[field] !== oldP[field as keyof typeof oldP]) {
-        changedFields[field] = newP[field as keyof typeof newP];
+    for (const field of profileFields) {
+      if (dto[field] === undefined) continue;
+
+      const oldValue = oldP[field as keyof typeof oldP];
+      const newValue = dto[field];
+
+      if (JSON.stringify(oldValue) !== JSON.stringify(newValue)) {
+        changedFields[field] = newValue;
       }
-    }
-
-    //Array field (special case)
-
-    if (
-      dto.preferredJobTypes &&
-      JSON.stringify(dto.preferredJobTypes) !== JSON.stringify(oldP.preferredJobTypes)
-    ) {
-      changedFields.preferredJobTypes = newP.preferredJobTypes;
     }
 
     return {
@@ -160,6 +144,7 @@ export class JobSeekerService {
       data: changedFields,
     };
   }
+
   async deactivate(email: string) {
     return await this.jobSeekerRepository.deactivateByEmail(email);
   }
@@ -225,7 +210,7 @@ export class JobSeekerService {
     const jobSeeker = await this.jobSeekerRepository.findProfileById(jobSeekerId);
 
     if (!jobSeeker) {
-      throw new NotFoundException('Job seeker not found');
+      throw new NotFoundException('Job seeker profile does not exist');
     }
 
     const [savedJobsCount, directMatches, scrapedMatches] = await Promise.all([
