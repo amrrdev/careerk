@@ -111,7 +111,9 @@ export class JobSeekerService {
     const oldP = oldProfile.profile;
 
     if (!oldP) {
-      throw new NotFoundException('Profile not found, please complete your onboarding first');
+      throw new BadRequestException(
+        'Profile is incomplete. Please complete onboarding first before updating your profile',
+      );
     }
 
     const profileFields: (keyof UpdateJobSeekerProfileDto)[] = [
