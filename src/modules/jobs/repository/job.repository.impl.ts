@@ -287,6 +287,7 @@ export class JobRepositoryImpl implements JobRepository {
     },
 
     publishedAt: job.publishedAt,
+    deadline: job.deadline ?? null,
 
     // applicants count from DB relation
     applicants: job._count?.applications ?? 0,

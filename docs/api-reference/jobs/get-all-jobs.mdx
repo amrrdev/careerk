@@ -66,6 +66,7 @@ GET /api/v1/jobs
     "jobs": [
       {
         "id": "uuid",
+        "type": "direct",
         "title": "Senior Backend Engineer",
         "description": "We are looking for...",
         "requirements": "5+ years experience",
@@ -76,11 +77,18 @@ GET /api/v1/jobs
         "jobType": "FULL_TIME",
         "workPreference": "REMOTE",
         "experienceLevel": "SENIOR",
-        "companyName": "Tech Corp",
-        "companyLogoUrl": null,
-        "postedAt": "2026-02-22T14:51:00.000Z",
+        "publishedAt": "2026-02-22T14:51:00.000Z",
+        "deadline": "2026-04-30T23:59:59.000Z",
+        "company": {
+          "id": "uuid",
+          "name": "Tech Corp",
+          "logoUrl": null,
+          "industry": "Technology"
+        },
+
         "source": "direct",
-        "skills": [{ "skillId": "uuid", "name": "Node.js" }]
+        "skills": [{ "skillId": "uuid", "name": "Node.js" }],
+        "applicants": 1
       }
     ],
     "total": 50,
@@ -106,6 +114,7 @@ GET /api/v1/jobs
     "jobs": [
       {
         "id": "uuid",
+        "type": "scraped",
         "title": "Frontend Developer",
         "description": "Join our team...",
         "location": "Remote",
@@ -114,7 +123,7 @@ GET /api/v1/jobs
         "companyName": "External Corp",
         "sourceUrl": "https://linkedin.com/jobs/...",
         "postedAt": "2026-02-20T10:00:00.000Z",
-        "source": "scraped",
+        "source": "LinkedIn" | "Indeed" | "Glassdoor" | "Bayt" | "Wuzzuf",
         "skills": [{ "skillId": "uuid", "name": "React" }]
       }
     ],

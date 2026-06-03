@@ -27,6 +27,7 @@ GET /api/v1/jobs/direct/{jobId}
   "success": true,
   "data": {
     "id": "6cc9f0af-10c0-4998-b252-fc6c52394759",
+    "type": "direct",
     "title": "Senior Backend Engineer",
     "description": "We are looking for an experienced backend engineer...",
     "requirements": "5+ years experience in Node.js",
@@ -37,15 +38,21 @@ GET /api/v1/jobs/direct/{jobId}
     "jobType": "FULL_TIME",
     "workPreference": "REMOTE",
     "experienceLevel": "SENIOR",
-    "companyName": "Tech Corp",
-    "companyLogoUrl": null,
-    "postedAt": "2026-02-22T14:51:00.000Z",
+    "publishedAt": "2026-02-22T14:51:00.000Z",
+    "deadline": "2026-04-30T23:59:59.000Z",
+    "company": {
+      "id": "uuid",
+      "name": "Tech Corp",
+      "logoUrl": null,
+      "industry": "Technology"
+    },
     "source": "direct",
     "skills": [
       { "skillId": "uuid1", "name": "Node.js" },
       { "skillId": "uuid2", "name": "TypeScript" },
       { "skillId": "uuid3", "name": "PostgreSQL" }
-    ]
+    ],
+    "applicants": 1
   },
   "message": "Success",
   "meta": {
@@ -61,7 +68,9 @@ GET /api/v1/jobs/direct/{jobId}
 <ResponseField name="id" type="string">
   Unique identifier for the job.
 </ResponseField>
-
+<ResponseField name="type" type="string">
+  Job type identifier. Always `direct` for this endpoint.
+</ResponseField>
 <ResponseField name="title" type="string">
   Job title.
 </ResponseField>
@@ -102,16 +111,16 @@ GET /api/v1/jobs/direct/{jobId}
   Required experience level. Values: `ENTRY`, `JUNIOR`, `MID`, `SENIOR`, `LEAD`, `MANAGER`
 </ResponseField>
 
-<ResponseField name="companyName" type="string | null">
-  Company name.
+<ResponseField name="company" type="object">
+  Company information related to the job. Includes id, name, logoUrl, and industry.
 </ResponseField>
 
-<ResponseField name="companyLogoUrl" type="string | null">
-  Company logo URL.
-</ResponseField>
-
-<ResponseField name="postedAt" type="string | null">
+<ResponseField name="publishedAt" type="string | null">
   When the job was published.
+</ResponseField>
+
+<ResponseField name="deadline" type="string | null">
+  The last date and time to apply for the job. After this date, applications may be closed.
 </ResponseField>
 
 <ResponseField name="source" type="string">
@@ -120,6 +129,9 @@ GET /api/v1/jobs/direct/{jobId}
 
 <ResponseField name="skills" type="array">
   Array of skill objects with skillId and name.
+</ResponseField>
+<ResponseField name="applicants" type="number | null">
+  Number of applicants who applied for this job.
 </ResponseField>
 
 ## Error Responses

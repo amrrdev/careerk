@@ -27,6 +27,7 @@ GET /api/v1/jobs/scraped/{jobId}
   "success": true,
   "data": {
     "id": "scr_1234567890",
+    "type": "scraped",
     "title": "Senior Software Engineer",
     "description": "We are looking for a senior software engineer...",
     "location": "Remote",
@@ -35,7 +36,7 @@ GET /api/v1/jobs/scraped/{jobId}
     "companyName": "Tech Corp",
     "sourceUrl": "https://example.com/jobs/123",
     "postedAt": "2024-01-15T10:00:00Z",
-    "source": "scraped",
+    "source": "LinkedIn",
     "skills": [{ "skillId": "uuid1", "name": "TypeScript" }]
   },
   "message": "Success",
@@ -51,6 +52,9 @@ GET /api/v1/jobs/scraped/{jobId}
 
 <ResponseField name="id" type="string">
   Unique identifier for the scraped job.
+</ResponseField>
+<ResponseField name="type" type="string">
+  Job type identifier. Always `scraped` for this endpoint.
 </ResponseField>
 
 <ResponseField name="title" type="string">
@@ -73,8 +77,8 @@ GET /api/v1/jobs/scraped/{jobId}
   Date when the job was posted (ISO 8601).
 </ResponseField>
 
-<ResponseField name="source" type="string">
-  Always `scraped` for this endpoint.
+<ResponseField name="source" type="enum">
+  Job source platform. Values: `LinkedIn`, `Indeed`, `Glassdoor`, `Bayt`, `Wuzzuf`
 </ResponseField>
 
 <ResponseField name="location" type="string">

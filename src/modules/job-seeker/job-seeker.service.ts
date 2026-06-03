@@ -28,9 +28,6 @@ export class JobSeekerService {
         profile: {
           ...jobSeeker.profile,
 
-          // RENAMED
-          email: jobSeeker.email,
-
           // ADDED
           cvScore: jobSeeker.skillGapAnalyses[0]?.cvScore ?? null,
         },

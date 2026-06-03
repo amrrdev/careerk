@@ -123,7 +123,7 @@ export class AuthenticationService {
       return {
         email: jobSeeker.email,
         //Added
-        userType: UserType.JOB_SEEKER,
+        role: UserType.JOB_SEEKER,
       };
     } catch (err) {
       if (err instanceof HttpException) {
@@ -169,7 +169,7 @@ export class AuthenticationService {
       return {
         email: company.email,
         //Added
-        userType: UserType.COMPANY,
+        role: UserType.COMPANY,
       };
     } catch (err) {
       if (err instanceof HttpException) {

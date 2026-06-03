@@ -28,6 +28,7 @@ export type DirectJob = {
   } | null;
 
   publishedAt: Date | null;
+  deadline?: Date | null;
   skills: { skillId: string; name: string }[];
   applicants?: number;
 };
