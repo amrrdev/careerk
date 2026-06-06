@@ -38,38 +38,87 @@ export const scrapedJobNotificationSelect = {
 export type ScrapedJobNotification = Prisma.ScrapedJobMatchGetPayload<
   typeof scrapedJobNotificationSelect
 >;
-
+//Edited to include additional fields
 export const rawScrapedJobMatchSelect = {
   select: {
     id: true,
     scrapedJobId: true,
     matchScore: true,
     createdAt: true,
+
     scrapedJob: {
       select: {
         id: true,
         title: true,
-        companyName: true,
+        description: true,
         location: true,
+        salary: true,
+        jobType: true,
+        companyName: true,
+        url: true,
+        source: true,
+        postedAt: true,
+
+        skills: {
+          select: {
+            skill: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     },
   },
 } satisfies Prisma.ScrapedJobMatchDefaultArgs;
-
+//Edited to include additional fields
 export const rawDirectJobMatchForJobSeekerSelect = {
   select: {
     id: true,
     directJobId: true,
     matchScore: true,
     createdAt: true,
+
     directJob: {
       select: {
         id: true,
         title: true,
+        description: true,
+        requirements: true,
+        responsibilities: true,
         location: true,
+        salaryMin: true,
+        salaryMax: true,
+        jobType: true,
+        workPreference: true,
+        experienceLevel: true,
+        publishedAt: true,
+
         company: {
           select: {
+            id: true,
             name: true,
+            logoUrl: true,
+            industry: true,
+          },
+        },
+
+        applications: {
+          select: {
+            id: true,
+          },
+        },
+
+        skills: {
+          select: {
+            skill: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -111,15 +160,57 @@ export type RawDirectJobMatchForCompany = Prisma.DirectJobMatchGetPayload<
 
 // ---------------- Response Types ----------------
 
+//Edited to include additional fields
 export interface MatchItem {
   id: string;
-  jobId: string;
-  jobTitle: string;
-  companyName: string;
+
+  type: 'direct' | 'scraped';
+
+  title: string;
+  description: string | null;
+
   location: string;
+
+  jobType: string | null;
+
   matchScore: number;
-  jobSource: 'DIRECT' | 'SCRAPED';
-  createdAt: Date;
+
+  // DIRECT ONLY
+  requirements?: string | null;
+  responsibilities?: string | null;
+
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+
+  workPreference?: string | null;
+  experienceLevel?: string | null;
+
+  company?: {
+    id: string;
+    name: string;
+    logoUrl: string | null;
+    industry: string;
+  };
+
+  publishedAt?: Date | null;
+
+  applicants?: number;
+
+  // SCRAPED ONLY
+  salary?: string | null;
+
+  companyName?: string;
+
+  sourceUrl?: string;
+  source?: string;
+
+  postedAt?: Date | null;
+
+  // COMMON
+  skills: {
+    skillId: string;
+    name: string;
+  }[];
 }
 
 export interface CompanyMatchItem {

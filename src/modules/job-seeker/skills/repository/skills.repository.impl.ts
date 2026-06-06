@@ -95,6 +95,15 @@ export class SkillsRepositoryImpl implements SkillsRepository {
       },
     });
   }
+  //New method to delete multiple skills at once, expects an array of skill ids
+  async deleteMany(jobSeekerId: string, skillIds: string[]) {
+    return this.databaseService.jobSeekerSkill.deleteMany({
+      where: {
+        jobSeekerId,
+        skillId: { in: skillIds },
+      },
+    });
+  }
 
   async findExisting(jobSeekerId: string, skillId: string): Promise<JobSeekerSkillWithName | null> {
     const result = await this.databaseService.jobSeekerSkill.findUnique({

@@ -68,6 +68,8 @@ export class DirectJobRepositoryImpl implements DirectJobRepository {
         ...jobData,
         deadline: data.deadline ? new Date(data.deadline) : undefined,
         companyId,
+        // Automatically record the publication timestamp for jobs created with PUBLISHED status
+        publishedAt: jobData.status === DirectJobStatusEnum.PUBLISHED ? new Date() : undefined,
         skills: skillsCreateData,
       },
       ...directJobSelect,

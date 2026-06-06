@@ -1,13 +1,13 @@
 ---
-title: 'Delete Skill'
-api: 'DELETE /api/v1/job-seekers/me/skills/:skillId'
-description: 'Remove a skill from the authenticated job seeker profile'
+title: 'Delete Skills'
+api: 'DELETE /api/v1/job-seekers/me/skills'
+description: 'Remove multiple skills from the authenticated job seeker profile'
 ---
 
 ## Endpoint
 
 ```
-DELETE /api/v1/job-seekers/me/skills/:skillId
+DELETE /api/v1/job-seekers/me/skills
 ```
 
 **Base URL**: `http://localhost:3000/api/v1`
@@ -24,13 +24,15 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 
 ## Description
 
-Remove a specific skill from your profile.
+Remove multiple skills from the authenticated job seeker profile by sending an array of skill IDs.
 
-## Path Parameters
+## Request Body
 
-<ParamField name="skillId" type="string" required>
-  The UUID of the skill to remove from your profile.
-</ParamField>
+```json
+{
+  "ids": ["skillId1", "skillId2"]
+}
+```
 
 ## Response
 
@@ -39,11 +41,13 @@ Remove a specific skill from your profile.
 ```json
 {
   "success": true,
-  "data": {},
+  "data": {
+    "deletedCount": 2
+  },
   "message": "Success",
   "meta": {
     "timestamp": "2026-04-23T20:00:00.000Z",
-    "path": "/job-seekers/me/skills/:skillId",
+    "path": "/job-seekers/me/skills",
     "method": "DELETE"
   }
 }
@@ -60,7 +64,7 @@ Remove a specific skill from your profile.
     "message": "Unauthorized",
     "statusCode": 401,
     "timestamp": "2026-04-23T20:00:00.000Z",
-    "path": "/job-seekers/me/skills/:skillId",
+    "path": "/job-seekers/me/skills",
     "method": "DELETE",
     "details": "Unauthorized"
   }
@@ -76,7 +80,7 @@ Remove a specific skill from your profile.
     "message": "Forbidden resource",
     "statusCode": 403,
     "timestamp": "2026-04-23T20:00:00.000Z",
-    "path": "/job-seekers/me/skills/:skillId",
+    "path": "/job-seekers/me/skills",
     "method": "DELETE",
     "details": "Forbidden"
   }
@@ -92,7 +96,7 @@ Remove a specific skill from your profile.
     "message": "Skill not found in your profile",
     "statusCode": 404,
     "timestamp": "2026-04-23T20:00:00.000Z",
-    "path": "/job-seekers/me/skills/:skillId",
+    "path": "/job-seekers/me/skills",
     "method": "DELETE",
     "details": "Not Found"
   }
@@ -104,3 +108,4 @@ Remove a specific skill from your profile.
 <Info>
   This only removes the skill association from your profile, not the skill itself from the platform.
 </Info>
+````

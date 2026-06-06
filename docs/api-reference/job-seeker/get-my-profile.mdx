@@ -52,6 +52,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     },
     "educations": [
       {
+        "id": "e2b31848-c578-442c-97dd-e8ceb5d2a538",
         "degreeType": "BACHELOR",
         "description": null,
         "institutionName": "Cairo University",
@@ -62,6 +63,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
         "startDate": "2018-10-16T00:00:00.000Z"
       },
       {
+        "id": "another-education-id",
         "degreeType": "HIGH_SCHOOL",
         "description": null,
         "institutionName": "UC Berkeley",
@@ -94,22 +96,27 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     ],
     "skills": [
       {
+        "id": "401d1916-1e5d-44df-b00a-d4dd09f49473",
         "name": "Git",
         "verified": true
       },
       {
+        "id": "1d49e2d7-0b38-4936-91ad-59025d8c67c5",
         "name": "NestJS",
         "verified": true
       },
       {
+        "id": "a8c2a34c-f14b-408b-85a5-c5cb7f040047",
         "name": "TypeScript",
         "verified": true
       },
       {
+        "id": "006c12e8-5532-4b62-b457-bfc90db43192",
         "name": "Java",
         "verified": true
       },
       {
+        "id": "6f01bd3a-71f1-448a-9032-46944207fa48",
         "name": "Terraform",
         "verified": false
       }
@@ -197,6 +204,9 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
     <ResponseField name="degreeType" type="enum">
       Type of degree.
     </ResponseField>
+    <ResponseField name="id" type="string">
+      Unique identifier for the education record.
+    </ResponseField>
     <ResponseField name="description" type="string">
       Degree description.
     </ResponseField>
@@ -251,6 +261,9 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 <ResponseField name="skills" type="array">
   List of skills.
   <Expandable title="Skill Properties">
+    <ResponseField name="id" type="string">
+      Unique identifier for the skill.
+    </ResponseField>
     <ResponseField name="name" type="string">
       Skill name.
     </ResponseField>

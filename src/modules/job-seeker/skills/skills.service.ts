@@ -91,4 +91,16 @@ export class SkillsService {
     await this.findById(skillId, jobSeekerId);
     await this.skillsRepository.delete(skillId, jobSeekerId);
   }
+  //Added to delete multiple skills at once, expects an array of skill ids in the body
+  async deleteMany(jobSeekerId: string, skillIds: string[]) {
+    if (!skillIds || skillIds.length === 0) {
+      throw new BadRequestException('No skill ids provided');
+    }
+
+    const result = await this.skillsRepository.deleteMany(jobSeekerId, skillIds);
+
+    return {
+      deletedCount: result.count,
+    };
+  }
 }

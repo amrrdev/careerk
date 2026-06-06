@@ -123,9 +123,18 @@ export class CvService {
     if (!cv) {
       throw new NotFoundException('No CV uploaded yet');
     }
+    // ADDED: define signed URL expiration time (1 hour)
+    const expiresIn = 3600;
+
     const downloadUrl = await this.cvStorageService.generateDownloadUrl(cv.key);
     return {
       downloadUrl,
+
+      // ADDED: when the link will expire
+      expiresAt: new Date(Date.now() + expiresIn * 1000).toISOString(),
+
+      // ADDED: duration in seconds
+      expiresIn,
     };
   }
 

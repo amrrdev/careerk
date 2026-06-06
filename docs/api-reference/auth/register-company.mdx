@@ -64,6 +64,7 @@ interface RegisterCompanyResponse {
   success: boolean;
   data: {
     email: string;
+    role: 'company';
   };
   message: string;
   meta: {
@@ -78,7 +79,8 @@ interface RegisterCompanyResponse {
 {
   "success": true,
   "data": {
-    "email": "hr@techcorp.com"
+    "email": "hr@techcorp.com",
+    "role": "company"
   },
   "message": "Company registration successful. Please check your email to verify your account.",
   "meta": {
@@ -98,6 +100,9 @@ interface RegisterCompanyResponse {
   <Expandable title="properties">
     <ResponseField name="email" type="string">
       The email address of the newly registered company.
+    </ResponseField>
+    <ResponseField name="role" type="string">
+      User role. Always returns "company".
     </ResponseField>
   </Expandable>
 </ResponseField>

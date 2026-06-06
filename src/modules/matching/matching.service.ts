@@ -15,34 +15,78 @@ export class MatchingService {
   constructor(private readonly matchingRepository: MatchingRepository) {}
 
   /**
+   * Edited
    * Convert raw scraped job match to unified MatchItem format
    */
   private fromScrapedMatch(raw: RawScrapedJobMatch): MatchItem {
     return {
-      id: raw.id,
-      jobId: raw.scrapedJobId,
-      jobTitle: raw.scrapedJob.title,
-      companyName: raw.scrapedJob.companyName,
+      id: raw.scrapedJob.id,
+      type: 'scraped',
+
+      title: raw.scrapedJob.title,
+      description: raw.scrapedJob.description,
+
       location: raw.scrapedJob.location ?? '',
+      salary: raw.scrapedJob.salary,
+
+      jobType: raw.scrapedJob.jobType,
+
+      companyName: raw.scrapedJob.companyName,
+
+      sourceUrl: raw.scrapedJob.url,
+      source: raw.scrapedJob.source,
+
+      postedAt: raw.scrapedJob.postedAt,
+
+      skills: raw.scrapedJob.skills.map((s) => ({
+        skillId: s.skill.id,
+        name: s.skill.name,
+      })),
+
       matchScore: Number(raw.matchScore ?? 0),
-      jobSource: 'SCRAPED',
-      createdAt: raw.createdAt,
     };
   }
 
   /**
+   * Edited
    * Convert raw direct job match to unified MatchItem format
    */
   private fromDirectMatch(raw: RawDirectJobMatchForJobSeeker): MatchItem {
     return {
-      id: raw.id,
-      jobId: raw.directJob.id,
-      jobTitle: raw.directJob.title,
-      companyName: raw.directJob.company.name,
+      id: raw.directJob.id,
+      type: 'direct',
+
+      title: raw.directJob.title,
+      description: raw.directJob.description,
+      requirements: raw.directJob.requirements,
+      responsibilities: raw.directJob.responsibilities,
+
       location: raw.directJob.location ?? '',
+
+      salaryMin: raw.directJob.salaryMin,
+      salaryMax: raw.directJob.salaryMax,
+
+      jobType: raw.directJob.jobType,
+      workPreference: raw.directJob.workPreference,
+      experienceLevel: raw.directJob.experienceLevel,
+
+      company: {
+        id: raw.directJob.company.id,
+        name: raw.directJob.company.name,
+        logoUrl: raw.directJob.company.logoUrl,
+        industry: raw.directJob.company.industry,
+      },
+
+      publishedAt: raw.directJob.publishedAt,
+
+      applicants: raw.directJob.applications.length,
+
+      skills: raw.directJob.skills.map((s) => ({
+        skillId: s.skill.id,
+        name: s.skill.name,
+      })),
+
       matchScore: Number(raw.matchScore ?? 0),
-      jobSource: 'DIRECT',
-      createdAt: raw.createdAt,
     };
   }
 
@@ -96,10 +140,21 @@ export class MatchingService {
         minScore,
       );
     }
+    // NOTE:
+    // We are merging two different job sources (DIRECT + SCRAPED)
+    // Each source has a different date field:
+    // - Direct jobs use "publishedAt"
+    // - Scraped jobs use "postedAt"
 
-    matches.sort(
-      (a, b) => b.matchScore - a.matchScore || b.createdAt.getTime() - a.createdAt.getTime(),
-    );
+    matches.sort((a, b) => {
+      const dateA =
+        a.type === 'direct' ? (a.publishedAt?.getTime() ?? 0) : (a.postedAt?.getTime() ?? 0);
+
+      const dateB =
+        b.type === 'direct' ? (b.publishedAt?.getTime() ?? 0) : (b.postedAt?.getTime() ?? 0);
+
+      return b.matchScore - a.matchScore || dateB - dateA;
+    });
 
     return this.paginate(matches, page, limit, totalCount);
   }

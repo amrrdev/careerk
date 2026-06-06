@@ -73,6 +73,7 @@ GET /api/v1/job-seekers?location=London&workPreference=REMOTE&availabilityStatus
       {
         "firstName": "Jeffrey",
         "lastName": "Martin",
+        "profileImageUrl": null,
         "profile": {
           "jobSeekerId": "7933b735-4212-4dbe-8843-ce4dd5961076",
           "title": "Rust Developer",
@@ -83,12 +84,27 @@ GET /api/v1/job-seekers?location=London&workPreference=REMOTE&availabilityStatus
           "yearsOfExperience": 20,
           "linkedinUrl": null,
           "portfolioUrl": null,
-          "githubUrl": null
-        }
+          "githubUrl": null,
+          "summary": "Experienced Rust developer specializing in backend systems.",
+          "expectedSalary": 5000,
+          "cvEmail": "jeffrey@example.com",
+          "cvScore": 87
+        },
+        "skills": [
+          {
+            "name": "Rust",
+            "verified": true
+          },
+          {
+            "name": "Docker",
+            "verified": false
+          }
+        ]
       },
       {
         "firstName": "Sandra",
         "lastName": "Morgan",
+        "profileImageUrl": null,
         "profile": {
           "jobSeekerId": "1245d82c-a49a-4ec5-b4dd-ff5e770c3b2b",
           "title": "DevOps Engineer",
@@ -99,8 +115,22 @@ GET /api/v1/job-seekers?location=London&workPreference=REMOTE&availabilityStatus
           "yearsOfExperience": 20,
           "linkedinUrl": null,
           "portfolioUrl": null,
-          "githubUrl": null
-        }
+          "githubUrl": null,
+          "summary": "Experienced DevOps Engineer with expertise in cloud infrastructure.",
+          "expectedSalary": 6000,
+          "cvEmail": "sandra@example.com",
+          "cvScore": 92
+        },
+        "skills": [
+          {
+            "name": "AWS",
+            "verified": true
+          },
+          {
+            "name": "Kubernetes",
+            "verified": true
+          }
+        ]
       }
     ],
     "total": 1032,
@@ -121,46 +151,101 @@ GET /api/v1/job-seekers?location=London&workPreference=REMOTE&availabilityStatus
 
 <ResponseField name="jobSeekers" type="array">
   Array of job seeker profile summaries.
-  <Expandable title="Job Seeker Profile Properties">
+
+  <Expandable title="Job Seeker Object">
+
     <ResponseField name="firstName" type="string">
       Job seeker's first name.
     </ResponseField>
+
     <ResponseField name="lastName" type="string">
       Job seeker's last name.
     </ResponseField>
+
+    <ResponseField name="profileImageUrl" type="string | null">
+      URL to the job seeker's profile image.
+    </ResponseField>
+
     <ResponseField name="profile" type="object">
       Public profile information.
-      <ResponseField name="jobSeekerId" type="string">
-        Unique profile identifier (UUID).
-      </ResponseField>
-      <ResponseField name="title" type="string">
-        Current job title.
-      </ResponseField>
-      <ResponseField name="location" type="string">
-        Location.
-      </ResponseField>
-      <ResponseField name="availabilityStatus" type="enum">
-        Current availability status.
-      </ResponseField>
-      <ResponseField name="workPreference" type="enum">
-        Work preference.
-      </ResponseField>
-      <ResponseField name="preferredJobTypes" type="enum[]">
-        Preferred job types.
-      </ResponseField>
-      <ResponseField name="yearsOfExperience" type="number">
-        Years of experience.
-      </ResponseField>
-      <ResponseField name="linkedinUrl" type="string | null">
-        LinkedIn profile URL.
-      </ResponseField>
-      <ResponseField name="portfolioUrl" type="string | null">
-        Portfolio website URL.
-      </ResponseField>
-      <ResponseField name="githubUrl" type="string | null">
-        GitHub profile URL.
-      </ResponseField>
+
+      <Expandable title="Profile Properties">
+
+        <ResponseField name="jobSeekerId" type="string">
+          Unique profile identifier (UUID).
+        </ResponseField>
+
+        <ResponseField name="title" type="string">
+          Current job title.
+        </ResponseField>
+
+        <ResponseField name="location" type="string">
+          Location.
+        </ResponseField>
+
+        <ResponseField name="availabilityStatus" type="enum">
+          Current availability status.
+        </ResponseField>
+
+        <ResponseField name="workPreference" type="enum">
+          Work preference.
+        </ResponseField>
+
+        <ResponseField name="preferredJobTypes" type="enum[]">
+          Preferred job types.
+        </ResponseField>
+
+        <ResponseField name="yearsOfExperience" type="number">
+          Years of experience.
+        </ResponseField>
+
+        <ResponseField name="linkedinUrl" type="string | null">
+          LinkedIn profile URL.
+        </ResponseField>
+
+        <ResponseField name="portfolioUrl" type="string | null">
+          Portfolio website URL.
+        </ResponseField>
+
+        <ResponseField name="githubUrl" type="string | null">
+          GitHub profile URL.
+        </ResponseField>
+
+        <ResponseField name="summary" type="string | null">
+          Short professional summary of the job seeker.
+        </ResponseField>
+
+        <ResponseField name="expectedSalary" type="number | null">
+          Expected monthly salary.
+        </ResponseField>
+
+        <ResponseField name="cvEmail" type="string">
+          Email used in CV submission.
+        </ResponseField>
+
+        <ResponseField name="cvScore" type="number">
+          AI-generated or system CV score (0–100).
+        </ResponseField>
+
+      </Expandable>
     </ResponseField>
+
+    <ResponseField name="skills" type="array">
+      List of skills associated with the job seeker.
+
+      <Expandable title="Skill Object">
+
+        <ResponseField name="name" type="string">
+          Skill name (e.g., AWS, Docker, Rust).
+        </ResponseField>
+
+        <ResponseField name="verified" type="boolean">
+          Indicates whether the skill is verified.
+        </ResponseField>
+
+      </Expandable>
+    </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -234,7 +319,7 @@ GET /api/v1/job-seekers?location=Berlin&workPreference=REMOTE&availabilityStatus
 
 <Info>
   **Public Profiles Only**: This endpoint returns only public profile information. Sensitive data
-  like email, phone, and expected salary are only available in the detailed profile endpoint.
+  like email, phone are only available in the detailed profile endpoint.{' '}
 </Info>
 
 <Tip>

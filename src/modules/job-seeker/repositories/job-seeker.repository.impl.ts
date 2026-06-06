@@ -170,4 +170,20 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
     });
     return result !== null;
   }
+  // 3 new methods for overview endpoint
+  async countSavedJobs(jobSeekerId: string): Promise<number> {
+    return this.databaseService.jobBookmark.count({
+      where: { jobSeekerId },
+    });
+  }
+  async countDirectMatches(jobSeekerId: string): Promise<number> {
+    return this.databaseService.directJobMatch.count({
+      where: { jobSeekerId },
+    });
+  }
+  async countScrapedMatches(jobSeekerId: string): Promise<number> {
+    return this.databaseService.scrapedJobMatch.count({
+      where: { jobSeekerId },
+    });
+  }
 }

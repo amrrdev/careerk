@@ -52,6 +52,7 @@ interface RegisterJobSeekerResponse {
   success: boolean;
   data: {
     email: string;
+    role: 'job-seeker';
   };
   message: string;
   meta: {
@@ -66,7 +67,8 @@ interface RegisterJobSeekerResponse {
 {
   "success": true,
   "data": {
-    "email": "john.doe@example.com"
+    "email": "john.doe@example.com",
+    "role": "job-seeker"
   },
   "message": "Registration successful. Please check your email to verify your account.",
   "meta": {
@@ -86,6 +88,9 @@ interface RegisterJobSeekerResponse {
   <Expandable title="properties">
     <ResponseField name="email" type="string">
       The email address of the newly registered user.
+    </ResponseField>
+    <ResponseField name="role" type="string">
+      The role of the user. Always returns "job-seeker" for this endpoint.
     </ResponseField>
   </Expandable>
 </ResponseField>

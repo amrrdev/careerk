@@ -74,6 +74,8 @@ export class AuthenticationService {
 
       return {
         ...user,
+        //Added to response for frontend to know which type of user logged in and display correct dashboard
+        role: userType,
         accessToken,
         refreshToken,
       };
@@ -120,6 +122,8 @@ export class AuthenticationService {
 
       return {
         email: jobSeeker.email,
+        //Added
+        role: UserType.JOB_SEEKER,
       };
     } catch (err) {
       if (err instanceof HttpException) {
@@ -164,6 +168,8 @@ export class AuthenticationService {
 
       return {
         email: company.email,
+        //Added
+        role: UserType.COMPANY,
       };
     } catch (err) {
       if (err instanceof HttpException) {

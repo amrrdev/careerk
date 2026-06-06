@@ -54,3 +54,5 @@ export { jobSeekerProfileSelect };
 export type PublicJobSeekerProfile = Prisma.JobSeekerProfileGetPayload<
   typeof jobSeekerProfileSelect
 >;
+//Full job seeker data used for overview endpoint
+export type JobSeekerOverview = JobSeeker;

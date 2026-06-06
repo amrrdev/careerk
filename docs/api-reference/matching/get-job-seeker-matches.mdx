@@ -50,44 +50,60 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
   "data": {
     "matches": [
       {
-        "id": "5f9f22ba-2d03-4e8e-a721-2243424f74d5",
-        "jobId": "1dce277f-4d30-4576-a8be-c636f0e85b7a",
-        "jobTitle": "Senior Platform Engineer",
-        "companyName": "TechCorp Solutions",
-        "location": "San Francisco, CA",
-        "matchScore": 62.5,
-        "jobSource": "DIRECT",
-        "createdAt": "2026-04-17T11:57:59.572Z"
+        "id": "acecb886-2c2d-4e5b-9b5d-49d1e4c5ca7b",
+        "type": "scraped",
+        "title": "Junior Full Stack Developer",
+        "description": "We are looking for a junior full stack developer...",
+        "location": "Bournemouth, England, United Kingdom",
+        "salary": null,
+        "jobType": "FULL_TIME",
+        "companyName": "Haystack",
+        "sourceUrl": "https://uk.linkedin.com/jobs/view/junior-full-stack-developer-at-haystack-4407798645",
+        "source": "LinkedIn",
+        "postedAt": "2026-05-04T23:43:55.307Z",
+        "skills": [
+          { "skillId": "uuid1", "name": "TypeScript" },
+          { "skillId": "uuid2", "name": "React" },
+          { "skillId": "uuid3", "name": "Next.js" }
+        ],
+        "matchScore": 88
       },
       {
-        "id": "b15de187-57e7-4701-a507-67f15a3f6ea5",
-        "jobId": "5cddf99c-b736-4920-a426-069327d59395",
-        "jobTitle": "Senior Data Scientist",
-        "companyName": "Wuzzuf Company",
-        "location": "Cairo, Egypt",
-        "matchScore": 61.54,
-        "jobSource": "SCRAPED",
-        "createdAt": "2026-04-15T15:18:33.981Z"
-      },
-      {
-        "id": "4d553091-738b-4a1b-80f7-005adb30e827",
-        "jobId": "4e5dcd57-9992-4738-ba20-b52bd155898b",
-        "jobTitle": "Full Stack JS Developer",
-        "companyName": "Wuzzuf Company",
-        "location": "Cairo, Egypt",
-        "matchScore": 52.94,
-        "jobSource": "SCRAPED",
-        "createdAt": "2026-04-15T14:44:14.375Z"
+        "id": "d86db67d-451b-4189-a49f-7c3bca8c6a99",
+        "type": "direct",
+        "title": "Mid-Level Backend Developer",
+        "description": "We are looking for a motivated backend developer...",
+        "requirements": null,
+        "responsibilities": null,
+        "location": "Alexandria, Egypt",
+        "salaryMin": 12000,
+        "salaryMax": 20000,
+        "jobType": "FULL_TIME",
+        "workPreference": "REMOTE",
+        "experienceLevel": "MID",
+        "company": {
+          "id": "4ea0d345-f379-4d02-8b89-db49b62abdcc",
+          "name": "Tech Corp",
+          "logoUrl": null,
+          "industry": "Technology"
+        },
+        "publishedAt": "2026-04-18T19:16:22.638Z",
+        "applicants": 0,
+        "skills": [
+          { "skillId": "uuid1", "name": "Node.js" },
+          { "skillId": "uuid2", "name": "Docker" }
+        ],
+        "matchScore": 64
       }
     ],
-    "total": 30,
+    "total": 2,
     "page": 1,
     "limit": 10,
-    "totalPages": 3
+    "totalPages": 1
   },
   "message": "Job seeker matches retrieved successfully",
   "meta": {
-    "timestamp": "2026-04-23T20:00:00.000Z",
+    "timestamp": "2026-06-03T18:09:04.738Z",
     "path": "/job-seekers/me/matches",
     "method": "GET"
   }
@@ -97,32 +113,78 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 ### Response Fields
 
 <ResponseField name="matches" type="array">
-  List of job matches sorted by match score (highest first).
-  <Expandable title="Match Properties">
+  List of job matches sorted by match score (highest first). Each object contains the full job
+  details with `matchScore` as a flat field. The shape differs based on `type`.
+  <Expandable title="Common Fields (all types)">
     <ResponseField name="id" type="string">
-      Unique match identifier (UUID).
-    </ResponseField>
-    <ResponseField name="jobId" type="string">
       Unique job identifier (UUID).
     </ResponseField>
-    <ResponseField name="jobTitle" type="string">
+    <ResponseField name="type" type="enum">
+      `"direct"` or `"scraped"`.
+    </ResponseField>
+    <ResponseField name="title" type="string">
       Job title.
     </ResponseField>
-    <ResponseField name="companyName" type="string">
-      Company name.
+    <ResponseField name="description" type="string">
+      Job description.
     </ResponseField>
     <ResponseField name="location" type="string">
       Job location.
     </ResponseField>
+    <ResponseField name="jobType" type="enum">
+      `FULL_TIME`, `PART_TIME`, `CONTRACT`, etc.
+    </ResponseField>
+    <ResponseField name="skills" type="array">
+      List of required skills with `skillId` and `name`.
+    </ResponseField>
     <ResponseField name="matchScore" type="number">
-      Match score percentage (0-100). Higher scores indicate better compatibility.
+      Match score percentage (0–100). Higher scores indicate better compatibility.
     </ResponseField>
-    <ResponseField name="jobSource" type="enum">
-      Source of the job. - `DIRECT` - Jobs posted directly by companies - `SCRAPED` - Jobs scraped
-      from external sources
+  </Expandable>
+  <Expandable title="Direct Job Extra Fields (type: direct)">
+    <ResponseField name="requirements" type="string | null">
+      Job requirements.
     </ResponseField>
-    <ResponseField name="createdAt" type="string">
-      Match creation date (ISO 8601 format).
+    <ResponseField name="responsibilities" type="string | null">
+      Job responsibilities.
+    </ResponseField>
+    <ResponseField name="salaryMin" type="number">
+      Minimum salary.
+    </ResponseField>
+    <ResponseField name="salaryMax" type="number">
+      Maximum salary.
+    </ResponseField>
+    <ResponseField name="workPreference" type="enum">
+      `REMOTE`, `ONSITE`, `HYBRID`.
+    </ResponseField>
+    <ResponseField name="experienceLevel" type="enum">
+      `JUNIOR`, `MID`, `SENIOR`, etc.
+    </ResponseField>
+    <ResponseField name="publishedAt" type="string">
+      Publication date (ISO 8601).
+    </ResponseField>
+    <ResponseField name="applicants" type="number">
+      Number of applicants so far.
+    </ResponseField>
+    <ResponseField name="company" type="object">
+      Company details: `id`, `name`, `logoUrl`, `industry`.
+    </ResponseField>
+  </Expandable>
+  <Expandable title="Scraped Job Extra Fields (type: scraped)">
+    <ResponseField name="salary" type="string | null">
+      Salary as a raw string from the source.
+    </ResponseField>
+    <ResponseField name="companyName" type="string">
+      Company name.
+    </ResponseField>
+    <ResponseField name="sourceUrl" type="string">
+      Original URL of the job posting.
+    </ResponseField>
+    <ResponseField name="source" type="string">
+      Platform the job was scraped from (e.g. `"LinkedIn"`).
+    </ResponseField>
+    <ResponseField name="postedAt" type="string">
+      Posting date from the source (ISO 8601).
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -142,6 +204,167 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 <ResponseField name="totalPages" type="number">
   Total number of pages available.
 </ResponseField>
+
+---
+
+## Job Details Response by Source
+
+<Info>
+  When fetching details for a specific match, the shape of the `data` object differs depending on
+  the `jobSource`.
+</Info>
+
+### Direct Job (`jobSource: "DIRECT"`)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "6cc9f0af-10c0-4998-b252-fc6c52394759",
+    "type": "direct",
+    "title": "Senior Backend Engineer",
+    "description": "We are looking for an experienced backend engineer...",
+    "requirements": "5+ years experience in Node.js",
+    "responsibilities": "Design and implement APIs, mentor junior developers",
+    "location": "Cairo, Egypt",
+    "salaryMin": 15000,
+    "salaryMax": 25000,
+    "jobType": "FULL_TIME",
+    "workPreference": "REMOTE",
+    "experienceLevel": "SENIOR",
+    "publishedAt": "2026-02-22T14:51:00.000Z",
+    "company": {
+      "id": "uuid",
+      "name": "Tech Corp",
+      "logoUrl": null,
+      "industry": "Technology"
+    },
+    "source": "direct",
+    "skills": [
+      { "skillId": "uuid1", "name": "Node.js" },
+      { "skillId": "uuid2", "name": "TypeScript" },
+      { "skillId": "uuid3", "name": "PostgreSQL" }
+    ],
+    "applicants": 1
+  }
+}
+```
+
+<Expandable title="Direct Job Fields">
+  <ResponseField name="id" type="string">
+    Unique job identifier (UUID).
+  </ResponseField>
+  <ResponseField name="type" type="string">
+    Always `"direct"` for this source.
+  </ResponseField>
+  <ResponseField name="title" type="string">
+    Job title.
+  </ResponseField>
+  <ResponseField name="description" type="string">
+    Full job description.
+  </ResponseField>
+  <ResponseField name="requirements" type="string">
+    Job requirements.
+  </ResponseField>
+  <ResponseField name="responsibilities" type="string">
+    Job responsibilities.
+  </ResponseField>
+  <ResponseField name="location" type="string">
+    Job location.
+  </ResponseField>
+  <ResponseField name="salaryMin" type="number">
+    Minimum salary.
+  </ResponseField>
+  <ResponseField name="salaryMax" type="number">
+    Maximum salary.
+  </ResponseField>
+  <ResponseField name="jobType" type="enum">
+    `FULL_TIME`, `PART_TIME`, `CONTRACT`, etc.
+  </ResponseField>
+  <ResponseField name="workPreference" type="enum">
+    `REMOTE`, `ONSITE`, `HYBRID`.
+  </ResponseField>
+  <ResponseField name="experienceLevel" type="enum">
+    `JUNIOR`, `MID`, `SENIOR`, etc.
+  </ResponseField>
+  <ResponseField name="publishedAt" type="string">
+    Publication date (ISO 8601).
+  </ResponseField>
+  <ResponseField name="company" type="object">
+    Company details: `id`, `name`, `logoUrl`, `industry`.
+  </ResponseField>
+  <ResponseField name="skills" type="array">
+    List of required skills with `skillId` and `name`.
+  </ResponseField>
+  <ResponseField name="applicants" type="number">
+    Number of applicants so far.
+  </ResponseField>
+</Expandable>
+
+---
+
+### Scraped Job (`jobSource: "SCRAPED"`)
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "scr_1234567890",
+    "type": "scraped",
+    "title": "Senior Software Engineer",
+    "description": "We are looking for a senior software engineer...",
+    "location": "Remote",
+    "salary": "$120,000 - $150,000 per year",
+    "jobType": "FULL_TIME",
+    "companyName": "Tech Corp",
+    "sourceUrl": "https://example.com/jobs/123",
+    "postedAt": "2024-01-15T10:00:00Z",
+    "source": "LinkedIn",
+    "skills": [{ "skillId": "uuid1", "name": "TypeScript" }]
+  }
+}
+```
+
+<Expandable title="Scraped Job Fields">
+  <ResponseField name="id" type="string">
+    Unique scraped job identifier (prefixed with `scr_`).
+  </ResponseField>
+  <ResponseField name="type" type="string">
+    Always `"scraped"` for this source.
+  </ResponseField>
+  <ResponseField name="title" type="string">
+    Job title.
+  </ResponseField>
+  <ResponseField name="description" type="string">
+    Job description.
+  </ResponseField>
+  <ResponseField name="location" type="string">
+    Job location.
+  </ResponseField>
+  <ResponseField name="salary" type="string">
+    Salary as a raw string from the source (not structured).
+  </ResponseField>
+  <ResponseField name="jobType" type="enum">
+    `FULL_TIME`, `PART_TIME`, `CONTRACT`, etc.
+  </ResponseField>
+  <ResponseField name="companyName" type="string">
+    Company name (no structured company object).
+  </ResponseField>
+  <ResponseField name="sourceUrl" type="string">
+    Original URL of the job posting.
+  </ResponseField>
+  <ResponseField name="postedAt" type="string">
+    Posting date from the source (ISO 8601).
+  </ResponseField>
+  <ResponseField name="source" type="string">
+    Platform the job was scraped from (e.g. `"LinkedIn"`).
+  </ResponseField>
+  <ResponseField name="skills" type="array">
+    List of required skills with `skillId` and `name`.
+  </ResponseField>
+</Expandable>
+
+---
 
 ## Error Responses
 

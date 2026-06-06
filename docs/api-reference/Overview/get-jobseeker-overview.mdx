@@ -1,0 +1,117 @@
+---
+title: 'Get My Overview'
+api: 'GET /api/v1/job-seekers/me/overview'
+description: 'Retrieve a summary overview of the authenticated job seeker profile'
+---
+
+## Endpoint
+
+```
+GET /api/v1/job-seekers/me/overview
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **authentication** and **Job Seeker role**.</Note>
+
+## Authentication
+
+Include the access token in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "firstName": "Shahd",
+    "lastName": "Raafat",
+    "hasProfile": true,
+    "profileImageUrl": "",
+    "linkedIn": "https://linkedin.com/in/shahdraafat",
+    "github": "https://github.com/shahdraafat",
+    "recommendedJobsCount": 5,
+    "savedJobsCount": 7
+  },
+  "message": "Success",
+  "meta": {
+    "timestamp": "2026-06-03T18:09:04.738Z",
+    "path": "/job-seekers/me/overview",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="firstName" type="string">
+  Job seeker's first name.
+</ResponseField>
+
+<ResponseField name="lastName" type="string">
+  Job seeker's last name.
+</ResponseField>
+
+<ResponseField name="hasProfile" type="boolean">
+  Indicates whether the job seeker has completed their profile.
+</ResponseField>
+
+<ResponseField name="profileImageUrl" type="string">
+  URL of the profile image. Returns an empty string if no image is set.
+</ResponseField>
+
+<ResponseField name="linkedIn" type="string">
+  LinkedIn profile URL. Returns an empty string if not provided.
+</ResponseField>
+
+<ResponseField name="github" type="string">
+  GitHub profile URL. Returns an empty string if not provided.
+</ResponseField>
+
+<ResponseField name="recommendedJobsCount" type="number">
+  Total number of recommended jobs available for the job seeker.
+</ResponseField>
+
+<ResponseField name="savedJobsCount" type="number">
+  Total number of jobs saved by the job seeker.
+</ResponseField>
+
+## Error Responses
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-06-03T18:09:04.738Z",
+    "path": "/job-seekers/me/overview",
+    "method": "GET",
+    "details": "Unauthorized"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Forbidden resource",
+    "statusCode": 403,
+    "timestamp": "2026-06-03T18:09:04.738Z",
+    "path": "/job-seekers/me/overview",
+    "method": "GET",
+    "details": "Forbidden"
+  }
+}
+```

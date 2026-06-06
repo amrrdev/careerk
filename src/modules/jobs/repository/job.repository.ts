@@ -11,7 +11,6 @@ export abstract class JobRepository {
   abstract findScrapedJobById(jobId: string): Promise<ScrapedJob | null>;
   abstract findDirectJobByIds(jobIds: string[]): Promise<DirectJob[]>;
   abstract findScrapedJobByIds(jobIds: string[]): Promise<ScrapedJob[]>;
-
   abstract createBookmark(jobSeekerId: string, data: CreateBookmarkData): Promise<{ id: string }>;
   abstract deleteBookmark(jobSeekerId: string, bookmarkId: string): Promise<void>;
   abstract findBookmarksByJobSeeker(jobSeekerId: string): Promise<BookmarkWithDetails[]>;
