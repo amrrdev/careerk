@@ -14,6 +14,7 @@ import { CvModule } from './modules/cv/cv.module';
 import { CvStorageModule } from './infrastructure/cv-storage/cv-storage.module';
 import { JobModule } from './modules/jobs/job.module';
 import { MatchingModule } from './modules/matching/matching.module';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -40,5 +41,6 @@ import { MatchingModule } from './modules/matching/matching.module';
       useClass: HttpExceptionFilter,
     },
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}
