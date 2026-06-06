@@ -18,8 +18,7 @@ jobs:
           script: |
             cd /home/ubuntu/snow/careerk
             git pull origin main
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export PATH="/home/ubuntu/.local/share/fnm/node-versions/v22.22.3/installation/bin:$PATH"
             pnpm install
             pnpm prisma generate
             pnpm prisma migrate deploy
