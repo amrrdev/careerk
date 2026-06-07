@@ -30,6 +30,14 @@ export class JobSeekerController {
     return this.jobSeekerService.findMyProfile(jobSeekerId);
   }
 
+  @Get('/me/overview')
+  @Auth(AuthType.Bearer)
+  @Roles(UserType.JOB_SEEKER)
+  @ResponseMessage('Job seeker overview retrieved successfully')
+  getOverview(@ActiveUser('sub') jobSeekerId: string) {
+    return this.jobSeekerService.getOverview(jobSeekerId);
+  }
+
   @Get(':id')
   @ResponseMessage('Job seeker profile retrieved successfully')
   async findProfileById(@Param('id') id: string) {
@@ -81,13 +89,5 @@ export class JobSeekerController {
       jobSeekerId,
       confirmProfileImageUploadDto,
     );
-  }
-  //Added: Job seeker overview endpoint
-  @Get('/me/overview')
-  @Auth(AuthType.Bearer)
-  @Roles(UserType.JOB_SEEKER)
-  @ResponseMessage('Job seeker overview retrieved successfully')
-  getOverview(@ActiveUser('sub') jobSeekerId: string) {
-    return this.jobSeekerService.getOverview(jobSeekerId);
   }
 }
