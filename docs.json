@@ -57,6 +57,7 @@
             "group": "Job Seeker",
             "pages": [
               "docs/job-seeker/introduction",
+              "docs/api-reference/job-seeker/get-overview",
               "docs/api-reference/job-seeker/get-all-profiles",
               "docs/api-reference/job-seeker/get-my-profile",
               "docs/api-reference/job-seeker/get-profile-by-id",
@@ -98,6 +99,7 @@
               "docs/api-reference/cv/confirm-upload",
               "docs/api-reference/cv/get-cv-info",
               "docs/api-reference/cv/get-download-url",
+              "docs/api-reference/cv/get-candidate-cv-url",
               "docs/api-reference/cv/delete-cv",
               "docs/api-reference/cv/preview-parsed-data",
               "docs/api-reference/cv/confirm-parsed-data",
@@ -159,8 +161,7 @@
               "docs/api-reference/direct-jobs/update-job",
               "docs/api-reference/direct-jobs/delete-job",
               "docs/api-reference/direct-jobs/publish-job",
-              "docs/api-reference/direct-jobs/pause-job",
-              "docs/api-reference/direct-jobs/close-job"
+              "docs/api-reference/direct-jobs/pause-job"
             ]
           },
           {
