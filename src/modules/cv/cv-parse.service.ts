@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, Logger, NotFoundException } from '@nes
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { DegreeTypeEnum } from 'generated/prisma/enums';
+import { Prisma } from 'generated/prisma/client';
 import { CvParseResultRepository } from './cv-parse-result/repository/cv-parse-result.repository';
 import { DatabaseService } from 'src/infrastructure/database/database.service';
 import { ConfirmParsedDataRequestDto } from './dto/confirm-parsed-data.dto';
@@ -133,12 +134,12 @@ export class CvParseService {
             institutionName: e.institutionName,
             degreeType: e.degreeType as DegreeTypeEnum,
             fieldOfStudy: e.fieldOfStudy,
-            startDate: new Date(e.startDate),
-            endDate: e.endDate ? new Date(e.endDate) : null,
+            startDate: this.parseDate(e.startDate),
+            endDate: this.parseDate(e.endDate),
             isCurrent: e.isCurrent,
             gpa: e.gpa ?? null,
             description: e.description ?? null,
-          })),
+          })) as Prisma.EducationCreateManyInput[],
         });
       }
 
@@ -150,11 +151,11 @@ export class CvParseService {
             companyName: w.companyName,
             jobTitle: w.jobTitle,
             location: w.location ?? null,
-            startDate: new Date(w.startDate),
-            endDate: w.endDate ? new Date(w.endDate) : null,
+            startDate: this.parseDate(w.startDate),
+            endDate: this.parseDate(w.endDate),
             isCurrent: w.isCurrent,
             description: w.description,
-          })),
+          })) as Prisma.WorkExperienceCreateManyInput[],
         });
       }
 
@@ -231,6 +232,21 @@ export class CvParseService {
     await this.cvParseResultRepository.deleteByJobSeekerId(jobSeekerId);
 
     return { message: 'Profile updated successfully from CV' };
+  }
+
+  private parseDate(value: string | null | undefined): Date | null {
+    if (!value) return null;
+    let s = value.trim();
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) return d;
+
+    s = s.replace(/(\d)\s+(\d{2})\b/g, '$1$2');
+    s = s.replace(/\b(\d{2})\b(?!\s*\d)/g, (_, p1) => {
+      const n = Number(p1);
+      return n >= 0 && n <= 49 ? `20${p1}` : `19${p1}`;
+    });
+    const retry = new Date(s);
+    return isNaN(retry.getTime()) ? new Date() : retry;
   }
 
   async deleteParseResult(jobSeekerId: string) {
