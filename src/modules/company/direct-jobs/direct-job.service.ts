@@ -29,15 +29,6 @@ export class DirectJobService {
     return transformDirectJob(job);
   }
 
-  /*   async create(companyId: string, dto: CreateDirectJobDto) {
-    const job = await this.directJobRepository.create(companyId, {
-      ...dto,
-      status: DirectJobStatusEnum.DRAFT,
-      deadline: dto.deadline ? new Date(dto.deadline) : undefined,
-    });
-    return transformDirectJob(job);
-  } */
-
   async create(companyId: string, dto: CreateDirectJobDto) {
     const job = await this.directJobRepository.create(companyId, {
       ...dto,
@@ -45,9 +36,20 @@ export class DirectJobService {
       deadline: dto.deadline ? new Date(dto.deadline) : undefined,
     });
 
-    await this.nlpQueue.add(PROCESS_NLP, {
-      jobId: job.id,
-    });
+    await this.nlpQueue.add(
+      PROCESS_NLP,
+      {
+        jobId: job.id,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+        removeOnComplete: true,
+      },
+    );
 
     return transformDirectJob(job);
   }
@@ -119,28 +121,24 @@ export class DirectJobService {
       DirectJobStatusEnum.PUBLISHED,
     );
 
-    await this.nlpQueue.add(PROCESS_NLP, { jobId });
+    await this.nlpQueue.add(
+      PROCESS_NLP,
+      {
+        jobId,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+        removeOnComplete: true,
+      },
+    );
 
     return transformDirectJob(updatedJob);
   }
-  /* async pause(jobId: string, companyId: string) {
-    const job = await this.directJobRepository.findByIdWithStatus(jobId, companyId);
 
-    if (!job) {
-      throw new NotFoundException('Job not found');
-    }
-
-    if (job.status !== DirectJobStatusEnum.PUBLISHED) {
-      throw new BadRequestException('Only published jobs can be paused');
-    }
-
-    const updatedJob = await this.directJobRepository.updateStatus(
-      jobId,
-      companyId,
-      DirectJobStatusEnum.PAUSED,
-    );
-    return transformDirectJob(updatedJob);
-  } */
   async pause(jobId: string, companyId: string) {
     const job = await this.directJobRepository.findByIdWithStatus(jobId, companyId);
 
