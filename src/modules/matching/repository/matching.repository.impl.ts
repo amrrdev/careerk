@@ -3,6 +3,7 @@ import { DatabaseService } from 'src/infrastructure/database/database.service';
 import type { MatchingRepository } from './matching.repository';
 import type {
   DirectJobNotificationTarget,
+  JobSeekerMatchFilters,
   ScrapedJobNotificationTarget,
 } from './matching.repository';
 import type {
@@ -17,11 +18,115 @@ import {
   rawScrapedJobMatchSelect,
   rawDirectJobMatchForCompanySelect,
 } from '../types/matching.types';
-import { AvailabilityStatusEnum } from 'generated/prisma/client';
+import { AvailabilityStatusEnum, Prisma } from 'generated/prisma/client';
 
 @Injectable()
 export class MatchingRepositoryImpl implements MatchingRepository {
   constructor(private readonly databaseService: DatabaseService) {}
+
+  private buildDirectJobMatchesWhere(
+    jobSeekerId: string,
+    filters: JobSeekerMatchFilters,
+  ): Prisma.DirectJobMatchWhereInput {
+    const {
+      minScore,
+      search,
+      jobType,
+      location,
+      workPreference,
+      experienceLevel,
+      salaryMin,
+      salaryMax,
+    } = filters;
+
+    const directJobWhere: Prisma.DirectJobWhereInput = {};
+
+    if (search) {
+      directJobWhere.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { requirements: { contains: search, mode: 'insensitive' } },
+        { responsibilities: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
+        { company: { name: { contains: search, mode: 'insensitive' } } },
+        {
+          skills: {
+            some: {
+              skill: {
+                name: { contains: search, mode: 'insensitive' },
+              },
+            },
+          },
+        },
+      ];
+    }
+
+    if (jobType) directJobWhere.jobType = jobType;
+    if (location) directJobWhere.location = { contains: location, mode: 'insensitive' };
+    if (workPreference) directJobWhere.workPreference = workPreference;
+    if (experienceLevel) directJobWhere.experienceLevel = experienceLevel;
+
+    const salaryFilters: Prisma.DirectJobWhereInput[] = [];
+    if (salaryMin !== undefined) {
+      salaryFilters.push({ salaryMax: { gte: salaryMin } });
+    }
+    if (salaryMax !== undefined) {
+      salaryFilters.push({ salaryMin: { lte: salaryMax } });
+    }
+    if (salaryFilters.length > 0) {
+      directJobWhere.AND = salaryFilters;
+    }
+
+    return {
+      jobSeekerId,
+      matchScore: { gte: minScore },
+      ...(Object.keys(directJobWhere).length > 0 && {
+        directJob: directJobWhere,
+      }),
+    };
+  }
+
+  private buildScrapedJobMatchesWhere(
+    jobSeekerId: string,
+    filters: JobSeekerMatchFilters,
+  ): Prisma.ScrapedJobMatchWhereInput {
+    const { minScore, source, search, jobType, location } = filters;
+
+    const scrapedJobWhere: Prisma.ScrapedJobWhereInput = {};
+
+    if (source) {
+      scrapedJobWhere.source = { equals: source, mode: 'insensitive' };
+    }
+
+    if (search) {
+      scrapedJobWhere.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { companyName: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
+        {
+          skills: {
+            some: {
+              skill: {
+                name: { contains: search, mode: 'insensitive' },
+              },
+            },
+          },
+        },
+      ];
+    }
+
+    if (jobType) scrapedJobWhere.jobType = jobType;
+    if (location) scrapedJobWhere.location = { contains: location, mode: 'insensitive' };
+
+    return {
+      jobSeekerId,
+      matchScore: { gte: minScore },
+      ...(Object.keys(scrapedJobWhere).length > 0 && {
+        scrapedJob: scrapedJobWhere,
+      }),
+    };
+  }
 
   // ---------------- Notification Methods ----------------
 
@@ -113,16 +218,20 @@ export class MatchingRepositoryImpl implements MatchingRepository {
 
   async findDirectJobMatchesForJobSeeker(
     jobSeekerId: string,
+    filters: JobSeekerMatchFilters,
   ): Promise<RawDirectJobMatchForJobSeeker[]> {
     return this.databaseService.directJobMatch.findMany({
-      where: { jobSeekerId },
+      where: this.buildDirectJobMatchesWhere(jobSeekerId, filters),
       ...rawDirectJobMatchForJobSeekerSelect,
     });
   }
 
-  async findScrapedJobMatchesForJobSeeker(jobSeekerId: string): Promise<RawScrapedJobMatch[]> {
+  async findScrapedJobMatchesForJobSeeker(
+    jobSeekerId: string,
+    filters: JobSeekerMatchFilters,
+  ): Promise<RawScrapedJobMatch[]> {
     return this.databaseService.scrapedJobMatch.findMany({
-      where: { jobSeekerId },
+      where: this.buildScrapedJobMatchesWhere(jobSeekerId, filters),
       ...rawScrapedJobMatchSelect,
     });
   }
@@ -142,21 +251,21 @@ export class MatchingRepositoryImpl implements MatchingRepository {
     });
   }
 
-  async countDirectJobMatchesForJobSeeker(jobSeekerId: string, minScore: number): Promise<number> {
+  async countDirectJobMatchesForJobSeeker(
+    jobSeekerId: string,
+    filters: JobSeekerMatchFilters,
+  ): Promise<number> {
     return this.databaseService.directJobMatch.count({
-      where: {
-        jobSeekerId,
-        matchScore: { gte: minScore },
-      },
+      where: this.buildDirectJobMatchesWhere(jobSeekerId, filters),
     });
   }
 
-  async countScrapedJobMatchesForJobSeeker(jobSeekerId: string, minScore: number): Promise<number> {
+  async countScrapedJobMatchesForJobSeeker(
+    jobSeekerId: string,
+    filters: JobSeekerMatchFilters,
+  ): Promise<number> {
     return this.databaseService.scrapedJobMatch.count({
-      where: {
-        jobSeekerId,
-        matchScore: { gte: minScore },
-      },
+      where: this.buildScrapedJobMatchesWhere(jobSeekerId, filters),
     });
   }
 

@@ -4,6 +4,7 @@ import {
   RawDirectJobMatchForCompany,
 } from '../types/matching.types';
 import { AvailabilityStatusEnum } from 'generated/prisma/client';
+import { ExperienceLevelEnum, JobTypeEnum, WorkPreferenceEnum } from 'generated/prisma/enums';
 
 export type DirectJobNotificationTarget = {
   companyEmail: string;
@@ -26,6 +27,18 @@ export type ScrapedJobNotificationTarget = {
   topMatches: ScrapedJobMatchPreview[];
 };
 
+export type JobSeekerMatchFilters = {
+  minScore: number;
+  source?: string;
+  search?: string;
+  jobType?: JobTypeEnum;
+  location?: string;
+  workPreference?: WorkPreferenceEnum;
+  experienceLevel?: ExperienceLevelEnum;
+  salaryMin?: number;
+  salaryMax?: number;
+};
+
 export abstract class MatchingRepository {
   // ============= Notification targets =============
 
@@ -46,6 +59,7 @@ export abstract class MatchingRepository {
    */
   abstract findDirectJobMatchesForJobSeeker(
     jobSeekerId: string,
+    filters: JobSeekerMatchFilters,
   ): Promise<RawDirectJobMatchForJobSeeker[]>;
 
   /**
@@ -54,7 +68,10 @@ export abstract class MatchingRepository {
    * @param jobSeekerId - The ID of the job seeker
    * @returns Array of raw scraped job matches
    */
-  abstract findScrapedJobMatchesForJobSeeker(jobSeekerId: string): Promise<RawScrapedJobMatch[]>;
+  abstract findScrapedJobMatchesForJobSeeker(
+    jobSeekerId: string,
+    filters: JobSeekerMatchFilters,
+  ): Promise<RawScrapedJobMatch[]>;
 
   /**
    * Find all candidate matches for a specific job posting
@@ -76,7 +93,7 @@ export abstract class MatchingRepository {
    */
   abstract countDirectJobMatchesForJobSeeker(
     jobSeekerId: string,
-    minScore: number,
+    filters: JobSeekerMatchFilters,
   ): Promise<number>;
 
   /**
@@ -87,7 +104,7 @@ export abstract class MatchingRepository {
    */
   abstract countScrapedJobMatchesForJobSeeker(
     jobSeekerId: string,
-    minScore: number,
+    filters: JobSeekerMatchFilters,
   ): Promise<number>;
 
   /**

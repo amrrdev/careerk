@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MatchingRepository } from './repository/matching.repository';
+import { JobSeekerMatchFilters, MatchingRepository } from './repository/matching.repository';
 import { JobSeekerMatchesQueryDto } from './dto/job-seeker-matches-query.dto';
 import { CompanyMatchesQueryDto } from './dto/company-matches-query.dto';
 import {
@@ -13,6 +13,30 @@ import {
 @Injectable()
 export class MatchingService {
   constructor(private readonly matchingRepository: MatchingRepository) {}
+
+  private normalizeQueryValue(value?: string): string | undefined {
+    const normalized = value?.trim();
+    return normalized ? normalized : undefined;
+  }
+
+  private buildJobSeekerMatchFilters(
+    query: JobSeekerMatchesQueryDto,
+    minScore: number,
+  ): JobSeekerMatchFilters {
+    const filters: JobSeekerMatchFilters = {
+      minScore,
+      source: this.normalizeQueryValue(query.source),
+      search: this.normalizeQueryValue(query.search),
+      jobType: query.jobType,
+      location: this.normalizeQueryValue(query.location),
+      workPreference: query.workPreference,
+      experienceLevel: query.experienceLevel,
+      salaryMin: query.salaryMin,
+      salaryMax: query.salaryMax,
+    };
+
+    return filters;
+  }
 
   /**
    * Edited
@@ -113,32 +137,29 @@ export class MatchingService {
     const minScore = Math.max(query.minScore ?? 0, 50);
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
+    const filters = this.buildJobSeekerMatchFilters(query, minScore);
 
     const matches: MatchItem[] = [];
     let totalCount = 0;
 
     if (type === 'all' || type === 'direct') {
-      const direct = await this.matchingRepository.findDirectJobMatchesForJobSeeker(jobSeekerId);
-      const directFiltered = direct
-        .filter((m) => Number(m.matchScore ?? 0) >= minScore)
-        .map((m) => this.fromDirectMatch(m));
-      matches.push(...directFiltered);
-      totalCount += await this.matchingRepository.countDirectJobMatchesForJobSeeker(
-        jobSeekerId,
-        minScore,
-      );
+      const [direct, directCount] = await Promise.all([
+        this.matchingRepository.findDirectJobMatchesForJobSeeker(jobSeekerId, filters),
+        this.matchingRepository.countDirectJobMatchesForJobSeeker(jobSeekerId, filters),
+      ]);
+
+      matches.push(...direct.map((match) => this.fromDirectMatch(match)));
+      totalCount += directCount;
     }
 
     if (type === 'all' || type === 'scraped') {
-      const scraped = await this.matchingRepository.findScrapedJobMatchesForJobSeeker(jobSeekerId);
-      const scrapedFiltered = scraped
-        .filter((m) => Number(m.matchScore ?? 0) >= minScore)
-        .map((m) => this.fromScrapedMatch(m));
-      matches.push(...scrapedFiltered);
-      totalCount += await this.matchingRepository.countScrapedJobMatchesForJobSeeker(
-        jobSeekerId,
-        minScore,
-      );
+      const [scraped, scrapedCount] = await Promise.all([
+        this.matchingRepository.findScrapedJobMatchesForJobSeeker(jobSeekerId, filters),
+        this.matchingRepository.countScrapedJobMatchesForJobSeeker(jobSeekerId, filters),
+      ]);
+
+      matches.push(...scraped.map((match) => this.fromScrapedMatch(match)));
+      totalCount += scrapedCount;
     }
     // NOTE:
     // We are merging two different job sources (DIRECT + SCRAPED)
