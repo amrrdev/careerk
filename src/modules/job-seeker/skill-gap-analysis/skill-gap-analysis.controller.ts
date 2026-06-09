@@ -27,7 +27,7 @@ export class SkillGapAnalysisController {
   @Get('latest')
   @ResponseMessage('Latest analysis retrieved successfully')
   async getLatestAnalysis(@ActiveUser('sub') jobSeekerId: string) {
-    return this.skillAnalysisGapService.getLatestAnalysis(jobSeekerId);
+    return this.skillAnalysisGapService.getLatestAnalysisBlocking(jobSeekerId);
   }
 
   @Get('history')

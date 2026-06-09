@@ -44,10 +44,18 @@ export class SkillGapAnalysisProcessor extends WorkerHost {
         completedAt: new Date(),
       });
     } catch (error) {
-      this.logger.error(`Failed to process analysis ${analysisId}:`, error);
-      await this.analysisRepository.update(analysisId, {
-        status: 'FAILED',
-      });
+      this.logger.error(
+        `Failed to process analysis ${analysisId} (attempt ${job.attemptsMade}):`,
+        error,
+      );
+
+      if (job.attemptsMade >= (job.opts.attempts ?? 1)) {
+        await this.analysisRepository.update(analysisId, {
+          status: 'FAILED',
+        });
+      }
+
+      throw error;
     }
   }
 }

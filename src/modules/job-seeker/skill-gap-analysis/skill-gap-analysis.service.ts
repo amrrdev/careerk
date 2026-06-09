@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { SkillGapAnalysisRepository } from './repository/analysis.repository';
 import { InjectQueue } from '@nestjs/bullmq';
 import { GENERATE_ANALYSIS_QUEUE, SKILL_GAP_ANALYSIS } from './jobs/queue.constants';
@@ -50,13 +55,62 @@ export class SkillGapAnalysisService {
       workExperience,
     };
 
-    await this.analysisQueue.add(GENERATE_ANALYSIS_QUEUE, jobData);
+    await this.analysisQueue.add(GENERATE_ANALYSIS_QUEUE, jobData, {
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 2000 },
+      removeOnComplete: true,
+      removeOnFail: false,
+    });
 
     return {
       id: analysis.id,
       status: 'PROCESSING',
       message: 'Analysis started. This may take 10-30 seconds.',
     };
+  }
+
+  async getLatestAnalysisBlocking(jobSeekerId: string, maxTimeout = 120_000, pollInterval = 1_000) {
+    const analysis = await this.analysisRepository.findLatest(jobSeekerId);
+    if (!analysis) {
+      throw new NotFoundException('No analysis found. Please create one first.');
+    }
+
+    if (analysis.status === 'COMPLETED') {
+      return analysis;
+    }
+
+    if (analysis.status === 'FAILED') {
+      throw new BadRequestException('Previous analysis failed. Please create a new one.');
+    }
+
+    const startedAt = Date.now();
+
+    while (Date.now() - startedAt < maxTimeout) {
+      await this.sleep(pollInterval);
+
+      const updated = await this.analysisRepository.findLatest(jobSeekerId);
+      if (!updated) {
+        throw new NotFoundException('Analysis was removed during processing');
+      }
+
+      if (updated.status === 'COMPLETED') {
+        return updated;
+      }
+
+      if (updated.status === 'FAILED') {
+        throw new BadRequestException(
+          'Skill gap analysis failed after multiple attempts. Please try again.',
+        );
+      }
+    }
+
+    throw new RequestTimeoutException(
+      'Analysis is taking longer than expected. Please try again later.',
+    );
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async getAnalysisById(analysisId: string, jobSeekerId: string) {
