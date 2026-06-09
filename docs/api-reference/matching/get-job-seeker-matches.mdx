@@ -28,6 +28,38 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
   Filter matches by source type. Options: `all`, `direct`, `scraped`
 </ParamField>
 
+<ParamField query="search" type="string" optional>
+  Full-text search across title, description, company name, and skills
+</ParamField>
+
+<ParamField query="jobType" type="enum" optional>
+  Filter by job type. Options: `FULL_TIME`, `PART_TIME`, `CONTRACT`, `FREELANCE`, `INTERNSHIP`
+</ParamField>
+
+<ParamField query="location" type="string" optional>
+  Filter by location (partial match, case-insensitive)
+</ParamField>
+
+<ParamField query="workPreference" type="enum" optional>
+  Work preference filter (direct jobs only). Options: `REMOTE`, `ONSITE`, `HYBRID`
+</ParamField>
+
+<ParamField query="experienceLevel" type="enum" optional>
+  Experience level filter (direct jobs only). Options: `ENTRY`, `JUNIOR`, `MID`, `SENIOR`, `LEAD`, `MANAGER`
+</ParamField>
+
+<ParamField query="salaryMin" type="number" optional>
+  Minimum salary filter (direct jobs only)
+</ParamField>
+
+<ParamField query="salaryMax" type="number" optional>
+  Maximum salary filter (direct jobs only)
+</ParamField>
+
+<ParamField query="source" type="string" optional>
+  Scraped job source filter (scraped only). e.g. `LinkedIn`, `Indeed`
+</ParamField>
+
 <ParamField query="minScore" type="number" optional>
   Minimum match score threshold (0-100)
 </ParamField>
@@ -39,6 +71,77 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 <ParamField query="limit" type="number" optional default="10" min="1">
   Number of items per page
 </ParamField>
+
+## Examples
+
+### Scraped Matches
+
+```bash
+# All scraped matches
+GET /api/v1/job-seekers/me/matches?type=scraped
+
+# Search keyword
+GET /api/v1/job-seekers/me/matches?type=scraped&search=react
+
+# Search + location
+GET /api/v1/job-seekers/me/matches?type=scraped&search=python&location=remote
+
+# Job type filter
+GET /api/v1/job-seekers/me/matches?type=scraped&jobType=FULL_TIME
+
+# By source website
+GET /api/v1/job-seekers/me/matches?type=scraped&source=LinkedIn
+
+# Min score only
+GET /api/v1/job-seekers/me/matches?type=scraped&minScore=80
+
+# Combined: search + jobType + minScore
+GET /api/v1/job-seekers/me/matches?type=scraped&search=devops&jobType=CONTRACT&minScore=60
+
+# Paginated (page 3, 20 per page)
+GET /api/v1/job-seekers/me/matches?type=scraped&page=3&limit=20
+```
+
+### Direct Matches
+
+```bash
+# All direct matches
+GET /api/v1/job-seekers/me/matches?type=direct
+
+# Search keyword (title, desc, company, skills)
+GET /api/v1/job-seekers/me/matches?type=direct&search=typescript
+
+# Search + location
+GET /api/v1/job-seekers/me/matches?type=direct&search=senior&location=new+york
+
+# Job type
+GET /api/v1/job-seekers/me/matches?type=direct&jobType=FULL_TIME
+
+# Work preference
+GET /api/v1/job-seekers/me/matches?type=direct&workPreference=REMOTE
+
+# Experience level
+GET /api/v1/job-seekers/me/matches?type=direct&experienceLevel=SENIOR
+
+# Salary range
+GET /api/v1/job-seekers/me/matches?type=direct&salaryMin=80000&salaryMax=150000
+
+# Min score
+GET /api/v1/job-seekers/me/matches?type=direct&minScore=90
+
+# Location + jobType + experienceLevel + salary
+GET /api/v1/job-seekers/me/matches?type=direct&location=remote&jobType=FULL_TIME&experienceLevel=MID&salaryMin=60000
+
+# Everything combined
+GET /api/v1/job-seekers/me/matches?type=direct&search=react&jobType=FULL_TIME&workPreference=REMOTE&experienceLevel=SENIOR&salaryMin=100000&salaryMax=200000&minScore=70&page=1&limit=20
+```
+
+### All (merged)
+
+```bash
+# Search across both sources
+GET /api/v1/job-seekers/me/matches?search=python&jobType=FULL_TIME&location=remote&minScore=70
+```
 
 ## Response
 
@@ -424,11 +527,16 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 </Info>
 
 <Tip>
-  **Filtering by Source**: Use the `type` parameter to filter between direct jobs posted by
-  companies (`direct`) and jobs scraped from external sources (`scraped`).
+  **Keyword Search**: Use the `search` parameter to find matches across title, description, company
+  name, and skills. Direct job searches also include requirements and responsibilities.
 </Tip>
 
 <Tip>
-  **Minimum Score Filtering**: Use the `minScore` parameter to filter out low-quality matches. For
-  example, `?minScore=50` will only return matches with a score of 50 or higher.
+  **Direct Job Filters**: Parameters `workPreference`, `experienceLevel`, `salaryMin`, and
+  `salaryMax` only apply to direct job matches. Scraped jobs do not have these structured fields.
+</Tip>
+
+<Tip>
+  **Scraped Source Filter**: Use `source=LinkedIn` (or `Indeed`, etc.) with `type=scraped` to
+  narrow results to a specific job board.
 </Tip>
