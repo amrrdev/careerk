@@ -79,6 +79,8 @@ export type ApplicationDetail = Prisma.ApplicationGetPayload<typeof applicationD
 
 export type ApplicationFilters = {
   status?: ApplicationStatusEnum;
+  search?: string;
+  dateApplied?: 'Last 24 hours' | 'Last 7 days' | 'Last 30 days' | 'All time';
   page?: number;
   limit?: number;
 };
