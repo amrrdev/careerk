@@ -14,23 +14,23 @@ import {
 export class MatchingService {
   constructor(private readonly matchingRepository: MatchingRepository) {}
 
-  private normalizeQueryValue(value?: string): string | undefined {
-    const normalized = value?.trim();
-    return normalized ? normalized : undefined;
-  }
-
   private buildJobSeekerMatchFilters(
     query: JobSeekerMatchesQueryDto,
     minScore: number,
   ): JobSeekerMatchFilters {
+    const normalize = (value?: string): string | undefined => {
+      const normalized = value?.trim();
+      return normalized ? normalized : undefined;
+    };
+
     const filters: JobSeekerMatchFilters = {
       minScore,
-      source: this.normalizeQueryValue(query.source),
-      search: this.normalizeQueryValue(query.search),
-      jobType: query.jobType,
-      location: this.normalizeQueryValue(query.location),
-      workPreference: query.workPreference,
-      experienceLevel: query.experienceLevel,
+      source: query.source?.length ? query.source : undefined,
+      search: normalize(query.search),
+      jobType: query.jobType?.length ? query.jobType : undefined,
+      location: normalize(query.location),
+      workPreference: query.workPreference?.length ? query.workPreference : undefined,
+      experienceLevel: query.experienceLevel?.length ? query.experienceLevel : undefined,
       salaryMin: query.salaryMin,
       salaryMax: query.salaryMax,
     };

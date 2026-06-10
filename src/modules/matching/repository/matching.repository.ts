@@ -29,12 +29,12 @@ export type ScrapedJobNotificationTarget = {
 
 export type JobSeekerMatchFilters = {
   minScore: number;
-  source?: string;
+  source?: string[];
   search?: string;
-  jobType?: JobTypeEnum;
+  jobType?: JobTypeEnum[];
   location?: string;
-  workPreference?: WorkPreferenceEnum;
-  experienceLevel?: ExperienceLevelEnum;
+  workPreference?: WorkPreferenceEnum[];
+  experienceLevel?: ExperienceLevelEnum[];
   salaryMin?: number;
   salaryMax?: number;
 };
