@@ -48,6 +48,16 @@ export const applicationDetailSelect = {
         experienceLevel: true,
         salaryMin: true,
         salaryMax: true,
+        skills: {
+          select: {
+            skill: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
         company: {
           select: {
             id: true,
