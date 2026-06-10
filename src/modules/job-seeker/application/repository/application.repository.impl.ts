@@ -28,12 +28,34 @@ export class JobSeekerApplicationRepositoryImpl implements JobSeekerApplicationR
     jobSeekerId: string,
     filters: ApplicationFilters,
   ): Promise<PaginatedApplications> {
-    const { status, limit = 20, page = 1 } = filters;
+    const { status, search, dateApplied, limit = 20, page = 1 } = filters;
     const where: Prisma.ApplicationWhereInput = {
       jobSeekerId,
     };
 
     if (status) where.status = status;
+
+    if (search) {
+      where.OR = [
+        { directJob: { title: { contains: search, mode: 'insensitive' } } },
+        { directJob: { description: { contains: search, mode: 'insensitive' } } },
+        { directJob: { requirements: { contains: search, mode: 'insensitive' } } },
+        { directJob: { responsibilities: { contains: search, mode: 'insensitive' } } },
+        { directJob: { company: { name: { contains: search, mode: 'insensitive' } } } },
+      ];
+    }
+
+    if (dateApplied && dateApplied !== 'All time') {
+      const now = Date.now();
+      const ms =
+        dateApplied === 'Last 24 hours'
+          ? 86_400_000
+          : dateApplied === 'Last 7 days'
+            ? 604_800_000
+            : 2_592_000_000;
+      where.appliedAt = { gte: new Date(now - ms) };
+    }
+
     const skip = (page - 1) * limit;
 
     const [applications, total] = await Promise.all([

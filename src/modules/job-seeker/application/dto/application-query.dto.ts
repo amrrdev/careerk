@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsEnum, IsIn, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApplicationStatusEnum } from 'generated/prisma/enums';
 
@@ -7,6 +7,14 @@ export class ApplicationQueryDto {
   @IsEnum(ApplicationStatusEnum)
   @IsString()
   status?: ApplicationStatusEnum;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @IsOptional()
+  @IsIn(['Last 24 hours', 'Last 7 days', 'Last 30 days', 'All time'])
+  dateApplied?: 'Last 24 hours' | 'Last 7 days' | 'Last 30 days' | 'All time';
 
   @IsOptional()
   @Type(() => Number)
