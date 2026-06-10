@@ -61,10 +61,12 @@ export class MatchingRepositoryImpl implements MatchingRepository {
       ];
     }
 
-    if (jobType) directJobWhere.jobType = jobType;
+    if (jobType && jobType.length > 0) directJobWhere.jobType = { in: jobType };
     if (location) directJobWhere.location = { contains: location, mode: 'insensitive' };
-    if (workPreference) directJobWhere.workPreference = workPreference;
-    if (experienceLevel) directJobWhere.experienceLevel = experienceLevel;
+    if (workPreference && workPreference.length > 0)
+      directJobWhere.workPreference = { in: workPreference };
+    if (experienceLevel && experienceLevel.length > 0)
+      directJobWhere.experienceLevel = { in: experienceLevel };
 
     const salaryFilters: Prisma.DirectJobWhereInput[] = [];
     if (salaryMin !== undefined) {
@@ -94,8 +96,8 @@ export class MatchingRepositoryImpl implements MatchingRepository {
 
     const scrapedJobWhere: Prisma.ScrapedJobWhereInput = {};
 
-    if (source) {
-      scrapedJobWhere.source = { equals: source, mode: 'insensitive' };
+    if (source && source.length > 0) {
+      scrapedJobWhere.source = { in: source };
     }
 
     if (search) {
@@ -116,7 +118,7 @@ export class MatchingRepositoryImpl implements MatchingRepository {
       ];
     }
 
-    if (jobType) scrapedJobWhere.jobType = jobType;
+    if (jobType && jobType.length > 0) scrapedJobWhere.jobType = { in: jobType };
     if (location) scrapedJobWhere.location = { contains: location, mode: 'insensitive' };
 
     return {

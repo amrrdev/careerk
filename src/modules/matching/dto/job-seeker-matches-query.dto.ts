@@ -1,5 +1,5 @@
 import { IsEnum, IsIn, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ExperienceLevelEnum, JobTypeEnum, WorkPreferenceEnum } from 'generated/prisma/enums';
 
 export class JobSeekerMatchesQueryDto {
@@ -27,31 +27,41 @@ export class JobSeekerMatchesQueryDto {
   minScore?: number;
 
   @IsOptional()
-  @IsString()
-  source?: string;
+  @Transform(({ value }: { value: unknown }) =>
+    Array.isArray(value) ? (value as unknown[]) : [value],
+  )
+  @IsString({ each: true })
+  source?: string[];
 
   @IsOptional()
   @IsString()
   search?: string;
 
   @IsOptional()
-  @IsEnum(JobTypeEnum)
-  @IsString()
-  jobType?: JobTypeEnum;
+  @Transform(({ value }: { value: unknown }) =>
+    Array.isArray(value) ? (value as unknown[]) : [value],
+  )
+  @IsEnum(JobTypeEnum, { each: true })
+  jobType?: JobTypeEnum[];
 
   @IsOptional()
   @IsString()
   location?: string;
 
   @IsOptional()
-  @IsEnum(WorkPreferenceEnum)
-  @IsString()
-  workPreference?: WorkPreferenceEnum;
+  @Transform(({ value }: { value: unknown }) =>
+    Array.isArray(value) ? (value as unknown[]) : [value],
+  )
+  @IsEnum(WorkPreferenceEnum, { each: true })
+  workPreference?: WorkPreferenceEnum[];
 
   @IsOptional()
-  @IsString()
-  @IsEnum(ExperienceLevelEnum)
-  experienceLevel?: ExperienceLevelEnum;
+  @Transform(({ value }: { value: unknown }) =>
+    Array.isArray(value) ? (value as unknown[]) : [value],
+  )
+  @IsString({ each: true })
+  @IsEnum(ExperienceLevelEnum, { each: true })
+  experienceLevel?: ExperienceLevelEnum[];
 
   @IsOptional()
   @Type(() => Number)
