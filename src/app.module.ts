@@ -14,6 +14,7 @@ import { CvModule } from './modules/cv/cv.module';
 import { CvStorageModule } from './infrastructure/cv-storage/cv-storage.module';
 import { JobModule } from './modules/jobs/job.module';
 import { MatchingModule } from './modules/matching/matching.module';
+import { InterviewModule } from './modules/interview/interview.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -30,6 +31,7 @@ import { HealthController } from './health.controller';
     CvModule,
     CvStorageModule,
     MatchingModule,
+    InterviewModule,
   ],
   providers: [
     {

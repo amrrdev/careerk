@@ -1,0 +1,2129 @@
+[
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the difference between a process and a thread in Linux.",
+    "difficulty": "EASY",
+    "skills": ["processes", "threads", "OS fundamentals", "Linux internals"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "A process is an independent execution unit with its own address space, file descriptors, and system resources",
+        "A thread is a lightweight unit of execution within a process, sharing the same address space and resources",
+        "Context switching between threads is cheaper than between processes because they share memory and don't require TLB flushes",
+        "Linux implements threads as lightweight processes under clone() with CLONE_VM and CLONE_THREAD flags"
+      ],
+      "commonMistakes": [
+        "Claiming threads are always faster — they share memory which can cause contention and race conditions",
+        "Confusing kernel threads with user-space threads",
+        "Thinking processes are completely isolated — they share kernel resources like file descriptor tables through inheritance"
+      ],
+      "answerStructure": [
+        "Define process as an independent execution context with private virtual address space",
+        "Define thread as a schedulable entity sharing the parent process address space",
+        "Explain resource isolation differences (memory, file descriptors, signals)",
+        "Mention how Linux implements both via clone() syscall with different flags",
+        "Give a practical example (e.g., Nginx uses processes; Apache uses threads per request)"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "How does virtual memory work in Linux?",
+    "difficulty": "EASY",
+    "skills": ["virtual memory", "memory management", "MMU", "paging"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Each process gets a contiguous virtual address space isolated from other processes via the MMU and page tables",
+        "Pages are mapped to physical frames on demand; not all virtual pages have backing physical memory",
+        "The kernel maintains per-process page tables that translate virtual addresses to physical addresses",
+        "Swapping moves infrequently accessed pages to disk to free physical memory"
+      ],
+      "commonMistakes": [
+        "Believing virtual memory is solely about swap space — it is primarily about address abstraction and isolation",
+        "Confusing virtual memory size with physical RAM available",
+        "Thinking the entire virtual address space is backed by physical memory at all times"
+      ],
+      "answerStructure": [
+        "Describe virtual addresses vs physical addresses and the role of the MMU",
+        "Explain page tables and how they map virtual pages to physical frames",
+        "Cover demand paging — pages are loaded only when accessed",
+        "Discuss swap and its role as an extension of physical memory"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the TCP three-way handshake and its purpose.",
+    "difficulty": "EASY",
+    "skills": ["TCP", "networking", "three-way handshake", "transport layer"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "The three-way handshake establishes a reliable connection before data transfer begins",
+        "Step 1: Client sends SYN with an initial sequence number (ISN)",
+        "Step 2: Server responds with SYN-ACK acknowledging the client's ISN and sending its own ISN",
+        "Step 3: Client sends ACK acknowledging the server's ISN; connection enters ESTABLISHED state"
+      ],
+      "commonMistakes": [
+        "Thinking data can be sent during the handshake — only the final ACK may carry data",
+        "Confusing the three-way handshake with TLS handshake",
+        "Forgetting that sequence numbers are randomized for security to prevent TCP sequence prediction attacks"
+      ],
+      "answerStructure": [
+        "State the purpose: synchronize sequence numbers and establish bidirectional communication",
+        "Walk through SYN → SYN-ACK → ACK step by step",
+        "Explain the role of sequence numbers in reliable delivery and ordering",
+        "Mention the final ACK can include data as an optimization"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "What are file descriptors in Linux and how do they work?",
+    "difficulty": "EASY",
+    "skills": ["file descriptors", "Linux file system", "system calls", "VFS"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "A file descriptor is a non-negative integer handle used by the kernel to reference open files, sockets, pipes, and other I/O resources",
+        "Each process has its own file descriptor table stored in the task_struct, with ulimit -n controlling the maximum",
+        "Standard descriptors: 0 (stdin), 1 (stdout), 2 (stderr) are inherited from the parent process",
+        "The kernel maintains three layers: per-process fd table → system-wide open file table → inode table"
+      ],
+      "commonMistakes": [
+        "Thinking file descriptors only represent regular files on disk",
+        "Confusing the file descriptor number with the file offset or file position",
+        "Not closing unused file descriptors leading to resource exhaustion — the infamous too many open files error"
+      ],
+      "answerStructure": [
+        "Define file descriptor as an integer handle for I/O resources",
+        "Explain the three kernel data structures (fd table, open file table, inode table)",
+        "Cover common system calls: open(), read(), write(), close(), dup2()",
+        "Mention resource limits and how lsof can inspect open descriptors",
+        "Describe inheritance across fork() and exec()"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the key differences between TCP and UDP.",
+    "difficulty": "EASY",
+    "skills": ["TCP", "UDP", "networking", "transport protocols"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "TCP is connection-oriented, reliable, and guarantees in-order delivery; UDP is connectionless, best-effort, with no delivery guarantees",
+        "TCP uses flow control (sliding window) and congestion control; UDP has no built-in congestion or flow control",
+        "TCP has higher overhead due to headers (20+ bytes vs 8 bytes) and connection state maintenance",
+        "UDP is suitable for real-time applications (DNS, VoIP, streaming) where timeliness matters over reliability"
+      ],
+      "commonMistakes": [
+        "Claiming UDP is always faster — the application must handle reliability which adds complexity",
+        "Forgetting that TCP enables multiplexing via ports, same as UDP",
+        "Thinking UDP has no error detection — it has a checksum (optional in IPv4, mandatory in IPv6)"
+      ],
+      "answerStructure": [
+        "Start with TCP's connection-oriented, reliable, ordered delivery model",
+        "Contrast with UDP's stateless, fire-and-forget datagram model",
+        "Compare header sizes and protocol overhead",
+        "Discuss use cases: TCP for web/file transfer, UDP for DNS/streaming/gaming",
+        "Mention that QUIC bridges the gap by building reliability on top of UDP"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "What are Linux signals and how do they work? Name some common ones.",
+    "difficulty": "EASY",
+    "skills": ["signals", "Linux", "inter-process communication", "kernel"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Signals are software interrupts delivered to a process to notify it of events or exceptions",
+        "Each signal has a default disposition (terminate, ignore, core dump, stop, or continue) that can be overridden with custom handlers via signal() or sigaction()",
+        "Common signals: SIGTERM (15) — graceful termination; SIGKILL (9) — forced kill, cannot be caught; SIGINT (2) — Ctrl+C; SIGSEGV (11) — segmentation fault",
+        "SIGSTOP and SIGKILL cannot be caught, blocked, or ignored"
+      ],
+      "commonMistakes": [
+        "Assuming SIGKILL is safe for graceful shutdown — it terminates immediately without cleanup",
+        "Writing non-async-signal-safe code inside signal handlers (e.g., calling printf or malloc)",
+        "Forgetting to check return values of signal() or using it in multi-threaded programs (sigaction is preferred)"
+      ],
+      "answerStructure": [
+        "Define signals as asynchronous notifications from kernel to process",
+        "Explain lifecycle: generation → delivery → disposition (default or custom handler)",
+        "List common signals with their numbers and default actions",
+        "Cover important rules: SIGKILL/SIGSTOP are uncatchable, async-signal-safe functions only in handlers",
+        "Mention kill command and signal() vs sigaction() differences"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "What is load average in Linux and how do you interpret it?",
+    "difficulty": "EASY",
+    "skills": ["load average", "Linux performance", "system monitoring", "CPU scheduling"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Load average represents the average number of processes in the run queue (running + uninterruptible sleep) over 1, 5, and 15 minute windows",
+        "The values include processes in R (running) and D (uninterruptible sleep) states — not just CPU-active processes",
+        "On an N-core system, a load average below N generally means the system is not CPU-overloaded; above N indicates contention",
+        "Spikes in load average can result from disk I/O bottlenecks because of D-state processes"
+      ],
+      "commonMistakes": [
+        "Interpreting load average as CPU utilization percentage — 1.0 means one process waiting for CPU, not 100% usage",
+        "Ignoring that load average includes D-state processes, so high load may indicate I/O issues not CPU issues",
+        "Comparing load average directly across different CPU counts without normalizing"
+      ],
+      "answerStructure": [
+        "Define load average as the exponentially damped moving average of scheduler queue length",
+        "Explain the three time windows (1, 5, 15 min) and what each reveals about trends",
+        "Clarify what states are counted (R and D), and why D-state inclusion matters",
+        "Provide interpretation relative to CPU core count",
+        "Demonstrate with examples: load 8.0 on 4-core means overload; load 2.0 on 8-core means idle"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "What do iostat and vmstat measure and how would you use them?",
+    "difficulty": "EASY",
+    "skills": ["iostat", "vmstat", "performance monitoring", "Linux tools"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "vmstat reports processes, memory, paging, block I/O, traps, and CPU activity — a high-level system health snapshot",
+        "iostat reports CPU utilization and I/O statistics per device, including IOPS, throughput, average I/O size, and await times",
+        "vmstat procs b > 0 sustained indicates CPU contention; si/so > 0 indicates swapping which severely degrades performance",
+        "iostat avgqu-sz and await help identify disk contention vs device latency limits"
+      ],
+      "commonMistakes": [
+        "Running vmstat or iostat without an interval for a single snapshot, which shows averages since boot",
+        "Misinterpreting vmstat b (blocked) as processes waiting for CPU — it means processes blocked on I/O",
+        "Ignoring %iowait in iostat — high %iowait does not mean the disk is slow but that CPUs are idle while waiting for I/O"
+      ],
+      "answerStructure": [
+        "Introduce vmstat columns: procs, memory, swap, io, system, cpu",
+        "Explain key vmstat metrics: r (run queue), b (blocked), si/so (swap), us/sy/id/wa (CPU breakdown)",
+        "Introduce iostat columns: tps, Blk_read/s, Blk_wrtn/s, await, avgqu-sz, %util",
+        "Provide a diagnostic workflow: start with vmstat for system-wide health, drill into iostat for I/O specifics",
+        "Show an example scenario: high await + high avgqu-sz suggests disk saturation"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A production server is running slow. Walk through your diagnostic approach.",
+    "difficulty": "EASY",
+    "skills": ["troubleshooting", "performance", "Linux tools", "incident response"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Start with the USE method: check Utilization, Saturation, and Errors for every resource (CPU, memory, disk, network)",
+        "Use top/htop for CPU and memory overview, iostat for disk, vmstat for system health, and ss for network connections",
+        "Look for runaway processes (high %CPU), memory leaks (growing RSS), swap usage (si/so > 0), or I/O waits (%iowait)",
+        "Narrow the scope: is the problem system-wide or per-application? Use timeframes to identify if a deploy caused regression"
+      ],
+      "commonMistakes": [
+        "Jumping to conclusions before gathering data — always measure before making changes",
+        "Ignoring the simplest causes first (disk full, zombie processes, exhausted file descriptors)",
+        "Restarting services without preserving diagnostic context (logs, core dumps, metrics)"
+      ],
+      "answerStructure": [
+        "Start with system-level checks: uptime, dmesg, vmstat 1, and top to identify resource pressure",
+        "Check CPU: top for high user/system time, run queue length vs core count",
+        "Check memory: free -m, vmstat si/so for swap activity, identify OOM killer logs",
+        "Check disk: iostat -x for await and %util, df for space, lsof for open files",
+        "Check network: ss -s for connection states, sar -n DEV for throughput and errors"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "An application crashes with an out-of-memory error. How do you investigate and resolve it?",
+    "difficulty": "EASY",
+    "skills": ["memory", "OOM", "troubleshooting", "Linux"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Check dmesg for OOM killer logs which show the offending process, memory stats, and which process was killed",
+        "Use free -m and vmstat to understand overall memory pressure, swap usage, and available memory",
+        "Identify memory leaks with top or ps sorted by RSS, and monitor growth over time",
+        "Review application memory limits (ulimit -v, cgroup memory.max) and ensure swap is sized appropriately"
+      ],
+      "commonMistakes": [
+        "Only restarting the application without investigating root cause — the OOM killer is a symptom, not the problem",
+        "Assuming the killed process was the memory hog — the OOM killer selects based on a heuristic (oom_score), not necessarily the largest consumer",
+        "Disabling the OOM killer entirely rather than fixing the underlying memory issue"
+      ],
+      "answerStructure": [
+        "Confirm OOM via dmesg | grep -i oom and identify which process was killed and why",
+        "Check overall memory state: free -h, cat /proc/meminfo, vmstat 1 for swap activity",
+        "Find high-memory processes: ps aux --sort=-%mem or top (M key)",
+        "Determine root cause: memory leak (growing RSS per process) vs insufficient capacity vs misconfigured limits",
+        "Apply fix: increase memory limits, add swap, optimize application config, or fix the leak"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A website hosted on your server is not loading. How do you troubleshoot network connectivity?",
+    "difficulty": "EASY",
+    "skills": ["networking", "troubleshooting", "DNS", "connectivity"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Follow the OSI model from bottom up: link → network → transport → application",
+        "Check physical/connection layer: ping the server IP to verify basic reachability",
+        "Check DNS resolution: nslookup or dig to verify the domain resolves correctly",
+        "Check application layer: curl with verbose output to see HTTP response and any error codes"
+      ],
+      "commonMistakes": [
+        "Skipping basic checks like firewall rules (iptables -L) or security group configurations",
+        "Assuming the problem is DNS without verifying ping by IP first",
+        "Forgetting to check if the web service is actually running (systemctl status) and listening (ss -tlnp)"
+      ],
+      "answerStructure": [
+        "Verify local connectivity: ping localhost and server IP from within the server",
+        "Check service availability: systemctl status, ss -tlnp | grep :80 or :443",
+        "Check DNS: dig +trace example.com to identify resolution failures",
+        "Check external connectivity: ping 8.8.8.8 and curl -v http://server-ip",
+        "Check firewall: iptables -L -n and verify ports 80/443 are open",
+        "Examine web server logs: /var/log/nginx/access.log and error.log for clues"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A disk is full on a production server. How do you find and clean up space?",
+    "difficulty": "EASY",
+    "skills": ["disk management", "Linux file system", "storage", "df", "du"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Use df -h to identify which partition is full and its mount point",
+        "Use du -sh /* and du -sh /var/* etc. to recursively find the largest directories and files",
+        "Check for deleted but still open files: lsof | grep '(deleted)' — processes hold file handles even after deletion",
+        "Rotate or compress log files with logrotate, archive old data, or remove unnecessary packages and cached files"
+      ],
+      "commonMistakes": [
+        "Only checking df without realizing a deleted file still consumes space because a process holds it open",
+        "Misunderstanding that df shows space per filesystem, not per directory",
+        "Deleting files without rotating or truncating logs first — consider log retention policies"
+      ],
+      "answerStructure": [
+        "Run df -h to find the full partition and its mount point",
+        "Check for large files: du -sh /* and drill into /var, /var/log, /tmp, /home",
+        "Find deleted but open files: lsof +L1 or lsof | grep deleted, truncate or restart the process",
+        "Examine log directories: find /var/log -type f -size +100M and check logrotate configs",
+        "Clean targeted areas: old kernel images (apt autoremove), orphaned packages, container images, cached package data"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A process is using 100% CPU. How do you identify the cause and handle it?",
+    "difficulty": "EASY",
+    "skills": ["CPU", "performance", "process management", "Linux"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Use top or htop sorted by CPU usage (%CPU column) to identify the offending process and its PID",
+        "Determine if CPU is spent in user (application logic), system (kernel syscalls), or iowait using top or vmstat",
+        "Use strace -p <PID> to observe system calls and identify what the process is doing",
+        "Check if the issue is a runaway infinite loop, a busy wait, or legitimate high throughput"
+      ],
+      "commonMistakes": [
+        "Killing the process without investigating — it might be legitimate processing that needs resource limits instead",
+        "Assuming high CPU always means a problem — some workloads are CPU-bound by design",
+        "Not checking child threads — top -H shows individual threads within a process"
+      ],
+      "answerStructure": [
+        "Identify the process: top -o %CPU, note PID and exact command path",
+        "Check CPU breakdown: vmstat 1 for us/sy/id/wa to understand where cycles are going",
+        "Inspect the process: ps -p <PID> -o pid,ppid,cmd,%cpu,%mem,etimes to see runtime",
+        "Look inside: strace -c -p <PID> for syscall count, or perf top -p <PID> for hot functions",
+        "Decide action: kill -9 if runaway, cpulimit for resource control, or code fix/EPS for legitimate high CPU"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Application logs show too many open files error. How do you resolve it?",
+    "difficulty": "EASY",
+    "skills": ["file descriptors", "ulimit", "Linux", "troubleshooting"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Check the current file descriptor limit for the process with cat /proc/<PID>/limits (Max open files) and current usage with lsof -p <PID> | wc -l",
+        "Check system-wide limit with cat /proc/sys/fs/file-max and current usage with cat /proc/sys/fs/file-nr",
+        "The issue is either a file descriptor leak (sockets/fds not closed) in the application or insufficient limits",
+        "Increase the limit via systemd unit LimitNOFILE, /etc/security/limits.conf, or container runtime limits"
+      ],
+      "commonMistakes": [
+        "Only increasing limits without checking for file descriptor leaks in the application code",
+        "Setting limits in /etc/security/limits.conf but the process is managed by systemd which has its own directives",
+        "Forgetting that each socket connection consumes a file descriptor, so high connection counts can exhaust limits"
+      ],
+      "answerStructure": [
+        "Confirm the error and identify the failing application and its PID",
+        "Check per-process limits: cat /proc/<PID>/limits and compare against current usage via lsof",
+        "Check system-wide limits: cat /proc/sys/fs/file-max vs cat /proc/sys/fs/file-nr",
+        "Identify if it is a leak (fd count growing over time, tracked with watch) or a limit too low for legitimate workload",
+        "Apply fix: increase LimitNOFILE in systemd, tune sysctl fs.file-max, and fix any code-level fd leaks"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A cron job is not running as expected. How do you debug it?",
+    "difficulty": "EASY",
+    "skills": ["cron", "task scheduling", "Linux", "troubleshooting"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Verify cron is running: systemctl status cronie or crond, and check /var/log/cron for execution logs",
+        "Check the crontab syntax with crontab -l for the correct user — cron jobs run in a minimal environment with limited PATH",
+        "Redirect stdout and stderr to a log file to capture output: * * * * * /path/to/script >> /var/log/myscript.log 2>&1",
+        "Ensure the script is executable, has proper shebang, and any referenced paths are absolute"
+      ],
+      "commonMistakes": [
+        "Assuming cron runs scripts with the user's full login environment — PATH is typically /usr/bin:/bin only",
+        "Forgetting that cron mail is only sent if MAILTO is set and output is not redirected",
+        "Writing scripts without absolute paths — cron has no knowledge of aliases, nvm, rvm, or other shell customizations"
+      ],
+      "answerStructure": [
+        "Verify cron daemon is running: systemctl status crond and check /var/log/cron for recent entries",
+        "Examine the crontab: crontab -l -u <user> and validate syntax and schedule expression",
+        "Test the script manually: run it as the cron user with su - <user> -c /path/to/script",
+        "Add logging: capture stdout/stderr to a file and include timestamps in the script",
+        "Check file permissions: ensure script is executable (chmod +x) and has correct owner"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A service fails to restart after a configuration change. How do you troubleshoot and recover it?",
+    "difficulty": "EASY",
+    "skills": ["service management", "troubleshooting", "systemd", "configuration"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Check the service status: systemctl status <service> shows the exit code, reason for failure, and recent log entries",
+        "Verify the configuration file syntax: many services have a test flag (nginx -t, apachectl configtest, sshd -t)",
+        "Check systemd journal: journalctl -u <service> --no-pager -n 50 for detailed error messages from the failed start attempt",
+        "Check file permissions and SELinux context on config files — wrong ownership or context can prevent reading"
+      ],
+      "commonMistakes": [
+        "Editing configuration files without first backing them up — always cp config config.bak before changes",
+        "Not checking for syntax errors before restarting the service — use the service's test/check command first",
+        "Ignoring systemd unit file changes — if the unit itself was modified, run systemctl daemon-reload"
+      ],
+      "answerStructure": [
+        "Check service status: systemctl status <service> for the exit code and failure reason",
+        "Examine logs: journalctl -u <service> -n 50 --no-pager for error messages from the failed start",
+        "Validate the configuration: run the service's syntax check command (e.g., nginx -t)",
+        "Check dependencies: is the required database or upstream service running? Check with ss -tlnp",
+        "Rollback if needed: restore the previous configuration from backup and verify the service starts",
+        "Gradually re-apply changes: make smaller incremental changes and test each step"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you resolved a critical technical issue under pressure.",
+    "difficulty": "EASY",
+    "skills": ["incident response", "composure", "problem-solving", "communication"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Use the STAR method: describe the Situation, Task, Action, and Result clearly",
+        "Demonstrate systematic thinking under pressure — you followed a process rather than panicking",
+        "Mention communication with stakeholders during the incident",
+        "Highlight what you learned and any preventive measures implemented afterward"
+      ],
+      "commonMistakes": [
+        "Being too vague about the technical details — specificity shows genuine experience",
+        "Taking all the credit instead of acknowledging team collaboration",
+        "Not mentioning the post-mortem or what was done to prevent recurrence"
+      ],
+      "answerStructure": [
+        "Set the context: what was the system, what was the severity, who was affected",
+        "Describe the pressure factors: production outage, customer impact, time sensitivity",
+        "Walk through your diagnostic steps logically and in chronological order",
+        "Explain the root cause and how you resolved it",
+        "Conclude with the outcome and preventive measures you implemented"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you prioritize tasks when managing multiple incidents or requests?",
+    "difficulty": "EASY",
+    "skills": ["prioritization", "time management", "incident management", "communication"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Use a framework: severity (critical, high, medium, low) based on business impact and user count affected",
+        "Start by triaging all open items rather than diving deep into the first one you see",
+        "Communicate expectations: tell stakeholders when you will get to their request",
+        "Use tools like a ticket system with priority flags and SLA tracking"
+      ],
+      "commonMistakes": [
+        "Working on the loudest request rather than the most impactful one",
+        "Failing to communicate status updates while working on a high-priority item",
+        "Overcommitting and burning out instead of escalating or asking for help"
+      ],
+      "answerStructure": [
+        "Describe your triage process: how you assess severity and impact",
+        "Explain how you categorize (e.g., P0-P3) and what criteria define each level",
+        "Give a concrete example: a P0 outage vs a routine access request",
+        "Mention how you communicate with stakeholders about timelines",
+        "Note how you handle interruptions and re-prioritization when new critical issues arise"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a situation where you had to learn a new technology quickly to complete a task.",
+    "difficulty": "EASY",
+    "skills": ["learning agility", "adaptability", "self-study", "problem-solving"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Show your approach to learning: break down the problem, identify what you need to learn, find quality resources",
+        "Mention using documentation, hands-on experimentation, and asking knowledgeable colleagues",
+        "Demonstrate practical results — you delivered despite being new to the technology",
+        "Highlight how the experience improved your ability to pick up new tools in the future"
+      ],
+      "commonMistakes": [
+        "Claiming you learned everything on your own without using any resources",
+        "Describing a trivial technology that didn't require real learning",
+        "Focusing on the learning process only without showing the outcome"
+      ],
+      "answerStructure": [
+        "State the task and the technology you needed to learn",
+        "Explain why you didn't already know it and the time pressure involved",
+        "Describe your learning strategy: documentation, labs, tutorials, mentorship",
+        "Show how you applied the knowledge to complete the task successfully",
+        "Reflect on what you learned about learning itself"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you handle a disagreement with a teammate about a technical decision?",
+    "difficulty": "EASY",
+    "skills": ["collaboration", "conflict resolution", "communication", "teamwork"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Focus on the technical merits, not personalities — evaluate each approach based on data and requirements",
+        "Propose a structured discussion: list pros and cons, consider tradeoffs, and involve a third opinion if needed",
+        "Be willing to compromise and accept that sometimes different solutions are equally valid",
+        "Document the decision and rationale so the team has a record regardless of outcome"
+      ],
+      "commonMistakes": [
+        "Making it personal or letting ego drive the conversation",
+        "Raising the issue in a public forum before discussing one-on-one",
+        "Refusing to change your mind even when presented with strong counter-evidence"
+      ],
+      "answerStructure": [
+        "Describe the context: what was the technical decision being debated",
+        "Explain your perspective and your teammate's perspective with respect",
+        "Walk through how you resolved it: data gathering, tradeoff analysis, escalation if needed",
+        "Share the outcome and whether you found a better solution through collaboration",
+        "Reflect on why healthy technical debate is valuable for team growth"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a time you automated a manual process. What was the impact?",
+    "difficulty": "EASY",
+    "skills": ["automation", "efficiency", "scripting", "process improvement"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Identify the manual process, its frequency, and why automation was needed (error-prone, time-consuming)",
+        "Describe the automation solution — what tools or scripts you used (bash, Python, Ansible, etc.)",
+        "Quantify the impact: time saved per week, error reduction rate, hours freed for higher-value work",
+        "Discuss how you validated the automation and handled edge cases"
+      ],
+      "commonMistakes": [
+        "Describing a one-off automation that saved minimal time — choose something with meaningful impact",
+        "Omitting how you ensured the automation was reliable and had appropriate error handling",
+        "Not mentioning how the automation was deployed and documented for team use"
+      ],
+      "answerStructure": [
+        "Describe the manual process: what it involved, how often it was done, who did it",
+        "Explain the problems with the manual approach: time cost, error rate, frustration",
+        "Detail the automation: technology choice, key design decisions, edge case handling",
+        "Share the quantitative impact: hours saved, errors eliminated, consistency improved",
+        "Conclude with how the team adopted it and any maintenance considerations"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you made a mistake in a production environment. How did you handle it?",
+    "difficulty": "EASY",
+    "skills": ["accountability", "mistake handling", "post-mortem", "growth mindset"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Take ownership of the mistake immediately without deflecting blame",
+        "Focus on the actions you took to mitigate the impact and restore service",
+        "Emphasize what you learned and the changes implemented to prevent recurrence",
+        "Show that you view mistakes as learning opportunities, not failures"
+      ],
+      "commonMistakes": [
+        "Minimizing the mistake or its impact — honesty and accountability are more valued than perfection",
+        "Blaming tools, processes, or other people",
+        "Describing a mistake with no learning or improvement outcome"
+      ],
+      "answerStructure": [
+        "Describe the mistake: what you did, what environment (production), what the impact was",
+        "Explain how you discovered the mistake and your immediate reaction",
+        "Detail the resolution steps: how you fixed it, who you communicated with, time to recovery",
+        "Discuss the post-mortem: what root cause analysis was done, what changed afterward",
+        "Reflect on how the experience made you a more careful and effective engineer"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you stay current with new technologies and industry trends?",
+    "difficulty": "EASY",
+    "skills": ["continuous learning", "professional development", "self-improvement"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Mention specific resources: blogs, newsletters, podcasts, conferences, or online communities",
+        "Describe hands-on learning: personal projects, homelab, contributing to open source",
+        "Explain how you filter information — not consuming everything but focusing on relevant technologies",
+        "Show you have a system: dedicated learning time, spaced repetition, sharing knowledge with the team"
+      ],
+      "commonMistakes": [
+        "Giving generic answers like I read blogs without naming any specific resource",
+        "Claiming you learn everything at work without any self-directed learning",
+        "Listing too many sources without demonstrating depth in any particular area"
+      ],
+      "answerStructure": [
+        "Describe your primary sources: specific blogs, newsletters, podcasts you follow regularly",
+        "Explain your hands-on learning approach: homelab, side projects, contribution to open source",
+        "Mention any formal learning: certifications, courses, workshops",
+        "Discuss how you share knowledge: team presentations, internal docs, mentoring",
+        "Give an example of a technology you recently learned and how you approached it"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a time you documented a complex system. What approach did you take?",
+    "difficulty": "EASY",
+    "skills": ["documentation", "communication", "knowledge sharing", "system design"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Explain why documentation was needed: onboarding new team members, reducing tribal knowledge, compliance",
+        "Describe your approach: architecture diagrams, runbooks, API docs, README files, decision logs (ADRs)",
+        "Mention how you kept documentation accurate — review process, living documents tied to code",
+        "Highlight the impact: reduced onboarding time, fewer incidents, better cross-team collaboration"
+      ],
+      "commonMistakes": [
+        "Writing excessive detail that becomes outdated quickly — document the why, not just the what",
+        "Creating docs in isolation without team review, leading to inaccuracies",
+        "Forgetting to include troubleshooting or recovery procedures"
+      ],
+      "answerStructure": [
+        "Describe the system that needed documentation",
+        "Explain your documentation approach: audience (new hires, ops, devs), format, level of detail",
+        "Mention tools used: Confluence, Notion, MkDocs, architecture diagrams (draw.io, PlantUML)",
+        "Discuss how you ensured accuracy: peer review, update cadence, CI checks",
+        "Share the outcome: how the documentation improved team efficiency or reduced incidents"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Explain kernel space versus user space. Why is this separation important for system stability and security?",
+    "difficulty": "MEDIUM",
+    "skills": ["kernel space", "user space", "memory protection", "system calls", "CPU rings"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Kernel space runs in Ring 0 with full hardware access; user space runs in Ring 3 with restricted instruction sets",
+        "The separation prevents user-space processes from corrupting kernel memory or accessing other processes' memory",
+        "Transition between user and kernel space requires a system call or hardware interrupt, which incurs a context switch cost",
+        "Kernel modules and device drivers run in kernel space; a bug there can crash the entire system"
+      ],
+      "commonMistakes": [
+        "Thinking syscalls are function calls — they require a trap to switch CPU rings, which is significantly more expensive",
+        "Assuming all kernel code is trusted — kernel exploits (privilege escalation) leverage bugs to cross this boundary",
+        "Confusing the kernel stack with user-space stacks — each thread has both"
+      ],
+      "answerStructure": [
+        "Define protection rings (Ring 0 vs Ring 3) and the hardware-enforced privilege model",
+        "Explain what runs in each space: kernel (scheduler, drivers, TCP stack, VFS) vs user (applications, libraries)",
+        "Describe the transition mechanism: syscalls, interrupts, and the cost of context switching",
+        "Discuss security implications: why applications cannot read each other's memory or corrupt the kernel",
+        "Cover practical considerations: kernel panics vs segfaults, impact on system design"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "What causes context switching and how does it impact system performance?",
+    "difficulty": "MEDIUM",
+    "skills": ["context switching", "scheduler", "performance", "CPU"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Context switching occurs when the CPU switches from one thread/process to another, triggered by timer interrupts, I/O completion, or voluntary yield",
+        "The kernel saves and restores CPU registers, program counter, stack pointer, and flushes the TLB (for process switches)",
+        "Thread switches within the same process are cheaper than process switches because they share the address space so TLB flush is not always needed",
+        "Excessive context switching reduces cache locality and causes overhead, visible in vmstat cs column or perf context-switches"
+      ],
+      "commonMistakes": [
+        "Confusing context switching with syscalls — syscalls may cause a mode switch but not necessarily a context switch",
+        "Assuming context switching always involves two processes — threads within the same process also trigger context switches",
+        "Ignoring TLB and cache effects — the direct cost is small, but the indirect cost (cache warming) dominates"
+      ],
+      "answerStructure": [
+        "Define context switching: saving state of current thread, loading state of next thread",
+        "Explain the triggers: preemptive (timer interrupt, higher priority thread becomes runnable) and cooperative (I/O wait, sleep, yield)",
+        "Break down the cost: direct (register save/restore, TLB flush) and indirect (cache pollution, cold caches)",
+        "Describe how to measure context switches: vmstat, pidstat -w, perf stat -e context-switches",
+        "Discuss mitigation strategies: thread pooling, CPU pinning, busy polling, reducing lock contention"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Explain paging and swapping in Linux memory management. How do they differ?",
+    "difficulty": "MEDIUM",
+    "skills": ["paging", "swapping", "memory management", "MMU", "virtual memory"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Paging translates virtual addresses to physical addresses in fixed-size units (4 KB typically, with support for huge pages)",
+        "Swapping moves entire processes or individual pages from RAM to a swap device (disk or zram) to free physical memory",
+        "Paging is always active via the MMU; swapping only occurs under memory pressure when kswapd reclaims pages",
+        "Linux prefers swapping individual pages rather than whole processes — the term swapping is used loosely for page-out"
+      ],
+      "commonMistakes": [
+        "Using swap and paging interchangeably — paging is the address translation mechanism, swap is a backing store",
+        "Believing swap is always bad — swap allows overcommitting memory and improves utilization for idle pages",
+        "Thinking swap must be on a dedicated disk partition — swap files and zram (compressed in-memory swap) are common"
+      ],
+      "answerStructure": [
+        "Define paging: the MMU translates virtual page numbers to physical frame numbers via page tables",
+        "Define swapping/page-out: moving pages from RAM to swap under memory pressure by kswapd",
+        "Contrast the two: paging is always on for address translation; swapping is a reclamation mechanism",
+        "Discuss the page replacement algorithm: LRU approximation (active/inactive lists) and how they are scanned",
+        "Explain monitoring: vmstat si/so > 0 indicates active swapping, which severely degrades performance"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Compare blocking, non-blocking, and asynchronous I/O models. When would you use each?",
+    "difficulty": "MEDIUM",
+    "skills": ["I/O models", "non-blocking", "asynchronous", "epoll", "select", "aio"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Blocking I/O: the calling thread sleeps until the operation completes — simple but wastes CPU cycles on waiting",
+        "Non-blocking I/O: system calls return immediately with EAGAIN/EWOULDBLOCK if data not ready; application polls in a loop or uses epoll/select/kqueue for readiness notification",
+        "Asynchronous I/O (Linux AIO, io_uring): the kernel initiates the operation and notifies completion via signal or callback, zero copying between user and kernel space",
+        "I/O multiplexing (epoll) is the most common pattern for high-concurrency servers — one thread monitors thousands of file descriptors"
+      ],
+      "commonMistakes": [
+        "Confusing non-blocking I/O with asynchronous I/O — non-blocking still requires polling; async offloads the entire operation",
+        "Thinking select/poll are always worse than epoll — for small numbers of fds, select is simpler and adequate",
+        "Believing epoll is only for sockets — it works on regular files, pipes, eventfd, signalfd, and timerfd"
+      ],
+      "answerStructure": [
+        "Define blocking I/O: simplest model, thread blocks until data is ready — used in simple scripts and low-concurrency apps",
+        "Define non-blocking I/O: returns immediately, requires epoll/select to check readiness — used in Nginx, Node.js, Redis",
+        "Define asynchronous I/O: kernel handles entire operation, notifies on completion — used with io_uring for high-performance storage",
+        "Compare tradeoffs: latency, CPU efficiency, code complexity, and scalability",
+        "Provide real-world examples: Apache (blocking threads), Nginx (non-blocking epoll), database engines (io_uring)"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How does TCP congestion control work? Describe at least two algorithms.",
+    "difficulty": "MEDIUM",
+    "skills": ["TCP", "congestion control", "networking", "CUBIC", "BBR"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "TCP congestion control detects and reacts to network congestion by adjusting the congestion window (cwnd) — the amount of data in flight",
+        "Slow start: cwnd doubles every RTT until a packet loss or ssthresh is reached; this probes available bandwidth rapidly",
+        "Congestion avoidance: after ssthresh, cwnd increases additively (AIMD) — typically +1 MSS per RTT (CUBIC variant)",
+        "CUBIC uses a cubic function for cwnd growth, designed for high-bandwidth long-distance networks; BBR uses bandwidth and RTT measurements instead of loss as a congestion signal"
+      ],
+      "commonMistakes": [
+        "Thinking loss-based algorithms (CUBIC) are optimal for all networks — they fill buffers which causes bufferbloat",
+        "Confusing flow control (receiver window) with congestion control (network capacity estimation)",
+        "Believing TCP congestion control is only one algorithm — there are many (Reno, NewReno, CUBIC, BBR, Westwood, etc.)"
+      ],
+      "answerStructure": [
+        "Introduce the problem: TCP needs to fairly share network capacity without causing congestion collapse",
+        "Explain the key mechanism: congestion window (cwnd) and how it limits in-flight data",
+        "Walk through CUBIC: cubic window growth function, concave/convex profile, fairness properties",
+        "Walk through BBR: models bottleneck bandwidth and round-trip propagation time (BtlBw + RTprop), paces at BtlBw",
+        "Contrast the two: CUBIC relies on packet loss as congestion signal; BBR uses bandwidth/delay models",
+        "Mention how to check the active algorithm: sysctl net.ipv4.tcp_congestion_control"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Write a systemd unit file for a production web application service. What key directives would you include?",
+    "difficulty": "MEDIUM",
+    "skills": ["systemd", "unit files", "service management", "Linux"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "A systemd unit file has three main sections: [Unit] (description, dependencies), [Service] (execution, restart), and [Install] (target linkage)",
+        "Key Service directives: ExecStart, User/Group, WorkingDirectory, Restart=on-failure, RestartSec, EnvironmentFile, LimitNOFILE, TimeoutStopSec",
+        "Security hardening: ProtectSystem, PrivateTmp, NoNewPrivileges, CapabilityBoundingSet, ReadWritePaths",
+        "Resource limits: CPUQuota, MemoryMax, TasksMax via cgroup integration"
+      ],
+      "commonMistakes": [
+        "Using Type=simple when the process forks — should use Type=forking or notify; simple means the main process is the one starting",
+        "Not setting TimeoutStopSec — the default 90s may be too short for graceful shutdown",
+        "Running services as root — always specify User and Group directives"
+      ],
+      "answerStructure": [
+        "Describe the [Unit] section: Description, After (network.target, postgresql.service), Wants/BindsTo dependencies",
+        "Detail the [Service] section: Type, ExecStart, User/Group, Restart policy, EnvironmentFile, LimitNOFILE, TimeoutStopSec",
+        "Cover security hardening: ProtectSystem=strict, PrivateTmp=true, NoNewPrivileges=true",
+        "Discuss resource limits: MemoryMax, CPUQuota, TasksAccounting=true",
+        "Complete with [Install]: WantedBy=multi-user.target",
+        "Show example commands: systemctl daemon-reload, systemctl enable/start, journalctl -u servicename"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "What are cgroups and how do they work? How are they used in container runtimes?",
+    "difficulty": "MEDIUM",
+    "skills": ["cgroups", "containers", "resource isolation", "Linux kernel"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Cgroups (control groups) are a kernel feature that limits, accounts for, and isolates resource usage — CPU, memory, I/O, and network — for process groups",
+        "Cgroups v2 uses a unified hierarchy with a single tree, replacing the separate controllers per hierarchy in v1",
+        "Each cgroup has resource controllers: cpu.weight (relative share), memory.max (hard limit), io.weight (I/O bandwidth)",
+        "Container runtimes (Docker, containerd) create a cgroup per container, enforcing limits and enabling monitoring via /sys/fs/cgroup"
+      ],
+      "commonMistakes": [
+        "Confusing cgroups with namespaces — cgroups limit resources; namespaces isolate visibility (PID, mount, network, etc.)",
+        "Thinking cgroups v1 and v2 can be used interchangeably — they have different controller hierarchies and interfaces",
+        "Assuming cgroup limits apply only to CPU and memory — they also control I/O bandwidth, PID count, and huge pages"
+      ],
+      "answerStructure": [
+        "Define cgroups: kernel mechanism for aggregating tasks and applying resource limits",
+        "Explain the cgroups v2 unified hierarchy: /sys/fs/cgroup with controllers as files",
+        "Walk through key controllers: cpu.weight (CFS shares), memory.max (hard limit), io.max (I/O throttle)",
+        "Describe how containerd/Docker create cgroup directories per container and write limits to interface files",
+        "Cover cgroupfs vs systemd cgroup drivers — how systemd manages slices/scopes/services via cgroups",
+        "Mention monitoring: cat /sys/fs/cgroup/<group>/memory.current, systemd-cgtop"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How would you use strace and perf to debug a performance issue? What key metrics would you look for?",
+    "difficulty": "MEDIUM",
+    "skills": ["strace", "perf", "performance debugging", "profiling"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "strace traces system calls and signals — useful for finding syscall count, slow syscalls, EAGAIN loops, and file/network operations",
+        "perf uses hardware performance counters and kernel tracepoints — it profiles CPU cycles, cache misses, branch mispredictions, and kernel events",
+        "strace -c <cmd> gives a summary of syscall counts and times; strace -p <PID> -e trace=network isolates network calls",
+        "perf top shows hottest functions in real-time; perf record/perf report captures a profile for offline analysis"
+      ],
+      "commonMistakes": [
+        "Running strace on a high-throughput production process (10x+ slowdown) — use strace -f but beware of overhead",
+        "Only looking at user-space stacks with perf — perf can also profile kernel functions and tracepoints",
+        "Forgetting to check perf --call-graph dwarf for accurate stack traces when frame pointers are missing"
+      ],
+      "answerStructure": [
+        "Introduce strace for syscall-level tracing: when to use (debugging EAGAIN loops, file descriptor leaks, slow syscalls)",
+        "Show strace usage: strace -c -p <PID> for summary, strace -e trace=network,file for targeted tracing",
+        "Warn about strace performance overhead and suggest using perf or bpftrace for production profiling",
+        "Introduce perf: perf stat for counting events, perf top for live profiling, perf record/perf report for sampling",
+        "Show a debugging workflow: use perf top to find hot functions, then perf record -g for call graph, then analyze in perf report",
+        "Give a real example: high context switching found via perf stat -e context-switches, traced to lock contention with perf record -e sched:sched_switch"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "An application shows intermittent latency spikes. How do you systematically diagnose the cause?",
+    "difficulty": "MEDIUM",
+    "skills": ["latency analysis", "performance debugging", "profiling", "incident response"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Capture the latency distribution (p50, p95, p99, max) using application metrics to understand the spike pattern",
+        "Correlate latency spikes with system metrics: CPU steal time on virtualized, GC pauses (JVM/Go), disk I/O waits, network tail latency",
+        "Use USE method per resource: check CPU saturation (run queue), memory pressure (swap), disk utilization, network drops",
+        "Use flame graphs (async-profiler or perf) to identify where time is spent during the spikes, focusing on lock contention and syscall patterns"
+      ],
+      "commonMistakes": [
+        "Only looking at averages — p99 latency can be high while average looks normal",
+        "Ignoring external factors: noisy neighbors in virtualized environments, shared storage contention",
+        "Not capturing the spike in real-time — set up continuous profiling to capture data retroactively"
+      ],
+      "answerStructure": [
+        "Confirm and characterize the latency: application metrics show p99 of 500ms vs baseline of 10ms",
+        "Gather system context during spike: use top, vmstat, iostat, sar, and correlate timestamps",
+        "Check CPU: steal time (%steal in vmstat on VMs), context switching rates, run queue length",
+        "Check I/O: iostat await spikes, disk saturation (%util near 100%), page cache pressure",
+        "Check application internals: GC logs, thread dumps, async-profiler flame graphs",
+        "Narrow to root cause: intermittent full GC, noisy neighbor, network congestion, lock contention — reproduce and fix"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "Memory usage of a service keeps increasing over time until it is OOM-killed. How do you find the leak?",
+    "difficulty": "MEDIUM",
+    "skills": ["memory leak", "debugging", "profiling", "heap analysis"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Monitor process memory growth over time: ps -o rss,vsz, or /proc/<PID>/smaps for detailed breakdown",
+        "Use /proc/<PID>/status (VmRSS, VmSize, VmPeak) and /proc/<PID>/smaps_rollup for quick memory summary",
+        "For interpreted languages (Python, Node, Java): use heap profilers (heapy, heapdump, jmap/jhat) to find growing data structures",
+        "Check for native memory leaks (C/C++/Rust) with valgrind memcheck, address sanitizer, or gperftools"
+      ],
+      "commonMistakes": [
+        "Looking only at RSS growth — it may include page cache or shared libraries; VSZ growth is a clearer indicator of heap leaks",
+        "Restarting the service without capturing a heap dump — the evidence is lost on restart",
+        "Confusing memory fragmentation with a leak — total memory may be stable but fragmentation prevents efficient reuse"
+      ],
+      "answerStructure": [
+        "Confirm it is a leak: graph RSS/VmRSS over time, verify it grows monotonically and does not plateau",
+        "For managed languages: capture heap dump (jmap for Java, heapdump for Node), analyze with MAT or Eclipse Memory Analyzer",
+        "For native code: use valgrind --leak-check=full <binary> or compile with -fsanitize=address",
+        "For Python: use tracemalloc or objgraph to track object growth by type",
+        "Identify the leak source: a cache without eviction, unclosed file handles, thread-local storage accumulation, global collection growth",
+        "Fix and verify: apply the fix, monitor the new version's memory graph to confirm it stabilizes"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A service intermittently fails with connection refused. How do you debug this?",
+    "difficulty": "MEDIUM",
+    "skills": ["networking", "TCP", "connection refused", "troubleshooting"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Connection refused means either no process is listening on the target port, or the backlog queue (somaxconn) is full and connections are dropped",
+        "Check if the service is listening: ss -tlnp | grep :PORT and verify the process is alive",
+        "Check listen backlog: cat /proc/sys/net/core/somaxconn and /proc/sys/net/ipv4/tcp_max_syn_backlog; compare against application backlog setting",
+        "Look for rapid connection churn (SYN flood, frequent restarts) using sar -n SOCK or netstat -s | grep overflowed"
+      ],
+      "commonMistakes": [
+        "Assuming connection refused always means the service is down — the backlog can fill under high load",
+        "Not checking if the service is listening only on localhost (127.0.0.1) while clients connect via the external IP",
+        "Forgetting about iptables/nftables rules that may REJECT packets with a TCP RST"
+      ],
+      "answerStructure": [
+        "Verify connectivity: telnet <host> <port> or nc -vz <host> <port> and note the exact error",
+        "Check the target host: ss -tlnp to see if the port is listening, and which process owns it",
+        "Check the listen backlog: application backlog setting vs somaxconn, listen overflow drops via netstat -s | grep overflow",
+        "Check firewall: iptables -L -n for REJECT rules on the target port",
+        "Check client-side: round-robin DNS or load balancer distributing to a failed backend",
+        "Check for rate limiting: nftables quotas, connection tracking table full (nf_conntrack_max)"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "How would you reduce the boot time of a Linux server?",
+    "difficulty": "MEDIUM",
+    "skills": ["boot optimization", "Linux startup", "systemd", "kernel"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Measure boot time: systemd-analyze for total, systemd-analyze blame for per-service time, systemd-analyze critical-chain for the dependency path",
+        "Disable unnecessary services: systemctl list-unit-files and mask non-essential services",
+        "Optimize kernel boot parameters: noquiet splash mitigations=off (on isolated systems) to reduce kernel init time",
+        "Parallelize service startup: use systemd service dependencies (After=) to avoid unnecessary serialization"
+      ],
+      "commonMistakes": [
+        "Disabling important system services for minor boot-time gains — always test in a staging environment first",
+        "Focusing on kernel boot time (dmesg) when service startup dominates total time",
+        "Not considering that some delays are hardware (BIOS/UEFI, disk initialization) rather than software"
+      ],
+      "answerStructure": [
+        "Measure baseline: systemd-analyze time, systemd-analyze blame, and dmesg | tail for kernel init time",
+        "Identify the biggest contributors: which services take the longest, check critical chain",
+        "Disable or mask unnecessary services: NetworkManager, avahi-daemon, bluetooth, cups if not needed",
+        "Optimize remaining services: use Type=notify for faster startup detection, set TimeoutStartSec appropriately",
+        "Tune kernel parameters: mitigations=off if acceptable, nopti noibrs, or use a minimal kernel config",
+        "Consider initramfs reduction: remove unnecessary kernel modules from initramfs"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "Disk I/O is identified as a performance bottleneck. How do you pinpoint the cause and resolve it?",
+    "difficulty": "MEDIUM",
+    "skills": ["I/O optimization", "storage", "iostat", "blktrace", "performance"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Use iostat -x 1 to identify: high await (request latency) vs high %util (device saturation), and distinguish queue depth vs device service time",
+        "Use pidstat -d to identify which process generates the most I/O, and iotop for real-time per-process I/O visibility",
+        "Use blktrace to trace I/O at the block layer, identifying request patterns, merge rates, and seek distances",
+        "Check if I/O is read vs write heavy, random vs sequential — this determines the solution path: caching, SSDs, filesystem tuning, or application changes"
+      ],
+      "commonMistakes": [
+        "Assuming %util at 100% means the disk is at maximum throughput — it just means the device is always busy serving requests",
+        "Not distinguishing between read and write latency — reads are typically cached; writes may be slow due to fsync/barriers",
+        "Ignoring filesystem overhead (journaling, metadata updates) vs raw block device performance"
+      ],
+      "answerStructure": [
+        "Confirm I/O bottleneck: iostat -x 1 shows high await (>20ms for SSDs) and high avgqu-sz",
+        "Identify the culprit: iotop or pidstat -d to find the process performing the most I/O",
+        "Characterize the workload: read vs write ratio, random vs sequential access pattern, I/O size distribution",
+        "Determine the limiting factor: is it device throughput (iops ceiling) or software (filesystem journal, page cache thrashing)",
+        "Apply solution: switch to SSDs, add RAM for page cache, tune filesystem (noatime, deadline scheduler), batch writes in application, add read replicas"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "Multiple services compete for resources on the same host. How do you isolate workloads and guarantee resource limits?",
+    "difficulty": "MEDIUM",
+    "skills": ["cgroups", "resource isolation", "containers", "systemd", "capacity planning"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Use cgroups v2 via systemd slices: create a dedicated slice per workload group and set CPU, memory, and I/O limits",
+        "For containers: use Docker Compose or Kubernetes resource requests/limits which map to cgroup settings",
+        "CPU isolation: use CPUQuota for hard limits, CPUWeight for soft shares, consider CPU pinning (taskset) for critical services",
+        "Memory isolation: memory.max to prevent one service from starving others; consider swap limits to avoid swapping"
+      ],
+      "commonMistakes": [
+        "Overcommitting CPU limits — CPUQuota can cause throttling if set too low, leading to latency spikes",
+        "Not setting memory limits — a memory leak in one service can OOM-kill other services on the same host",
+        "Forgetting I/O limits — a service doing heavy writes can starve others of disk bandwidth"
+      ],
+      "answerStructure": [
+        "Audit current resource usage: top, htop, iostat per process to understand baseline consumption",
+        "Decide isolation method: systemd slices (for system services), containers (for microservices), or VMs (for strong isolation)",
+        "Set CPU limits: CPUQuota= for max, CPUWeight= for shares during contention",
+        "Set memory limits: MemoryMax= in systemd or memory.limit_in_bytes in cgroup v2",
+        "Set I/O limits: IOReadBandwidthMax= and IOWriteBandwidthMax= in systemd or io.max in cgroup v2",
+        "Monitor and adjust: use systemd-cgtop, cgroup event counters, and stress-test to verify isolation"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A network service drops connections under load. How do you investigate and resolve the issue?",
+    "difficulty": "MEDIUM",
+    "skills": ["networking", "TCP", "connection drops", "performance tuning"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Check connection tracking limits: nf_conntrack_max and nf_conntrack_count — the connection tracking table can fill up, dropping new connections",
+        "Check listen backlog: /proc/sys/net/core/somaxconn and application backlog; SYN drops visible in netstat -s | grep LISTEN",
+        "Check for TIME_WAIT exhaustion: net.ipv4.tcp_max_tw_buckets overflow causes dropped connections",
+        "Check epoll event handling: the application may not be draining the accept queue fast enough (accept() rate < connection arrival rate)"
+      ],
+      "commonMistakes": [
+        "Only increasing nf_conntrack_max without raising the hash table size (nf_conntrack_buckets), causing hash chain performance issues",
+        "Not distinguishing between connection drops at layer 4 (TCP) vs layer 7 (application) — use tcpdump to confirm which side resets",
+        "Ignoring the application's accept loop — if accept() handles one connection at a time, the backlog will fill under high connection rates"
+      ],
+      "answerStructure": [
+        "Characterize the drops: use netstat -s | grep -i drop and sar -n SOCK, SOCKET, TCP for overview",
+        "Check connection tracking: cat /proc/sys/net/netfilter/nf_conntrack_count vs nf_conntrack_max",
+        "Check backlog drops: netstat -s | grep overflowed and adjust somaxconn and application backlog",
+        "Check TIME_WAIT: netstat -s | grep tw_buckets and consider tcp_tw_reuse or increase tcp_max_tw_buckets",
+        "Use tcpdump to capture handshake failures: look for SYN sent but no SYN-ACK, or RST after SYN",
+        "Apply mitigations: increase nf_conntrack_max, enable tcp_tw_reuse, tune backlog, or use a load balancer to spread connections"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A process is stuck in uninterruptible sleep (D state). How do you identify the cause and resolve it?",
+    "difficulty": "MEDIUM",
+    "skills": ["D state", "process management", "I/O", "kernel debugging"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "D state means the process is in kernel sleep waiting for I/O completion and cannot be interrupted (even by SIGKILL)",
+        "Use ps aux | grep ' D' or top with D state indicator to find affected processes, and /proc/<PID>/stack to see where in the kernel they are blocked",
+        "Common causes: NFS server not responding, disk controller failure, kernel driver bug, or filesystem operation stuck on a locked resource",
+        "Use /proc/<PID>/wchan to see the kernel function the process is blocked in, and /proc/<PID>/stack for the full kernel stack trace"
+      ],
+      "commonMistakes": [
+        "Trying to kill -9 a D-state process — it cannot be killed and will only go away when the I/O completes or the kernel resolves the condition",
+        "Rebooting the server without first identifying the root cause — the same issue will recur after reboot",
+        "Confusing D state with zombie (Z) state — D state means the process is in kernel code, Z means it has exited but parent hasn't reaped it"
+      ],
+      "answerStructure": [
+        "Identify D-state processes: ps aux | grep ' D' and note their PIDs and commands",
+        "Examine kernel stack: cat /proc/<PID>/stack shows the kernel function where the process is blocked",
+        "Check /proc/<PID>/wchan for the wait channel (the kernel function name)",
+        "Determine the I/O subsystem: is it NFS (nfs_wait_bit), block device (wait_on_buffer), or filesystem (ext4_sync_file)?",
+        "Check the underlying resource: NFS server reachable? Disk responding? SMART status? dmesg for I/O errors?",
+        "Resolve: fix the underlying I/O issue (remount NFS, replace failing disk, recover from kernel bug) and the D-state processes will clear automatically"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Describe a complex incident you resolved in a production environment. What was your role and what was the outcome?",
+    "difficulty": "MEDIUM",
+    "skills": ["incident management", "root cause analysis", "leadership", "communication"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Use STAR format: Situation (production outage), Task (investigate and restore), Action (your diagnostic steps), Result (resolution and prevention)",
+        "Emphasize systematic troubleshooting: gathering data, forming hypotheses, isolating variables",
+        "Show leadership: coordinating with team members, communicating with stakeholders, making decisions under uncertainty",
+        "Highlight the post-incident improvements: monitoring, runbooks, automated tests, architectural changes"
+      ],
+      "commonMistakes": [
+        "Describing an incident where the root cause was trivial or already known",
+        "Taking sole credit — acknowledge team collaboration and support from others",
+        "Focusing only on the fix without discussing the detection and diagnostic process"
+      ],
+      "answerStructure": [
+        "Set the scene: what system was affected, severity, customer impact, time of day",
+        "Describe your investigation: what metrics/alarms triggered, your initial hypothesis, how you narrowed the scope",
+        "Explain the root cause: was it a kernel bug, configuration error, resource exhaustion, or application code?",
+        "Detail the resolution: did you roll back, scale out, apply a hotfix, or restart? What was the time to recovery?",
+        "Discuss the post-mortem: monitoring gaps identified, runbooks created, architectural changes made",
+        "Share lessons learned: how this incident changed how the team operates"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "How do you approach capacity planning for a growing system?",
+    "difficulty": "MEDIUM",
+    "skills": ["capacity planning", "scalability", "monitoring", "forecasting"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Establish baseline metrics: current resource utilization (CPU, memory, disk, network) and their growth trends over months",
+        "Forecast based on business growth projections and historical trends — use linear or exponential models",
+        "Identify the bottleneck resource first — scaling the non-bottleneck yields no benefit",
+        "Build headroom with alerting thresholds: 80% utilization triggers review, 90% triggers action"
+      ],
+      "commonMistakes": [
+        "Planning based on peak utilization only — understand the full distribution including P99 and burst patterns",
+        "Ignoring non-linear scaling: adding more instances may not linearly increase capacity due to coordination overhead",
+        "Forgetting to account for redundancy: N+1 or N+2 requires additional capacity beyond baseline load"
+      ],
+      "answerStructure": [
+        "Describe your monitoring setup: what metrics you track (CPU, memory, disk IOPS, network bandwidth, connection counts)",
+        "Explain trend analysis: how you measure growth rates and model future needs (e.g., 20% month-over-month traffic growth)",
+        "Discuss the bottleneck approach: identify the limiting resource and plan upgrades accordingly",
+        "Cover buffer strategy: what thresholds you set for scaling (e.g., scale out at 70% CPU sustained, add nodes at 80%)",
+        "Mention tools: Prometheus + Grafana for monitoring, custom dashboards, cost analysis spreadsheets",
+        "Talk about right-sizing: avoiding over-provisioning while ensuring adequate headroom for traffic spikes"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you improved system reliability. What metrics did you track?",
+    "difficulty": "MEDIUM",
+    "skills": ["reliability", "SRE", "monitoring", "automation"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Define reliability quantitatively: SLOs (service level objectives) based on latency, error rate, or uptime",
+        "Describe the problem: what failures were occurring, how frequently, and the business impact",
+        "Explain the solution: architectural changes, redundancy, failover automation, graceful degradation patterns",
+        "Show before-and-after metrics: reduced p99 latency, eliminated error budget burn, improved availability percentage"
+      ],
+      "commonMistakes": [
+        "Describing reliability in vague terms without measurable metrics",
+        "Claiming 100% uptime — realistic engineering acknowledges failures and focuses on recovery speed and graceful handling",
+        "Implementing changes without testing their impact in a staging environment first"
+      ],
+      "answerStructure": [
+        "Identify the reliability problem: frequent outages, high error rates, slow recovery times — quantify it",
+        "Set SLOs: what target did you define (e.g., 99.9% availability, p99 latency under 200ms)",
+        "Describe the improvements: implement health checks, load balancing, circuit breakers, retries with backoff, automated failover",
+        "Show the impact: tracked error budget burn rate, reduction in P1 incidents, improved MTTR",
+        "Discuss monitoring: what new metrics and dashboards were added to measure reliability continuously"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "How do you handle on-call rotations and what techniques do you use to reduce alert fatigue?",
+    "difficulty": "MEDIUM",
+    "skills": ["on-call", "alerting", "incident response", "SRE practices"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Design alerts with a clear philosophy: alert on symptoms (high latency, error rate) not causes (CPU at 80%), and only alert if human action is required",
+        "Use alert severity levels: P0 (page, immediate), P1 (page, 15 min), P2 (ticket, next business day), P3 (ticket, backlog)",
+        "Tune alert thresholds: use alert fatigue metrics (true positives vs noise ratio) and conduct regular alert reviews",
+        "Automate remediation: implement auto-remediation runbooks for known failure modes so humans are only paged for novel issues"
+      ],
+      "commonMistakes": [
+        "Creating alerts for every metric change without considering whether it requires human intervention",
+        "Setting static thresholds that don't adapt to traffic patterns — use dynamic baselines or seasonal thresholds",
+        "Not involving the team in alert reviews — alert ownership should be shared, not delegated to one person"
+      ],
+      "answerStructure": [
+        "Describe your on-call rotation model: team size, shift length, primary/escalation structure",
+        "Explain your alerting philosophy: monitor everything, alert rarely, page only for actionable items",
+        "Walk through how you reduce noise: deduplication, grouping related alerts, silencing during maintenance windows",
+        "Discuss auto-remediation: use tools (StackStorm, Rundeck, custom scripts) to handle common scenarios automatically",
+        "Mention the review process: monthly alert review meetings to prune noisy alerts and tune thresholds"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Describe a situation where you had to communicate a complex technical issue to non-technical stakeholders.",
+    "difficulty": "MEDIUM",
+    "skills": ["communication", "stakeholder management", "technical writing", "executive reporting"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Tailor the message to the audience: executives care about business impact, timeline, and cost, not technical details",
+        "Use analogies that map technical concepts to familiar business concepts (e.g., the server is like a restaurant kitchen)",
+        "Provide options with tradeoffs: show the solution space with risk, cost, and timeline for each option",
+        "Set clear expectations: what will be done, when, and what the expected outcome is"
+      ],
+      "commonMistakes": [
+        "Using jargon or acronyms without explanation (e.g., TLS handshake, kernel panic, bufferbloat)",
+        "Over-explaining technical details when the audience only needs the bottom line",
+        "Avoiding bad news or softening it to the point that the urgency is lost"
+      ],
+      "answerStructure": [
+        "Describe the context: what was the technical issue and who were the stakeholders",
+        "Explain how you framed the message: focused on customer impact, revenue risk, or timeline delay",
+        "Describe the translation: how did you make the technical concept understandable without oversimplifying",
+        "Share the options you presented: Plan A (fast but costly), Plan B (slower but cheaper), Plan C (minimal viable fix)",
+        "Discuss the outcome: which option was chosen and how the communication enabled informed decision-making"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "How do you approach disaster recovery planning? Walk through the key elements.",
+    "difficulty": "MEDIUM",
+    "skills": ["disaster recovery", "business continuity", "backup", "RTO", "RPO"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Define RTO (Recovery Time Objective) and RPO (Recovery Point Objective) for each service based on business criticality",
+        "Design multi-region or multi-AZ redundancy depending on RTO/RPO requirements and budget",
+        "Document and test the recovery runbook regularly — an untested DR plan is worthless",
+        "Automate recovery as much as possible: infrastructure as code, database replication, DNS failover, load balancer health checks"
+      ],
+      "commonMistakes": [
+        "Creating a DR plan without testing it — tabletop exercises and actual failover drills are essential",
+        "Treating all services equally — tier them by business impact and allocate DR resources accordingly",
+        "Forgetting about data consistency: asynchronous replication can lose recent writes; synchronous replication impacts write latency"
+      ],
+      "answerStructure": [
+        "Define RTO and RPO: how fast must the service be restored, and how much data loss is acceptable",
+        "Describe the architecture: active-active vs active-passive, same-region vs cross-region, replicated storage",
+        "Discuss backup strategy: database backups (snapshot + WAL), file backups, off-site storage, retention policy",
+        "Cover the runbook: step-by-step failover procedure, validation checks, rollback steps",
+        "Explain the testing cadence: quarterly tabletop exercises, annual full failover drill, and lessons learned each time"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you mentored a junior engineer. What approach did you take?",
+    "difficulty": "MEDIUM",
+    "skills": ["mentorship", "leadership", "knowledge sharing", "team development"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Adapt your mentoring style to the mentee's experience level and learning preferences — some prefer hands-on, others prefer theory first",
+        "Use a scaffolded approach: demonstrate, then co-work, then observe and give feedback",
+        "Encourage independence: teach how to find answers (documentation, debugging techniques) rather than giving direct solutions",
+        "Create psychological safety: the mentee should feel comfortable asking questions and making mistakes"
+      ],
+      "commonMistakes": [
+        "Doing the work for the mentee instead of guiding them to the solution",
+        "Assuming what worked for you will work for everyone — different people have different learning curves",
+        "Neglecting to set clear goals and expectations for the mentoring relationship"
+      ],
+      "answerStructure": [
+        "Describe the mentee's background: what they knew and what they needed to learn",
+        "Explain your approach: how you assessed their skills and tailored your mentoring plan",
+        "Give specific examples of mentoring activities: pair debugging, code reviews, whiteboard sessions, shadowing on-call",
+        "Show progress: how the mentee improved over time, specific skills they developed, confidence growth",
+        "Reflect on what you learned as a mentor: how the experience improved your own skills"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Describe a major infrastructure change you led. How did you plan and execute it?",
+    "difficulty": "MEDIUM",
+    "skills": ["infrastructure", "project management", "change management", "leadership"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the change scope: migrating from bare metal to cloud, containerizing applications, upgrading kernel, etc.",
+        "Explain planning: risk assessment, rollback plan, stakeholder communication, maintenance windows",
+        "Discuss execution: phased rollout (canary, 10% traffic, 50%, 100%), monitoring each phase for regressions",
+        "Highlight the outcome: improved performance, reduced cost, enhanced reliability, or enabled new capabilities"
+      ],
+      "commonMistakes": [
+        "Making changes directly in production without a rollback plan",
+        "Not communicating the change to all affected teams (developers, QA, customer support, sales)",
+        "Assuming the change is too small to need a plan — even small changes can cascade into outages"
+      ],
+      "answerStructure": [
+        "Describe the change: what infrastructure was being changed and why (business or technical driver)",
+        "Explain the planning process: design docs, RFCs, stakeholder reviews, risk assessment",
+        "Detail the rollout strategy: blue-green deployment, feature flags, phased canary rollout",
+        "Describe monitoring and validation: what metrics you watched, how you measured success, rollback triggers",
+        "Cover the outcome: was it successful? What metrics improved? Were there any surprises?",
+        "Share lessons learned: what you would do differently next time"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the Completely Fair Scheduler (CFS) in Linux. How does it decide which task to run next?",
+    "difficulty": "HARD",
+    "skills": ["CFS", "Linux scheduler", "kernel internals", "task scheduling"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "CFS uses a red-black tree keyed by vruntime (virtual runtime), always scheduling the task with the smallest vruntime",
+        "vruntime tracks the amount of time a task has run, normalized by task priority (nice value) — lower nice = slower vruntime growth = more CPU time",
+        "The scheduler picks the leftmost node of the rb-tree in O(log n) time, preempting the current task if its vruntime exceeds the minimum by more than sched_latency",
+        "CFS replaced the O(1) scheduler to provide better interactivity and fairness without requiring heuristics for interactive tasks"
+      ],
+      "commonMistakes": [
+        "Thinking CFS is completely fair in wall-clock time — it is fair in weighted CPU time, so higher priority tasks get proportionally more",
+        "Confusing vruntime with actual runtime — vruntime is scaled by priority and the inverse of weight",
+        "Assuming CFS only uses the rb-tree — it also maintains a runqueue per CPU with load tracking for load balancing"
+      ],
+      "answerStructure": [
+        "Introduce CFS: the default Linux scheduler since kernel 2.6.23, designed for O(log n) scheduling with fairness",
+        "Explain vruntime: what it is, how it's calculated, how nice values affect its accumulation rate",
+        "Describe the rb-tree: tasks are ordered by vruntime, the leftmost node is the next to run",
+        "Cover preemption: the scheduler tick checks if current vruntime exceeds leftmost + sched_latency, triggering reschedule",
+        "Discuss scheduling classes: CFS is one class; RT tasks (FIFO/RR) and deadline tasks run before CFS tasks",
+        "Mention group scheduling and CPU cgroups: CFS handles hierarchical scheduling where groups have their own vruntime"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "What is eBPF and how does it work internally? Describe practical use cases.",
+    "difficulty": "HARD",
+    "skills": ["eBPF", "kernel tracing", "BPF", "observability", "networking"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "eBPF is a sandboxed bytecode runtime inside the Linux kernel that allows safe, programmatic extension of kernel behavior without loading kernel modules",
+        "eBPF programs are verified by the kernel verifier to ensure they terminate (bounded loops only starting in 5.3) and do not access unsafe memory",
+        "Programs attach to hook points: tracepoints, kprobes, uprobes, network sockets, XDP, cgroup hooks, and tc classifiers",
+        "eBPF maps are the communication mechanism between user space and BPF programs — hash maps, arrays, ring buffers, and perf events"
+      ],
+      "commonMistakes": [
+        "Thinking eBPF is only for observability — it is also used in networking (XDP, Cilium), security (seccomp, landlock), and storage",
+        "Confusing classic BPF (cBPF) used by tcpdump with eBPF — eBPF has a richer instruction set, registers, and maps",
+        "Believing eBPF replaces kernel modules entirely — eBPF cannot do everything (e.g., register new system calls, handle interrupts)"
+      ],
+      "answerStructure": [
+        "Define eBPF: a sandboxed bytecode VM inside the kernel for safe extensibility",
+        "Explain the lifecycle: C code compiled to BPF bytecode → verifier checks safety → JIT compiles to native → attaches to hook → events trigger execution",
+        "Describe the verifier: control-flow graph analysis, bounded loop verification, pointer safety, helper function validation",
+        "Cover maps: key-value stores for sharing data between BPF programs and user space — perf buffers and ring buffers for event streaming",
+        "Detail use cases: observability (bpftrace, Pixie), networking (Cilium, XDP-based DDoS protection), security (Falco), performance (BCC tools)",
+        "Discuss limitations: no arbitrary kernel memory access, bounded loops, instruction limit (1M instructions), no BPF-to-BPF function calls (originally)"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "Explain how the Linux network stack processes a packet from arrival at the NIC to delivery to a userspace application.",
+    "difficulty": "HARD",
+    "skills": ["network stack", "NAPI", "iptables", "conntrack", "kernel networking"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "The NIC receives the packet via DMA into ring buffers and raises an interrupt; NAPI (New API) mitigates interrupt storms by switching to polling under high load",
+        "The packet traverses: NIC driver → netif_receive_skb → bridge/iptables PREROUTING → routing decision → FORWARD/INPUT chain",
+        "For locally destined packets: iptables/nftables INPUT chain → conntrack lookup → TCP/IP protocol stack → socket receive queue",
+        "Conntrack tracks connection state (NEW, ESTABLISHED, RELATED, INVALID) and enables stateful firewall rules and NAT"
+      ],
+      "commonMistakes": [
+        "Thinking the kernel processes one packet at a time — the network stack has GRO (Generic Receive Offload) that merges segments before processing",
+        "Ignoring the distinction between iptables and nftables — nftables is the modern replacement with a single unified rule set",
+        "Assuming the NIC interrupt fires for every packet — modern NICs use interrupt coalescing and NAPI to batch processing"
+      ],
+      "answerStructure": [
+        "Start with hardware: NIC receives packet via DMA into RX ring buffer, raises IRQ",
+        "Cover NAPI: IRQ handler schedules softirq (net_rx_action), which polls the ring buffer in batches",
+        "Walk through the kernel path: GRO merges segments → TC ingress hook → conntrack lookup → nftables/iptables PREROUTING",
+        "Describe the routing decision: is the packet for local delivery (INPUT chain) or forwarding (FORWARD chain)?",
+        "For local delivery: nftables INPUT chain → L4 protocol processing (TCP reassembly) → socket lookup → socket receive buffer",
+        "Mention optimizations: XDP (eXpress Data Path) runs eBPF before the kernel stack; DPDK bypasses the kernel entirely"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "Compare ext4 and XFS filesystem internals. When would you choose one over the other?",
+    "difficulty": "HARD",
+    "skills": ["ext4", "XFS", "filesystem internals", "storage", "performance"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "ext4 uses a multi-block allocator (mballoc) with extents (ext4_extent) for large contiguous files; it supports up to 1 EB with 16 TB per file",
+        "XFS uses B+ trees for most metadata (allocation groups, inodes, directories), which scales better for large filesystems and parallel operations",
+        "XFS has allocation groups (AGs) that enable concurrent operations across AGs, making it superior for multi-threaded workloads",
+        "ext4 has a more mature stable codebase and is the default on most Linux distributions; XFS handles large files (500 TB+) and parallel I/O better"
+      ],
+      "commonMistakes": [
+        "Assuming ext4 is always slower than XFS — for small filesystems (<50 TB) and single-threaded workloads, ext4 often performs comparably",
+        "Thinking XFS cannot be shrunk — while shrinking was historically difficult, modern XFS supports online shrinking (kernel 5.19+)",
+        "Confusing delayed allocation behavior — both support it, but ext4's implementation can lead to more fragmentation under certain workloads"
+      ],
+      "answerStructure": [
+        "Introduce both filesystems: ext4 is the evolutionary successor to ext3; XFS was designed by SGI for high-performance computing",
+        "Compare metadata structures: ext4 uses extent trees and H-tree directories; XFS uses B+ trees for all metadata with allocation groups",
+        "Compare scalability: ext4 limits around 50 TB for optimal performance; XFS scales to petabytes with linear performance",
+        "Compare features: ext4 supports encryption, project quotas; XFS supports reflink/deduplication, online defragmentation, real-time devices",
+        "Discuss performance characteristics: XFS wins on parallel workloads and large files; ext4 wins on small-file random workloads due to simpler allocation",
+        "Provide selection criteria: ext4 for general-purpose up to 50 TB, XFS for >50 TB, database workloads, or when reflink/dedupe is needed"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How would you tune storage performance for a high-throughput database workload?",
+    "difficulty": "HARD",
+    "skills": ["storage tuning", "database", "I/O optimization", "NVMe", "filesystem"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Use NVMe SSDs with multiple queues (each CPU core has its own submission/completion queue) for parallel I/O without lock contention",
+        "Align filesystem with storage: use XFS with sunit=swidth matching RAID stripe geometry, or ext4 with bigalloc and flex_bg",
+        "Tune I/O scheduler: use none (NVMe) or mq-deadline (SATA SSDs); avoid cfq which adds latency from fairness logic",
+        "Consider kernel parameters: vm.dirty_ratio (increase for write-heavy loads), vm.swappiness=1, blockdev --setra for read-ahead"
+      ],
+      "commonMistakes": [
+        "Using default ext4 on NVMe without tuning — ext4's journal can become a bottleneck; consider XFS or ext4 with journal on separate device",
+        "Setting vm.dirty_ratio too high (over 40%) causing latency spikes when writeback kicks in — use vm.dirty_background_ratio and vm.dirty_writeback_centisecs tuning",
+        "Not benchmarking with the actual workload — synthetic benchmarks (fio) must match access patterns (random 8k reads vs sequential 1M writes)"
+      ],
+      "answerStructure": [
+        "Understand the workload: random read (OLTP) vs sequential write (analytics), I/O size (8K for databases vs 1M for streaming)",
+        "Select hardware: NVMe with multiple PCIe lanes, sufficient over-provisioning, battery-backed write cache",
+        "Configure the filesystem: XFS with su/sw for RAID, noatime, largeio, and consider separate log device (external log on dedicated SSD)",
+        "Tune the kernel: block layer (multiqueue, scheduler=none), virtual memory (dirty ratios, swappiness), page cache behavior",
+        "Optimize database I/O: direct I/O (O_DIRECT) bypasses page cache, use adequate innodb_io_capacity (MySQL) or effective_io_concurrency (PostgreSQL)",
+        "Benchmark and iterate: use fio with the database access pattern, measure iops and latency, adjust based on results"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "What is NUMA architecture and how does it affect application performance? How would you optimize for it?",
+    "difficulty": "HARD",
+    "skills": ["NUMA", "CPU architecture", "memory locality", "performance tuning"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "NUMA (Non-Uniform Memory Access) divides the system into nodes, each with local CPU cores and memory; accessing remote node memory has higher latency (~1.5-2x)",
+        "Each NUMA node has its own memory controller — cross-node memory access goes through the interconnect (e.g., AMD Infinity Fabric, Intel UPI)",
+        "Applications that bind threads and memory to the same NUMA node (numactl) see significantly lower memory latency and higher bandwidth",
+        "The kernel's default NUMA policy (default) allocates memory on the node where the thread is running; but threads can migrate leaving memory behind"
+      ],
+      "commonMistakes": [
+        "Not using numactl to pin processes — allowing the kernel to migrate threads without migrating their memory (mitigated by AutoNUMA or implicit migration)",
+        "Assuming all memory is equidistant — on multi-socket systems, remote NUMA access can be 60-80ns vs 100-140ns local, which matters for cache-miss-heavy workloads",
+        "Forgetting about NUMA I/O — PCIe devices are attached to specific NUMA nodes; accessing a device from a remote node adds latency"
+      ],
+      "answerStructure": [
+        "Define NUMA: multiple memory domains with different access costs, motivation from scaling memory bandwidth",
+        "Explain topology discovery: numactl --hardware, lstopo, /sys/devices/system/node/",
+        "Describe NUMA policies: default, bind, interleave, preferred — and their tradeoffs",
+        "Discuss performance impact: remote memory access latency, bandwidth saturation from cross-node traffic, false sharing across nodes",
+        "Cover optimization strategies: numactl --cpunodebind --membind for process pinning, per-node memory allocation in async engines",
+        "Mention kernel features: AutoNUMA (NUMA balancing in kernel), transparent page placement, CONFIG_NUMA aware allocators"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "What kernel parameters would you tune for a high-performance web server handling 100k+ concurrent connections?",
+    "difficulty": "HARD",
+    "skills": ["kernel tuning", "sysctl", "web server", "high concurrency"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Network stack: increase net.core.somaxconn (1024+), net.core.netdev_max_backlog, and net.ipv4.tcp_max_syn_backlog for connection burst handling",
+        "File descriptors: fs.file-max and systemd LimitNOFILE=1000000+ for handling many socket connections",
+        "Ephemeral port range: net.ipv4.ip_local_port_range = 1024 65535 avoids port exhaustion on outbound connections",
+        "TIME_WAIT reuse: net.ipv4.tcp_tw_reuse=1 and tcp_fin_timeout=15 recovers ports faster for outbound connections"
+      ],
+      "commonMistakes": [
+        "Enabling tcp_tw_recycle (removed in 4.12) — it caused NAT connectivity issues and is no longer available",
+        "Setting tcp_keepalive_time too low — aggressive keepalives generate unnecessary network traffic",
+        "Increasing buffer sizes (tcp_rmem/tcp_wmem) without considering BDP — too-large buffers cause latency under low bandwidth"
+      ],
+      "answerStructure": [
+        "Start with connection limits: fs.file-max, systemd LimitNOFILE, nginx worker_rlimit_nofile",
+        "Tune TCP listen backlog: somaxconn and application backlog, netdev_max_backlog for NIC ring buffer",
+        "Optimize TIME_WAIT handling: tcp_tw_reuse for clients, tcp_max_tw_buckets to bound TIME_WAIT table",
+        "Tune buffer sizes: tcp_rmem/tcp_wmem auto-tuning with min/default/max values based on BDP",
+        "Optimize ephemeral ports: ip_local_port_range for outbound connections",
+        "Tune congestion control: BBR for long-distance connections or CUBIC for datacenter",
+        "Memory and I/O: vm.max_map_count for mmap, vm.min_free_kbytes to avoid latency under memory pressure"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "What considerations go into building and maintaining a custom Linux kernel? When would you need one?",
+    "difficulty": "HARD",
+    "skills": ["custom kernel", "kernel compilation", "kernel config", "performance tuning"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Custom kernels are needed when: specific hardware support not in stock kernel, removing features to reduce attack surface, patching for real-time (PREEMPT_RT), or enabling experimental features",
+        "Configure via make menuconfig, disable unused drivers and filesystems to reduce build time and memory footprint, and enable only required hardware",
+        "Build considerations: cross-compilation for embedded, module signing for secure boot, initramfs inclusion for root filesystem on uncommon hardware",
+        "Maintenance overhead: tracking CVEs, rebasing custom patches on each new kernel version, testing compatibility with user-space applications and kernel modules"
+      ],
+      "commonMistakes": [
+        "Building all drivers as built-in (=y) instead of modules (=m), bloating the kernel image and consuming memory",
+        "Not setting CONFIG_LOCALVERSION to differentiate custom kernels from distribution kernels, causing module loading conflicts",
+        "Underestimating the maintenance burden — each upstream release requires rebasing patches and retesting all hardware combinations"
+      ],
+      "answerStructure": [
+        "Identify when a custom kernel is justified: real-time requirements, minimal footprint for embedded, specific kernel patches (XDP, BTF, BBRv2)",
+        "Describe the configuration process: start from distribution config (zcat /proc/config.gz), use make menuconfig to modify",
+        "Cover build and installation: make -j$(nproc) && make modules_install && make install, update GRUB",
+        "Discuss patching: applying out-of-tree patches, resolving conflicts, using quilt or git merge",
+        "Explain maintenance: subscribing to LTS or stable, periodic rebase cycles, automated build testing",
+        "Mention alternatives: distribution kernels (Ubuntu HWE, kernel-lts) may suffice without the custom maintenance burden"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A latency-sensitive application shows periodic latency spikes every few seconds. How do you diagnose the root cause at the kernel level?",
+    "difficulty": "HARD",
+    "skills": ["latency debugging", "ftrace", "perf", "kernel tracing", "scheduling"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Use perf sched record + perf sched latency to identify if the application is being preempted by other tasks or interrupts",
+        "Use ftrace (trace-cmd or perf) to trace wakeup latency: how long between a task becoming runnable and actually running on CPU",
+        "Check for interrupt storms: /proc/interrupts shows per-CPU interrupt counts; high interrupt rates from NICs or timers cause latency jitter",
+        "Use cyclictest (from rt-tests) to measure system-wide scheduling latency and identify if the issue is kernel preemption or IRQ handling"
+      ],
+      "commonMistakes": [
+        "Only looking at CPU utilization — low CPU usage does not mean low latency; scheduling delays can occur even at low utilization",
+        "Ignoring timer coalescing (kernel.timer_migration, CONFIG_NO_HZ_FULL) — timers can batch and cause periodic latency spikes",
+        "Not checking for system management interrupts (SMIs) — firmware-level interrupts invisible to the OS that can cause 10ms+ pauses"
+      ],
+      "answerStructure": [
+        "Characterize the latency spike: period, duration, correlation with other events (network, disk, timer)",
+        "Use perf to sample: perf top, perf record -g during spikes to identify the hot functions running",
+        "Use ftrace: trace-cmd record -e sched_switch -e irq_handler_entry to see what preempted the application",
+        "Check /proc/interrupts and /proc/softirqs for per-CPU interrupt distribution and pin interrupts to dedicated cores",
+        "Consider CPU isolation: use isolcpus and nohz_full kernel parameters to dedicate CPU cores to the latency-sensitive workload"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Database performance degrades under high concurrency. How would you diagnose and tune the system?",
+    "difficulty": "HARD",
+    "skills": ["database tuning", "I/O optimization", "concurrency", "kernel tuning"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Determine the bottleneck using USE methodology: is it CPU (query execution), memory (buffer pool insufficient), I/O (data not in cache), or locks (row/table contention)?",
+        "Check database-specific metrics: buffer cache hit ratio, checkpoint frequency, transaction log contention, replication lag under load",
+        "At the OS level: iostat for disk latency, vmstat for context switching, mpstat for CPU balance across cores",
+        "For I/O bottlenecks: tune database checkpoint intervals, increase buffer pool, separate data and log on different devices, use O_DIRECT to bypass page cache"
+      ],
+      "commonMistakes": [
+        "Throwing hardware at the problem without first checking if the database is configured optimally for the workload",
+        "Increasing buffer pool without considering NUMA — if buffer pool exceeds local memory, cross-node access kills performance",
+        "Ignoring query-level issues: missing indexes and poorly written queries are often the root cause, not system configuration"
+      ],
+      "answerStructure": [
+        "Identify the bottleneck: use database monitoring (pg_stat_activity, SHOW PROCESSLIST, active query log) and OS metrics",
+        "Check CPU: high context switching from lock contention, high system CPU from syscalls (check with perf)",
+        "Check I/O: iostat await, database checkpoint frequency, WAL/redo log contention — consider separating log and data devices",
+        "Check memory: buffer pool hit ratio, NUMA locality, swap activity",
+        "Check concurrency: database connection pool size, thread pool configuration, lock monitoring",
+        "Apply tuning: optimize queries and indexes first, then tune database config (shared_buffers, innodb_buffer_pool_size, checkpoint intervals), then OS kernel parameters"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A network-intensive application shows packet loss. How do you trace it through the entire data path?",
+    "difficulty": "HARD",
+    "skills": ["packet loss", "network tracing", "tcpdump", "eBPF", "ethtool"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Start at layer 1-2: ethtool -S for NIC hardware drops (rx_dropped, rx_missed_errors) and ring buffer overruns",
+        "Check the kernel network stack: netstat -s for protocol-level drops (TCP retransmits, checksum errors, listen overflows)",
+        "Use dropwatch or kernel tracepoints (skb:kfree_skb) to trace exactly where in the kernel the packet is dropped",
+        "Use eBPF with tracepoints at each layer: NIC → GRO → qdisc → netfilter → IP → TCP → socket buffer"
+      ],
+      "commonMistakes": [
+        "Assuming all packet loss is on the network — many drops occur in the kernel (buffer exhaustion, conntrack limits, firewall rules)",
+        "Only checking tcpdump on one end — capture at both the sender and receiver to distinguish network loss from local drops",
+        "Ignoring qdisc drops (tc -s qdisc show) — the transmit queue can drop packets under congestion"
+      ],
+      "answerStructure": [
+        "Confirm loss type: TCP retransmits? ICMP unreachable? Check tcpdump and netstat -s",
+        "Check NIC layer: ethtool -S <dev> | grep drop for hardware ring drops, increase ring buffer size if needed",
+        "Check kernel drops: dropwatch -l kas to see kernel drop locations, netstat -s for listen overflows and conntrack drops",
+        "Check qdisc drops: tc -s qdisc show for backlog and drops on transmit queue",
+        "Check iptables/nftables: do any rules drop packets (policy or explicit rules)? Check conntrack table full",
+        "Check application: is the socket buffer full (SO_RCVBUF)? Is the application reading fast enough (epoll/select)?"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "The OOM killer is killing processes even though memory appears available. How do you investigate?",
+    "difficulty": "HARD",
+    "skills": ["OOM killer", "memory management", "kernel debugging", "overcommit"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Check dmesg for OOM killer output — it shows the OOM score, memory stats, and which process was selected and why",
+        "Verify memory overcommit: vm.overcommit_memory=0 (heuristic) may overcommit; vm.overcommit_ratio controls how much overcommit is allowed",
+        "Check for memory cgroup limits: if the process is in a cgroup with memory.max set, the cgroup OOM killer triggers even when system memory is available",
+        "Examine oom_score_adj — processes with positive adjustment are more likely to be killed; system services often have negative adjustments"
+      ],
+      "commonMistakes": [
+        "Assuming OOM kills mean the system is out of memory — it could be a cgroup limit or memory.max constraint",
+        "Not checking low memory specifically — OOM killer triggers when low memory is exhausted even if total free memory is high",
+        "Disabling overcommit (vm.overcommit_memory=2) blindly — it prevents overcommit but fork() may fail (cannot allocate memory) for legitimate processes"
+      ],
+      "answerStructure": [
+        "Examine dmesg OOM logs: identify which process was killed, memory statistics at the time, and OOM score details",
+        "Check system memory: free -h, cat /proc/meminfo (especially MemAvailable, not just MemFree), /proc/zoneinfo for lowmem",
+        "Check overcommit: cat /proc/sys/vm/overcommit_memory and /proc/sys/vm/overcommit_ratio",
+        "Check cgroup limits: if process is containerized, check cgroup memory.max, memory.current",
+        "Check OOM score: cat /proc/<PID>/oom_score, /proc/<PID>/oom_score_adj for both the killed process and memory hogs",
+        "Apply fix: increase cgroup limit, reduce overcommit, add swap, fix memory leak, or adjust oom_score_adj"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "CPU soft lockups occur intermittently on a production server. How do you debug the cause?",
+    "difficulty": "HARD",
+    "skills": ["soft lockup", "kernel debugging", "watchdog", "ftrace", "latency"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "A soft lockup means a CPU core did not handle scheduling ticks for more than 20 seconds — check dmesg for lockup detection messages with the offending CPU and stack trace",
+        "Common causes: kernel code running with interrupts disabled for too long, infinite loops in kernel modules, filesystem hangs, or driver bugs",
+        "Use the NMI watchdog (hard lockup detector) to differentiate between hard and soft lockups — soft lockups have interrupts still enabled but no scheduling",
+        "Use ftrace or perf with tracepoint sched:sched_switch to see what was running on the offending CPU before the lockup"
+      ],
+      "commonMistakes": [
+        "Confusing soft lockups with high load — soft lockup means kernel code is stuck (interrupts or preemption disabled), not just high CPU utilization",
+        "Ignoring hardware issues — faulty hardware (especially storage controllers) can cause interrupt starvation at the firmware level",
+        "Not enabling lockup detection config (CONFIG_LOCKUP_DETECTOR, CONFIG_HARDLOCKUP_DETECTOR) in the kernel"
+      ],
+      "answerStructure": [
+        "Collect evidence: dmesg | grep -i lockup shows the CPU, duration, and stack trace of the stuck context",
+        "Check the stack trace: which kernel function is the CPU stuck in? Look for filesystem code, driver code, or memory management",
+        "Use perf: perf record -g -e cycles -a during the lockup (or use NMI-based sampling if possible)",
+        "Check hardware: firmware versions, storage controller logs, ACPI power states, CPU microcode",
+        "Mitigate while debugging: isolate the workload to different CPUs, try disabling C-states, update firmware",
+        "If it is a known kernel bug: reproduce on a newer kernel or apply specific patch; report upstream with stack trace"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Filesystem corruption is detected on an ext4 volume. Describe your recovery approach and how you would prevent recurrence.",
+    "difficulty": "HARD",
+    "skills": ["filesystem recovery", "ext4", "fsck", "data recovery", "storage"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "First, unmount the filesystem if possible and take a block-level backup with dd or ddrescue before any recovery attempt",
+        "Run fsck.ext4 -f -y on the unmounted filesystem to repair structural damage; the -n flag can first check what repairs are needed without applying them",
+        "For severe corruption (fsck cannot repair), use ddrescue to recover data, then try debugfs to extract files manually from the raw block device",
+        "After recovery, investigate root cause: hardware (disk SMART errors, cable, controller), kernel bug, power loss, or filesystem bug"
+      ],
+      "commonMistakes": [
+        "Running fsck on a mounted filesystem — it will cause further corruption and fail with a warning",
+        "Using -y (auto yes) without first using -n to see what changes will be made — -y can delete data that might be recoverable with manual intervention",
+        "Remounting the filesystem without identifying root cause — it may corrupt again immediately"
+      ],
+      "answerStructure": [
+        "Stop write activity: unmount the filesystem, or remount read-only if unmount fails",
+        "Create a backup: dd if=/dev/sdb1 of=/backup/sdb1.img bs=4M conv=noerror,sync to preserve the current state",
+        "Run fsck in read-only mode: fsck.ext4 -fn /dev/sdb1 to see what errors exist without fixing",
+        "Run fsck with repair: fsck.ext4 -fy /dev/sdb1 to fix structural issues",
+        "If fsck fails: try debugfs to extract critical files, or use ext4magic for journal-based recovery",
+        "Identify root cause: check SMART (smartctl -a), kernel logs (dmesg | grep sd), power supply, and verify cables",
+        "Prevent recurrence: switch to XFS (better crash recovery), enable periodic scrub (xfs_scrub/ext4 scrub), add monitoring, use UPS"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A service fails to scale past 16 cores even though CPU utilization is moderate. Investigate and identify the limitation.",
+    "difficulty": "HARD",
+    "skills": ["scalability", "lock contention", "NUMA", "cache coherency", "profiling"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Use perf top to check for high kernel spinlock contention (spin_lock, mutex_lock), cache line bouncing (perf c2c), or RCU stall warnings",
+        "Check NUMA topology: the application may be running across multiple NUMA nodes, incurring remote memory access penalties as it scales past the cores in one node",
+        "Use flame graphs with frame pointers to identify serialization points — locks, atomic operations, or global counters that become contended",
+        "The Amdahl's Law bottleneck might be in a shared data structure, a single-threaded event loop, or a kernel-level limit like a global lock in the network stack or filesystem"
+      ],
+      "commonMistakes": [
+        "Assuming adding more cores will always improve performance — lock contention, cache coherence traffic, and NUMA penalties reverse scaling at some point",
+        "Not profiling with --call-graph — without stack traces, you cannot identify the function holding the contended lock",
+        "Ignoring the kernel's contribution — the contention may be in a kernel subsystem (e.g., network stack, memory allocator, filesystem)"
+      ],
+      "answerStructure": [
+        "Characterize the scaling: does throughput plateau or decrease past 16 cores? Graph the scaling curve",
+        "Profile CPU utilization: is user time dropping and system time increasing as cores increase (sign of syscall contention)?",
+        "Use perf c2c to detect cache line contention (false sharing) — threads writing to different fields in the same cache line",
+        "Use perf record -e cycles:u -g and generate flame graphs to identify hot functions and lock contention",
+        "Check NUMA: numastat -p <PID> shows memory allocation across nodes; aim for all memory and threads on same node",
+        "Identify and fix: use per-thread data structures, read-copy-update (RCU), lock striping, or lock-free algorithms"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A kernel panic occurs under a specific workload. How do you bisect the kernel to identify the offending commit?",
+    "difficulty": "HARD",
+    "skills": ["kernel bisect", "kernel debugging", "git bisect", "crash analysis"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Capture the panic details: use netconsole or serial console to get the full oops/panic log including register state, stack trace, and ksym addresses",
+        "Use kdump/kexec to capture a crash dump (vmcore) and analyze with crash utility offline for detailed post-mortem",
+        "Reproduce the crash reliably on a specific kernel version before attempting to bisect — the workload must trigger the panic consistently",
+        "Use git bisect over the kernel git tree, building and testing each bisect point until the bad commit is identified"
+      ],
+      "commonMistakes": [
+        "Starting a bisect without a reliable reproduction test — false positives waste hours of bisect iterations",
+        "Not using a scripted test (kernel test harness) — manual testing across dozens of kernel builds is error-prone",
+        "Bisecting blind: not understanding the crash signature and which subsystem is likely responsible"
+      ],
+      "answerStructure": [
+        "Set up crash capture: configure kdump (crashkernel= parameter, kexec-tools) to capture vmcore on panic",
+        "Analyze the vmcore with crash utility: bt (backtrace), log (kernel log), ps (processes), vm (virtual memory) to understand the crash context",
+        "Identify the subsystem: does the crash occur in networking, filesystem, memory management, scheduler?",
+        "Create a minimal reproducer: if possible, reduce the workload to the smallest trigger (single syscall, specific hardware operation)",
+        "Run git bisect: mark known good (e.g., stable tag), known bad (current kernel), and let bisect find the commit",
+        "After finding the commit: review the patch for the bug, and either revert, apply a fix, or report upstream with the bisect result"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a time you drove a fundamental infrastructure change that significantly impacted the organization.",
+    "difficulty": "HARD",
+    "skills": ["infrastructure transformation", "leadership", "strategic thinking", "change management"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the motivation: what problem necessitated the change (scalability, cost, reliability, security)",
+        "Explain how you built consensus: RFC process, proof of concept, stakeholder buy-in, executive sponsorship",
+        "Detail the migration strategy: how did you move from old to new without downtime? Phased rollout, parallel run, feature flags",
+        "Quantify the impact: cost savings (e.g., 40% reduction), performance improvement (2x throughput), or reliability (99.9% to 99.99%)"
+      ],
+      "commonMistakes": [
+        "Describing a change that was trivial or had minimal impact",
+        "Not mentioning how you handled resistance or technical disagreements",
+        "Failing to discuss rollback planning or what happened when things went wrong"
+      ],
+      "answerStructure": [
+        "Describe the old infrastructure and its limitations (technical debt, scaling ceiling, cost)",
+        "Explain the proposed new system and why it was the right choice (research, POC, comparison)",
+        "Walk through the rollout strategy: how you ensured zero downtime, which teams were involved",
+        "Discuss challenges you faced: unexpected issues, rollbacks, performance regressions",
+        "Share the measurable outcomes: cost, performance, reliability metrics improved",
+        "Reflect on lessons learned: what you would do differently, advice for similar transformations"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you balance the need for reliability with the need for velocity in deployments?",
+    "difficulty": "HARD",
+    "skills": ["reliability vs velocity", "SRE", "deployment strategy", "risk management"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Implement deployment safety nets: feature flags, canary deployments, blue-green deployments, and automated rollback",
+        "Use error budgets: define SLOs, track error budget burn rate, and slow down deployments when budget is depleted",
+        "Build quality into the pipeline: automated testing (unit, integration, chaos), security scanning, and compliance checks before production",
+        "Foster a blameless culture where post-mortems lead to system improvements rather than process slowdowns"
+      ],
+      "commonMistakes": [
+        "Adding manual approval gates for every change — this creates bottlenecks without improving safety",
+        "Implementing so many safety checks that deployments take days — velocity matters for security fixes and business responsiveness",
+        "Relying on process instead of automation — manual steps are where mistakes happen"
+      ],
+      "answerStructure": [
+        "Define your philosophy: reliability and velocity are not opposites; automation enables both",
+        "Describe safety mechanisms: feature flags for gradual rollout, automated canary analysis with metrics comparison",
+        "Explain the error budget concept: SLO of 99.9% allows 8.6 hours of downtime per year — that is your budget for risk",
+        "Discuss deployment frequency: aim for small, frequent, reversible changes rather than large, risky releases",
+        "Cover the feedback loop: how you monitor deployment health and trigger automated rollback",
+        "Give a real example: successfully deploying 50+ times per day while maintaining 99.99% availability"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a major incident post-mortem you led. How did you drive systemic improvements?",
+    "difficulty": "HARD",
+    "skills": ["post-mortem", "incident analysis", "blameless culture", "systems thinking"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Structure the post-mortem: timeline of events, detection, response, root cause, contributing factors, and action items",
+        "Focus on systemic factors, not individual blame — ask what system conditions allowed the error to happen",
+        "Prioritize action items by impact: immediate mitigations, short-term fixes, long-term architectural changes",
+        "Track action items to completion and verify their effectiveness with follow-up reviews"
+      ],
+      "commonMistakes": [
+        "Making the post-mortem a blame session — this discourages transparency and future reporting",
+        "Generating a long list of action items without prioritizing — no team can fix 50 things at once",
+        "Writing the post-mortem in isolation — gather input from all involved parties for a complete picture"
+      ],
+      "answerStructure": [
+        "Describe the incident: what happened, severity, duration, customer impact",
+        "Explain how you organized the post-mortem: who was involved, timeline construction, data gathering",
+        "Walk through the root cause analysis: the 5 Whys, contributing factors, and system vulnerabilities",
+        "Discuss the action items: which fixes were applied immediately, which became roadmap items",
+        "Share how you tracked progress: regular check-ins on action items, verify fixes prevented recurrence",
+        "Reflect on the culture impact: how the blameless post-mortem improved incident reporting and team trust"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you build a culture of operational excellence within an engineering team?",
+    "difficulty": "HARD",
+    "skills": ["operational excellence", "team culture", "SRE", "leadership"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Lead by example: prioritize operational work (monitoring, documentation, automation) alongside feature development",
+        "Institute regular rituals: weekly operations review, rotating on-call with clear responsibilities, post-mortems after every significant incident",
+        "Invest in automation: reduce toil so engineers have time and energy for improvement work",
+        "Measure and share operational metrics: error budgets, MTTR, deployment frequency, and make them visible to the whole team"
+      ],
+      "commonMistakes": [
+        "Treating operations as separate from development — operational excellence requires Dev and Ops collaboration",
+        "Recognizing only feature delivery, not reliability improvements — operational work must be celebrated",
+        "Implementing processes without buy-in — people support what they help create; involve the team in designing on-call rotations and SLOs"
+      ],
+      "answerStructure": [
+        "Define what operational excellence means: reliability, observability, incident response, and continuous improvement",
+        "Describe team rituals: daily standup ops check, weekly error budget review, monthly incident drill",
+        "Explain on-call culture: fair rotation, clear escalation paths, post-incident decompression, blameless reviews",
+        "Discuss quality gates: production readiness reviews, chaos engineering experiments, load testing",
+        "Cover knowledge sharing: runbook reviews, brown bag sessions, cross-training to avoid bus factor",
+        "Share a specific outcome: how a reliability culture reduced P0 incidents or improved MTTR"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a situation where you had to make a critical decision with incomplete information. How did you proceed?",
+    "difficulty": "HARD",
+    "skills": ["decision-making", "uncertainty", "risk management", "leadership"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Acknowledge the uncertainty and identify what information is most critical to the decision",
+        "Use a structured approach: list assumptions, evaluate best/worst-case scenarios, estimate probabilities",
+        "De-risk the decision: choose reversible options where possible, or make incremental commitments that preserve optionality",
+        "Communicate the decision and its rationale transparently to stakeholders, noting what is certain vs uncertain"
+      ],
+      "commonMistakes": [
+        "Paralyzing the team by waiting for perfect information — in production incidents, you must act on incomplete data",
+        "Making a decision without articulating assumptions and risks to stakeholders",
+        "Failing to revisit the decision when new information becomes available"
+      ],
+      "answerStructure": [
+        "Describe the situation: what was at stake, why was information incomplete (incident urgency, system complexity)",
+        "Explain your decision framework: what criteria did you use, what were the key tradeoffs",
+        "Detail the decision: which option you chose and why, what assumptions you made",
+        "Discuss how you managed risk: what safety nets or monitoring did you put in place",
+        "Reflect on the outcome: was the decision correct? What did you learn about decision-making under uncertainty?"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you approach technical debt at the infrastructure level? When do you prioritize paying it down vs shipping new features?",
+    "difficulty": "HARD",
+    "skills": ["technical debt", "infrastructure", "prioritization", "strategic thinking"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Classify technical debt: principal (cost to fix now) vs interest (ongoing cost of not fixing — slower deploys, more incidents, higher toil)",
+        "Use a cost-benefit framework: quantify the interest payments (engineer hours lost per week, incident frequency) and compare to fix cost",
+        "Adopt the rule of thirds: one-third of time for new features, one-third for fixing debt, one-third for improving the platform",
+        "Create visibility: maintain a technical debt register with estimated effort and impact, discuss in quarterly planning"
+      ],
+      "commonMistakes": [
+        "Allowing all infrastructure work to be deprioritized as technical debt — some is essential maintenance that keeps the system running",
+        "Fixing everything at once without understanding the cost-to-benefit ratio of each item",
+        "Not measuring the impact of debt — without data, it is hard to justify investment to stakeholders"
+      ],
+      "answerStructure": [
+        "Define infrastructure debt: outdated tooling, manual processes, deprecated dependencies, missing automation, capacity risks",
+        "Describe how you surface debt: from incident post-mortems, on-call feedback, deploy friction, engineer surveys",
+        "Explain your prioritization framework: impact on velocity, reliability risk, cost, and alignment with strategic goals",
+        "Discuss how you negotiate with product teams: use error budgets and reliability metrics to justify infrastructure investment",
+        "Give an example: paying down a specific debt and the measurable improvement (reduced deploy time, fewer incidents)",
+        "Reflect on balance: how you decide when debt becomes critical enough to stop feature work"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you influenced organizational change beyond your immediate team.",
+    "difficulty": "HARD",
+    "skills": ["organizational influence", "leadership without authority", "cross-team collaboration", "advocacy"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the change: a new practice, tool, or process adopted beyond your team (e.g., containerization, SLO framework, on-call standards)",
+        "Explain your influence strategy: build a coalition of supporters, demonstrate value with a POC, present data-driven arguments to leadership",
+        "Show persistence: organizational change takes time — multiple presentations, iterations, and stakeholder management",
+        "Highlight the outcome: how the organization operates differently because of the change you drove"
+      ],
+      "commonMistakes": [
+        "Claiming credit for a change that was already in progress or mandated from the top",
+        "Describing a change that only affected your team, not the broader organization",
+        "Not addressing resistance — every organizational change has skeptics; how you handled them matters"
+      ],
+      "answerStructure": [
+        "Describe the problem that affected multiple teams (e.g., no consistent on-call process, unreliable deploys)",
+        "Explain your proposal: what change you advocated for and why it would help beyond your team",
+        "Detail your influence tactics: built a cross-team working group, created a compelling POC, presented to leadership",
+        "Discuss challenges: how you addressed skepticism, adapted the proposal based on feedback",
+        "Share the organizational impact: how many teams adopted it, what metrics improved organization-wide",
+        "Reflect on what you learned about driving change in a large organization"
+      ]
+    }
+  },
+  {
+    "role": "SYSTEMS_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you evaluate and adopt new technologies for infrastructure? What is your decision framework?",
+    "difficulty": "HARD",
+    "skills": ["technology evaluation", "decision framework", "innovation", "risk assessment"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Start with the problem, not the solution: what pain point or capability gap are you trying to address?",
+        "Evaluate candidates on multiple axes: maturity (community, production deployments), operational complexity, learning curve, vendor lock-in, total cost",
+        "Run a structured POC: define success criteria, test under realistic conditions, measure against baseline",
+        "Assess adoption risk: can it be introduced incrementally (sidecar, API compatibility)? Is there a rollback path?"
+      ],
+      "commonMistakes": [
+        "Falling in love with a technology before understanding the problem — shiny object syndrome",
+        "Not involving the operations team early — they will maintain it, their buy-in is critical",
+        "Ignoring total cost of ownership: licensing, training, migration effort, ongoing maintenance overhead",
+        "Adopting bleeding-edge technology without evaluating maturity and community support"
+      ],
+      "answerStructure": [
+        "Describe the problem: what gap in the current infrastructure prompted the evaluation",
+        "Explain the evaluation criteria: scalability, reliability, ecosystem maturity, community health, learning curve, cost",
+        "Walk through the evaluation process: research (papers, talks, case studies), shortlist, POC with defined success metrics",
+        "Discuss how you built consensus: share findings in tech talks, involve stakeholders from affected teams",
+        "Cover the adoption plan: phased rollout, parallel run, monitoring, rollback plan, team training",
+        "Give a concrete example: a technology you evaluated and adopted, and the outcome"
+      ]
+    }
+  }
+]

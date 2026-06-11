@@ -408,6 +408,49 @@ model Application {
 
 }
 
+enum InterviewRole {
+  FRONTEND
+  BACKEND
+  DEVOPS
+  DATA_ENGINEER
+  SYSTEMS_ENGINEER
+}
+
+enum InterviewLevel {
+  JUNIOR
+  MID
+  SENIOR
+}
+
+enum QuestionCategory {
+  TECHNICAL
+  PROBLEM_SOLVING
+  BEHAVIORAL
+}
+
+enum QuestionDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model InterviewQuestion {
+  id            String              @id @default(uuid()) @db.Uuid
+  role          InterviewRole
+  level         InterviewLevel
+  category      QuestionCategory
+  question      String              @db.Text
+  difficulty    QuestionDifficulty
+  skills        String[]
+  estimatedTime String              @map("estimated_time")
+  guidance      Json
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @default(now()) @updatedAt @map("updated_at")
+
+  @@index([role, level, category])
+  @@map("interview_questions")
+}
+
 model JobSeekerNotificationPreference {
   id                                    String    @id @default(uuid()) @db.Uuid
   jobSeekerId                           String    @unique @db.Uuid @map("job_seeker_id")

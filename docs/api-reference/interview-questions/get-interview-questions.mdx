@@ -1,0 +1,300 @@
+---
+title: 'Get Interview Questions'
+api: 'GET /api/v1/interview-questions'
+description: 'Retrieve a paginated list of interview questions filterable by role, level, and category'
+---
+
+## Endpoint
+
+```
+GET /api/v1/interview-questions
+```
+
+**Base URL**: `http://localhost:3000/api/v1`
+
+<Note>This endpoint requires **Job Seeker authentication**.</Note>
+
+## Headers
+
+| Header        | Value                 |
+| ------------- | --------------------- |
+| Authorization | Bearer {access_token} |
+
+## Query Parameters
+
+<ParamField query="role" type="enum" optional>
+  Filter by role. - `FRONTEND` - `BACKEND` - `DEVOPS` - `DATA_ENGINEER` - `SYSTEMS_ENGINEER`
+</ParamField>
+
+<ParamField query="level" type="enum" optional>
+  Filter by experience level. - `JUNIOR` - `MID` - `SENIOR`
+</ParamField>
+
+<ParamField query="category" type="enum" optional>
+  Filter by question category. - `TECHNICAL` - `PROBLEM_SOLVING` - `BEHAVIORAL`
+</ParamField>
+
+<ParamField query="page" type="number" optional>
+  Page number (default: 1).
+</ParamField>
+
+<ParamField query="limit" type="number" optional>
+  Items per page (default: 20).
+</ParamField>
+
+## Request Examples
+
+### All questions (paginated)
+
+```bash
+GET /api/v1/interview-questions?page=1&limit=10
+```
+
+### Filter by role only
+
+```bash
+# Get all Frontend questions across all levels and categories
+GET /api/v1/interview-questions?role=FRONTEND
+```
+
+### Filter by role + level
+
+```bash
+# Senior Backend questions (all categories)
+GET /api/v1/interview-questions?role=BACKEND&level=SENIOR
+```
+
+### Filter by role + level + category
+
+```bash
+# Technical questions for Junior Frontend developers
+GET /api/v1/interview-questions?role=FRONTEND&level=JUNIOR&category=TECHNICAL
+
+# Problem-solving questions for Senior DevOps engineers
+GET /api/v1/interview-questions?role=DEVOPS&level=SENIOR&category=PROBLEM_SOLVING
+
+# Behavioral questions for Mid Data Engineers
+GET /api/v1/interview-questions?role=DATA_ENGINEER&level=MID&category=BEHAVIORAL
+```
+
+### Role-specific examples
+
+```bash
+# All Backend questions
+GET /api/v1/interview-questions?role=BACKEND
+
+# Junior Backend technical questions
+GET /api/v1/interview-questions?role=BACKEND&level=JUNIOR&category=TECHNICAL
+
+# Senior Systems Engineer problem-solving
+GET /api/v1/interview-questions?role=SYSTEMS_ENGINEER&level=SENIOR&category=PROBLEM_SOLVING
+```
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "data": {
+    "questions": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "role": "BACKEND",
+        "level": "SENIOR",
+        "category": "TECHNICAL",
+        "question": "Explain PostgreSQL's MVCC implementation in detail. What happens internally when two concurrent transactions try to UPDATE the same row? How does vacuum reclaim dead tuples, and what factors determine when autovacuum runs?",
+        "difficulty": "HARD",
+        "skills": ["PostgreSQL", "MVCC", "Concurrency", "Database Internals"],
+        "estimatedTime": "5-7 min",
+        "guidance": {
+          "keyPoints": [
+            "Each UPDATE creates a new tuple version; old version is marked as dead",
+            "Transaction IDs (XID) determine tuple visibility via the visibility map",
+            "Snapshot isolation: each transaction sees a consistent snapshot at start time",
+            "Row-level locking prevents lost updates but can cause deadlocks"
+          ],
+          "commonMistakes": [
+            "Thinking UPDATE modifies data in-place — it creates a new tuple",
+            "Confusing MVCC with pessimistic locking"
+          ],
+          "answerStructure": [
+            "Explain tuple structure: xmin, xmax, ctid pointers",
+            "Describe how SELECT uses snapshot isolation for visibility",
+            "Walk through a concurrent UPDATE scenario step by step"
+          ]
+        },
+        "createdAt": "2026-06-11T14:12:59.962Z"
+      }
+    ],
+    "total": 24,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 3
+  },
+  "message": "Interview questions retrieved successfully",
+  "meta": {
+    "timestamp": "2026-06-11T14:00:00.000Z",
+    "path": "/api/v1/interview-questions",
+    "method": "GET"
+  }
+}
+```
+
+### Response Fields
+
+<ResponseField name="questions" type="array">
+  Array of interview questions.
+
+  <Expandable title="Question Object">
+
+    <ResponseField name="id" type="string">
+      Unique identifier (UUID).
+    </ResponseField>
+
+    <ResponseField name="role" type="enum">
+      Role this question targets. - `FRONTEND` - `BACKEND` - `DEVOPS` - `DATA_ENGINEER` -
+      `SYSTEMS_ENGINEER`
+    </ResponseField>
+
+    <ResponseField name="level" type="enum">
+      Target experience level. - `JUNIOR` - `MID` - `SENIOR`
+    </ResponseField>
+
+    <ResponseField name="category" type="enum">
+      Question category. - `TECHNICAL` - `PROBLEM_SOLVING` - `BEHAVIORAL`
+    </ResponseField>
+
+    <ResponseField name="question" type="string">
+      The interview question text. Deep technical questions focus on internals and
+      architecture.
+    </ResponseField>
+
+    <ResponseField name="difficulty" type="enum">
+      Difficulty level. - `EASY` - `MEDIUM` - `HARD`
+    </ResponseField>
+
+    <ResponseField name="skills" type="string[]">
+      Related skills and technologies this question covers.
+    </ResponseField>
+
+    <ResponseField name="estimatedTime" type="string">
+      Estimated time to answer, e.g. `"5-7 min"`.
+    </ResponseField>
+
+    <ResponseField name="guidance" type="object">
+      Answer guidance for interviewers and candidates.
+
+      <Expandable title="Guidance Properties">
+
+        <ResponseField name="keyPoints" type="string[]">
+          Key points the answer should cover.
+        </ResponseField>
+
+        <ResponseField name="commonMistakes" type="string[]">
+          Common mistakes or misconceptions candidates make.
+        </ResponseField>
+
+        <ResponseField name="answerStructure" type="string[]">
+          Recommended structure for the answer.
+        </ResponseField>
+
+      </Expandable>
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Total number of questions matching the filters.
+</ResponseField>
+
+<ResponseField name="page" type="number" default="1">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="limit" type="number" default="20">
+  Items per page.
+</ResponseField>
+
+<ResponseField name="totalPages" type="number">
+  Total number of pages.
+</ResponseField>
+
+## Category Overview
+
+### TECHNICAL
+
+Deep technical questions covering internals, architecture, and implementation details.
+
+| Level | Example Topics |
+|---|---|
+| JUNIOR | HTTP, DOM APIs, database indexing, event loop, process management |
+| MID | MVCC isolation, Spark execution, connection pooling, Kubernetes scheduling |
+| SENIOR | Raft consensus, CFS scheduler, Catalyst optimizer, eBPF internals |
+
+### PROBLEM_SOLVING
+
+System design and problem-solving scenarios that test architectural thinking.
+
+| Level | Example Topics |
+|---|---|
+| JUNIOR | Design a URL shortener, build a rate limiter, implement a cache |
+| MID | Design real-time collaboration, build a monitoring system, distributed rate limiting |
+| SENIOR | Design global CDN, event sourcing system, multi-region disaster recovery |
+
+### BEHAVIORAL
+
+Situational and experience-based questions to assess soft skills and leadership.
+
+| Level | Example Topics |
+|---|---|
+| JUNIOR | Team collaboration, handling feedback, learning new technologies |
+| MID | Leading technical decisions, mentoring juniors, handling production incidents |
+| SENIOR | Architecture decisions, cross-team communication, incident leadership |
+
+## Available Roles & Question Count
+
+| Role | Junior | Mid | Senior | Total |
+|---|---|---|---|---|
+| FRONTEND | 24 | 24 | 24 | 72 |
+| BACKEND | 24 | 24 | 24 | 72 |
+| DEVOPS | 24 | 24 | 24 | 72 |
+| DATA_ENGINEER | 24 | 24 | 24 | 72 |
+| SYSTEMS_ENGINEER | 24 | 24 | 24 | 72 |
+| **Total** | **120** | **120** | **120** | **360** |
+
+## Error Responses
+
+### 400 Bad Request - Validation Error
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": ["role must be a valid enum value"],
+    "statusCode": 400,
+    "timestamp": "2026-06-11T14:00:00.000Z",
+    "path": "/api/v1/interview-questions",
+    "method": "GET",
+    "details": "Bad Request"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Unauthorized",
+    "statusCode": 401,
+    "timestamp": "2026-06-11T14:00:00.000Z",
+    "path": "/api/v1/interview-questions",
+    "method": "GET",
+    "details": "Unauthorized"
+  }
+}
+```

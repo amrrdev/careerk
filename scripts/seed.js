@@ -1073,13 +1073,15 @@ async function seed() {
       await client.query(
         `
             INSERT INTO companies (
-              id, email, password, name, description, logo_url, cover_url, industry, size, type,
-              headquarters_location, founded_year, website_url, benefits, linked_in, facebook, twitter,
+              id, email, password, name, description, logo_url,
+              industry, size, type,
+              headquarters_location, founded_year, website_url, benefits, linked_in, twitter,
               is_active, is_verified, created_at, updated_at
             )
             VALUES (
-              $1, $2, $3, $4, $5, $6, NULL, $7, $8, $9,
-              $10, $11, $12, $13, $14, NULL, $15,
+              $1, $2, $3, $4, $5, $6,
+              $7, $8, $9,
+              $10, $11, $12, $13, $14, $15,
               TRUE, $16, $17, $18
             )
           `,
@@ -1411,6 +1413,38 @@ async function seed() {
       );
     }
 
+    // Seed interview questions
+    const interviewQuestionsDir = path.join(__dirname, 'interview-questions');
+    const questionFiles = fs.readdirSync(interviewQuestionsDir).filter((f) => f.endsWith('.json'));
+    const allQuestions = [];
+    for (const file of questionFiles) {
+      const data = JSON.parse(fs.readFileSync(path.join(interviewQuestionsDir, file), 'utf8'));
+      allQuestions.push(...data);
+    }
+
+    for (const q of allQuestions) {
+      const pgArray = (arr) => '{' + arr.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(',') + '}';
+
+      await client.query(
+        `
+            INSERT INTO interview_questions (
+              id, role, level, category, question, difficulty, skills, estimated_time, guidance
+            )
+            VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8)
+          `,
+        [
+          q.role,
+          q.level,
+          q.category,
+          q.question,
+          q.difficulty,
+          pgArray(q.skills),
+          q.estimatedTime,
+          JSON.stringify(q.guidance),
+        ],
+      );
+    }
+
     await client.query('COMMIT');
 
     console.log('Seed completed successfully.');
@@ -1431,6 +1465,7 @@ async function seed() {
     console.log(`- skill_gap_analyses: ${analyses.length}`);
     console.log(`- job_bookmarks: ${bookmarks.length}`);
     console.log(`- applications: ${applications.length}`);
+    console.log(`- interview_questions: ${allQuestions.length}`);
   } catch (error) {
     await client.query('ROLLBACK');
     throw error;
