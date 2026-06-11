@@ -27,7 +27,9 @@ export const applicationListSelect = {
   },
 } satisfies Prisma.ApplicationDefaultArgs;
 
-export type ApplicationListItem = Prisma.ApplicationGetPayload<typeof applicationListSelect>;
+export type ApplicationListItem = Prisma.ApplicationGetPayload<typeof applicationListSelect> & {
+  matchScore?: number;
+};
 
 export const applicationDetailSelect = {
   select: {
@@ -75,7 +77,9 @@ export const applicationDetailSelect = {
   },
 } satisfies Prisma.ApplicationDefaultArgs;
 
-export type ApplicationDetail = Prisma.ApplicationGetPayload<typeof applicationDetailSelect>;
+export type ApplicationDetail = Prisma.ApplicationGetPayload<typeof applicationDetailSelect> & {
+  matchScore?: number;
+};
 
 export type ApplicationFilters = {
   status?: ApplicationStatusEnum[];

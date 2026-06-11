@@ -55,6 +55,10 @@ export class AuthenticationService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
+      if (!user.isActive) {
+        throw new UnauthorizedException('Account has been deactivated');
+      }
+
       if (!user.isVerified) {
         throw new UnauthorizedException('Please verify your email before logging in');
       }

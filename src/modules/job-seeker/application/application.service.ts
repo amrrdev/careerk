@@ -16,7 +16,25 @@ export class JobSeekerApplicationService {
   ) {}
 
   async getMyApplications(jobSeekerId: string, filters: ApplicationQueryDto) {
-    return this.applicationRepository.findApplicationsByJobSeeker(jobSeekerId, filters);
+    const result = await this.applicationRepository.findApplicationsByJobSeeker(
+      jobSeekerId,
+      filters,
+    );
+
+    const pairs = result.applications.map((app) => ({
+      jobSeekerId,
+      directJobId: app.directJob.id,
+    }));
+
+    const matchScores = await this.applicationRepository.findDirectJobMatches(pairs);
+
+    return {
+      ...result,
+      applications: result.applications.map((app) => ({
+        ...app,
+        matchScore: matchScores.get(`${jobSeekerId}:${app.directJob.id}`) ?? 0,
+      })),
+    };
   }
 
   async getApplicationById(jobSeekerId: string, applicationId: string) {
@@ -28,7 +46,15 @@ export class JobSeekerApplicationService {
       throw new NotFoundException('Application not found');
     }
 
-    return application;
+    const directJobMatch = await this.applicationRepository.findDirectJobMatch(
+      jobSeekerId,
+      application.directJob.id,
+    );
+
+    return {
+      ...application,
+      matchScore: Number(directJobMatch?.matchScore ?? 0),
+    };
   }
 
   async applyToJob(jobSeekerId: string, jobId: string) {
