@@ -338,9 +338,15 @@ Husky runs lint-staged on commit:
 - **Company application detail** — added `matchScore` to `GET /api/v1/companies/me/applications/:id` and list endpoint by querying `DirectJobMatch` via `(jobSeekerId, directJobId)` compound key
 - **Job seekers public list** — added `search` param (`OR` across `firstName`, `lastName`, `profile.title`, `skill.name`); made `availabilityStatus` and `workPreference` multi-value (arrays via `@Transform`, Prisma `in`); fixed regression where job seekers without profiles leaked into results (now uses `where.profile = { is: {} }`)
 - **Job seeker applications** — made `status` multi-value: `?status=PENDING&status=REVIEWED`
+- **Interview questions** — new `GET /api/v1/interview-questions` endpoint with 5 roles × 3 levels × 3 categories = 360 deep technical questions seeded in `interview_questions` table; filterable by `role`, `level`, `category`
+- **Interview questions docs** — created `docs/api-reference/interview-questions/get-interview-questions.mdx` with comprehensive filter examples, category overview table, and response field documentation
+- **More filter examples** — expanded `job-seeker-applications/get-all-applications.mdx` (status multi-value, search, dateApplied, combined) and `company-applications/get-all-applications.mdx` (jobId, status multi-value, combined)
+- **docs.json** — added Interview Questions navigation group
 
 ### Key Patterns
 - Multi-value query params use `@IsEnum(..., { each: true })` + `@Transform` normalizing to array → Prisma `in` operator
 - Optional 1:1 relation filter: use `{ is: {} }` to enforce existence (INNER JOIN)
 - `DirectJobMatch` lookup uses `@@unique([directJobId, jobSeekerId])` compound key
+- For raw SQL inserts of Prisma `String[]` (TEXT[]) fields, convert JS arrays to PostgreSQL array literals: `'{' + arr.map(s => '"' + s.replace(/"/g, '\\"') + '"').join(',') + '}'`
+- When adding tables via migrations after `db push`, create the migration file manually and use `prisma migrate resolve --applied <name>` to mark it applied locally
 

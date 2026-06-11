@@ -1,0 +1,2306 @@
+[
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the Linux process lifecycle. What are the different process states (running, sleeping, zombie, stopped)? How does the kernel transition between them? What causes a process to become a zombie, and how do you clean it up?",
+    "difficulty": "EASY",
+    "skills": ["Linux", "Process Management", "Kernel"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Process states: TASK_RUNNING, TASK_INTERRUPTIBLE, TASK_UNINTERRUPTIBLE, TASK_STOPPED, TASK_ZOMBIE",
+        "Zombie occurs when parent hasn't called wait() to reap child's exit status",
+        "init/systemd adopts orphaned processes and reaps them",
+        "SIGKILL cannot kill a zombie — you must kill the parent or wait for init reaping",
+        "Uninterruptible sleep (D state) usually indicates I/O wait and cannot be killed",
+        "Context switching is managed by the scheduler using the task_struct"
+      ],
+      "commonMistakes": [
+        "Thinking a zombie process is actively running or consuming CPU",
+        "Believing SIGKILL will remove a zombie process",
+        "Confusing uninterruptible sleep with a deadlock",
+        "Assuming all D-state processes are problematic"
+      ],
+      "answerStructure": [
+        "Define the five main process states with their kernel identifiers",
+        "Walk through fork/exec/wait lifecycle with state transitions",
+        "Explain zombie formation: child exits, parent ignores SIGCHLD",
+        "Describe reaping mechanisms: wait(), waitpid(), init adoption",
+        "Mention tools: ps (STAT column), top, /proc filesystem"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "How does Docker build images layer by layer? What is layer caching and when does it invalidate? Explain how multi-stage builds reduce image size internally. What is the difference between ADD and COPY in a Dockerfile?",
+    "difficulty": "EASY",
+    "skills": ["Docker", "Dockerfile", "Container Images", "Layer Caching"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Each RUN, COPY, ADD instruction creates a new read-only layer (overlayfs)",
+        "Cache invalidates when the instruction or its context changes; subsequent layers rebuild",
+        "Multi-stage builds copy artifacts from builder stages, discarding build dependencies",
+        "COPY is preferred over ADD — ADD has implicit tar extraction and remote URL behavior",
+        "Instruction order matters: put rarely-changing instructions first to maximize cache hits",
+        "Each layer is identified by a content hash; cache match uses the hash"
+      ],
+      "commonMistakes": [
+        "Assuming RUN apt-get update alone invalidates cache (needs version pinning)",
+        "Using ADD for simple file copies when COPY suffices",
+        "Not ordering Dockerfile instructions to optimize layer caching",
+        "Believing that removing a file in a later layer reduces image size"
+      ],
+      "answerStructure": [
+        "Explain overlayfs and layer stacking with union mounts",
+        "Describe Docker's build cache algorithm (instruction + parent layer hash)",
+        "Show a caching strategy: OS packages → application dependencies → code",
+        "Compare ADD vs COPY behavior (tar auto-extraction, remote URLs, permissions)",
+        "Walk through a multi-stage build example: builder → runner → minimal image"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Walk through the internal stages of a CI/CD pipeline. What triggers a pipeline? How does the CI server detect changes, run builds, and promote artifacts? What is the difference between a build artifact and a release artifact?",
+    "difficulty": "EASY",
+    "skills": ["CI/CD", "Pipeline", "Artifacts", "Build Automation"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Pipeline triggers: webhook (push/PR), schedule, manual, upstream dependency",
+        "Webhook → CI server fetches source → checkouts commit SHA → runs pipeline",
+        "Pipeline stages: lint → unit test → build → integration test → publish artifact",
+        "Build artifacts are immutable outputs (JAR, Docker image, binary); release artifacts are versioned and deployed",
+        "Environment promotion: dev → staging → production with gates at each stage",
+        "Artifact repositories (Nexus, Artifactory, ECR) store versioned immutable artifacts"
+      ],
+      "commonMistakes": [
+        "Using build artifacts directly in production without versioning",
+        "Not understanding the difference between CI and CD — CI stops at artifact publish",
+        "Checking in compiled artifacts to version control",
+        "Applying environment-specific configuration after promotion instead of at build time"
+      ],
+      "answerStructure": [
+        "Describe pipeline triggers and webhook mechanics",
+        "Walk through a typical pipeline from commit to artifact",
+        "Distinguish CI from CD with a clear boundary marker",
+        "Explain artifact promotion with versioning and immutability",
+        "Discuss gating mechanisms: approval steps, test pass thresholds"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "What is the internal structure of a YAML file? How do anchors (&), aliases (*), and merge keys (<<:) work in YAML? How does YAML parse scalars, sequences, and mappings differently than JSON?",
+    "difficulty": "EASY",
+    "skills": ["YAML", "Serialization", "Configuration"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "YAML core types: mappings (dict), sequences (list), scalars (string, int, bool, null)",
+        "Anchors (&) mark a node for reuse; aliases (*) reference the anchored node",
+        "Merge keys (<<:) flatten one mapping into another (not part of YAML 1.2 spec but widely supported)",
+        "YAML indentation defines structure — tabs are invalid, spaces only",
+        "Implicit typing: unquoted yes/no/true/false are booleans, unquoted numbers are integers",
+        "Multi-document YAML uses --- separator and ... end marker"
+      ],
+      "commonMistakes": [
+        "Using tabs instead of spaces for indentation",
+        "Forgetting that unquoted strings like 'yes' become booleans",
+        "Overusing anchors leading to hard-to-debug configuration",
+        "Assuming merge keys (<<:) work the same in all YAML parsers"
+      ],
+      "answerStructure": [
+        "Explain YAML's three basic data structures with examples",
+        "Demonstrate anchor (&) and alias (*) with a reusable config fragment",
+        "Show merge key pattern and its supported parsers",
+        "Highlight common pitfalls with implicit typing and indentation",
+        "Contrast YAML with JSON: comments, anchors, type coercion"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "How does TCP establish a connection with the three-way handshake? What is the difference between TCP and UDP at the transport layer? How does DNS resolution work end-to-end when you type a URL in a browser?",
+    "difficulty": "EASY",
+    "skills": ["Networking", "TCP/IP", "DNS", "OSI Model"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "TCP: SYN → SYN-ACK → ACK establishes connection; FIN or RST tears it down",
+        "TCP guarantees delivery via sequence numbers, ACKs, and retransmission",
+        "UDP is connectionless with no delivery guarantees — used for DNS, NTP, streaming",
+        "DNS resolution: browser cache → OS cache → hosts file → recursive resolver → root → TLD → authoritative",
+        "OSI layers relevant to DevOps: L2 (switches), L3 (routing), L4 (TCP/UDP), L7 (HTTP)",
+        "MTU affects packet fragmentation at L3; TCP MSS negotiates segment size"
+      ],
+      "commonMistakes": [
+        "Confusing TCP and UDP port usage (DNS uses both)",
+        "Thinking DNS always uses TCP (it uses UDP by default, TCP for zone transfers)",
+        "Believing the three-way handshake happens for every HTTP request on a keep-alive connection",
+        "Not understanding the difference between a MAC address and an IP address"
+      ],
+      "answerStructure": [
+        "Illustrate the TCP three-way handshake with sequence numbers",
+        "Compare TCP vs UDP: reliability, ordering, connection overhead",
+        "Walk DNS resolution step by step from browser to authoritative server",
+        "Map the flow to OSI layers, mentioning relevant protocols per layer",
+        "Touch on common troubleshooting tools: tcpdump, dig/nslookup, ss/netstat"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "How does SSH public key authentication work internally? Explain the difference between password auth and key-based auth. What is SSH agent forwarding and when should you use it? How does the known_hosts file protect against MITM attacks?",
+    "difficulty": "EASY",
+    "skills": ["SSH", "Authentication", "Public Key Cryptography"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Server sends a challenge signed with the client's public key; client proves possession of private key",
+        "Private key never leaves the client machine; server stores ~/.ssh/authorized_keys with public keys",
+        "SSH agent forwarding allows a chain of connections without storing private keys on intermediate hosts",
+        "known_hosts stores server host keys; mismatch triggers a warning that could indicate MITM",
+        "Key types: RSA, Ed25519 (preferred), ECDSA — each with different security properties",
+        "SSH tunnels: local (-L), remote (-R), dynamic (-D) port forwarding for secure proxying"
+      ],
+      "commonMistakes": [
+        "Leaving private keys with no passphrase on disk",
+        "Using SSH agent forwarding when a bastion jump or ProxyJump suffices",
+        "Ignoring host key warnings when connecting to a new server",
+        "Copying private keys to servers instead of using agent forwarding"
+      ],
+      "answerStructure": [
+        "Explain the key generation process: ssh-keygen creates a key pair",
+        "Walk through key-based auth: client sends pubkey ID → server checks authorized_keys → signs challenge",
+        "Describe SSH agent and how forwarding works (socket forwarding)",
+        "Explain known_hosts fingerprint verification and MITM prevention",
+        "Recommend security practices: Ed25519 keys, passphrase, disable password auth"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "How does shell script execution work internally? Explain the difference between a subshell and the current shell. How do pipes connect processes? What is the difference between $(), ${}, and $(()) in Bash?",
+    "difficulty": "EASY",
+    "skills": ["Shell Scripting", "Bash", "Process Execution"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Each shell command forks a child process (fork+exec) unless it's a builtin",
+        "Pipes create an anonymous pipe buffer in the kernel; left process writes to stdout, right reads from stdin",
+        "$() is command substitution (captures stdout), ${} is parameter expansion (variable manipulation), $(()) is arithmetic expansion",
+        "Subshell ( ) runs commands in a child shell environment; changes don't affect parent",
+        "Builtins (cd, export, source) run in the current shell without forking",
+        "Exit codes: 0 = success, non-zero = failure; $? captures the last exit code"
+      ],
+      "commonMistakes": [
+        "Using export in a subshell and expecting it to affect the parent",
+        "Forgetting that pipe creates a subshell for each command",
+        "Misunderstanding variable scope between parent and child processes",
+        "Not quoting variables leading to word splitting and glob expansion"
+      ],
+      "answerStructure": [
+        "Distinguish builtins from external commands with example (type command)",
+        "Explain pipe mechanics: fd[0] read end, fd[1] write end, kernel buffer",
+        "Demonstrate the three expansion forms with concrete examples",
+        "Show subshell behavior with variable scope demonstration",
+        "Cover error handling patterns: set -e, trap, exit code checking"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "How does systemd's journald collect and store logs? What is the difference between syslog and journald? How do log levels (emerg, alert, crit, err, warning, notice, info, debug) map to syslog priorities? Explain log rotation internals.",
+    "difficulty": "EASY",
+    "skills": ["Log Management", "systemd", "journald", "syslog"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "journald stores logs as structured binary data (journal files) with metadata fields",
+        "Syslog uses text-based format with facility/severity; journald adds structured fields (PID, UID, transport, etc.)",
+        "Log rotation: rename current log, compress old logs, signal or reopen file descriptor, prune beyond retention",
+        "journald has built-in rotation based on max size, max age, and available disk space",
+        "Syslog severity levels 0-7: Emergency (0), Alert (1), Critical (2), Error (3), Warning (4), Notice (5), Info (6), Debug (7)",
+        "journalctl queries binary journals with indexed fields for fast filtering"
+      ],
+      "commonMistakes": [
+        "Assuming journald logs are plain text (they are binary; use journalctl)",
+        "Not configuring journald's SystemMaxUse leading to disk-full issues",
+        "Confusing syslog facility (kern, mail, auth) with severity level",
+        "Manually deleting journal files instead of using journalctl --vacuum-*"
+      ],
+      "answerStructure": [
+        "Describe journald's binary journal format and indexed metadata fields",
+        "Compare syslog text output to journald structured logging",
+        "Explain syslog severity levels 0-7 with their meanings",
+        "Walk through log rotation: size triggers, compression, rotation count, signal handling",
+        "Show journalctl usage patterns: --since, -u, -p, --output=json"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A CI pipeline fails intermittently with 'Exit code 137' on the test stage. The same tests pass locally. How do you diagnose and fix this?",
+    "difficulty": "EASY",
+    "skills": ["CI/CD", "Troubleshooting", "OOM", "Docker"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Exit code 137 = SIGKILL (128 + 9), almost always OOM kill",
+        "CI runners often have less memory than local machines",
+        "Check CI runner resource limits and Docker --memory flag",
+        "Look at OOM killer logs: dmesg, journalctl, Docker events",
+        "Node or container level: container memory limit vs runner memory",
+        "Solutions: increase memory limit, reduce test parallelism, optimize test memory usage"
+      ],
+      "commonMistakes": [
+        "Ignoring exit codes and only looking at test output",
+        "Assuming it's a network timeout (exit code 124 for timeout vs 137 for OOM)",
+        "Increasing parallelism to speed up tests (makes OOM worse)",
+        "Not checking CI runner specs vs local dev machine specs"
+      ],
+      "answerStructure": [
+        "Interpret exit code 137 as SIGKILL — identify OOM as root cause",
+        "Check CI environment memory limits (CI config, Docker memory, runner config)",
+        "Inspect OOM killer logs to confirm which process was killed",
+        "Compare resource usage locally vs CI environment",
+        "Implement fix: reduce parallelism, increase memory, or optimize tests"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A Docker container exits immediately after starting with no error logs. The Dockerfile uses an entrypoint script that works locally. How do you debug this?",
+    "difficulty": "EASY",
+    "skills": ["Docker", "Debugging", "Container Lifecycle", "Entrypoint"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Check exit code: docker ps -a shows exit code, docker logs shows stdout/stderr",
+        "Override entrypoint: docker run --entrypoint bash to inspect the container interactively",
+        "Common cause: entrypoint script is Windows line endings (CRLF) or missing execute permission",
+        "Check if base image architecture matches host architecture",
+        "Verify entrypoint script exists in the container at the specified path",
+        "Use docker inspect to check Entrypoint, Cmd, and Env configuration"
+      ],
+      "commonMistakes": [
+        "Only checking docker logs and not the exit code",
+        "Not testing with an interactive shell override",
+        "Assuming the Dockerfile is correct because it built successfully",
+        "Not checking for missing shared libraries or interpreter (#!/bin/bash vs #!/bin/sh)"
+      ],
+      "answerStructure": [
+        "Check exit code and docker logs to gather initial information",
+        "Run the container with --entrypoint override to inspect the filesystem",
+        "Verify entrypoint script permissions, interpreter, and line endings",
+        "Check base image platform match and dependency availability",
+        "Test the entrypoint script manually inside the container"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A Linux server reports 100% disk usage on the root partition. The application is no longer writing logs. How do you identify what's consuming space and resolve the issue?",
+    "difficulty": "EASY",
+    "skills": ["Linux", "Disk Management", "Troubleshooting"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "du -sh /* and du -sh /var/* to find largest directories recursively",
+        "Deleted but held-open files: lsof +L1 shows files with link count 0 still using space",
+        "Journald logs can grow unchecked: journalctl --disk-usage, journalctl --vacuum-size",
+        "Docker overlay2 layers accumulate: docker system df, docker prune commands",
+        "Check inode usage with df -i; full inodes prevent file creation even with free space",
+        "Common culprits: log files, Docker images/volumes, tmp files, core dumps"
+      ],
+      "commonMistakes": [
+        "Only checking df -h and not investigating what changed recently",
+        "Deleting files while processes hold them open — space not reclaimed until process restarts",
+        "Not checking /tmp for large temporary files",
+        "Running rm -rf instead of truncating files with > /var/log/bigfile.log"
+      ],
+      "answerStructure": [
+        "Run df -h to confirm disk usage and identify the partition",
+        "Use du -sh --exclude={proc,sys,dev} /* to find largest directories",
+        "Check for open deleted files with lsof +L1",
+        "Clean up: logs (truncate/rotate), Docker (prune), packages (apt clean)",
+        "Implement prevention: log rotation, monitoring alerts, disk quota"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A web application behind Nginx returns 502 Bad Gateway for some requests but not others. The backend seems healthy. How do you isolate the root cause?",
+    "difficulty": "EASY",
+    "skills": ["Nginx", "Reverse Proxy", "HTTP", "Troubleshooting"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "502 means upstream server returned an invalid or no response",
+        "Check Nginx error logs: /var/log/nginx/error.log for upstream connection failures",
+        "Verify backend health endpoints directly (curl localhost:port/health)",
+        "Check Nginx upstream timeout settings: proxy_read_timeout, proxy_connect_timeout",
+        "Look for request-specific failures: large payloads, slow endpoints, headers",
+        "Check upstream connection limits and keepalive configuration"
+      ],
+      "commonMistakes": [
+        "Assuming the backend is healthy because the homepage loads",
+        "Not checking Nginx error logs at all",
+        "Increasing timeouts without understanding which timeout is triggering",
+        "Missing proxy_buffer_size for large headers or cookies"
+      ],
+      "answerStructure": [
+        "Identify the 502 pattern: specific endpoints, payload sizes, or timing",
+        "Check Nginx error logs and access logs for upstream response codes",
+        "Test backend directly bypassing Nginx with curl",
+        "Review Nginx upstream configuration: timeouts, buffers, keepalive",
+        "Apply fix: adjust timeouts, buffer sizes, or debug backend issue"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "SSH connection to a server times out. The server is pingable from the same machine. Other servers on the same subnet are reachable via SSH. How do you diagnose and resolve this?",
+    "difficulty": "EASY",
+    "skills": ["SSH", "Networking", "Troubleshooting"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Ping works (ICMP) but SSH doesn't (TCP/22) — likely a firewall or service issue",
+        "Check if sshd is running on the target: systemctl status sshd",
+        "Check local firewall: iptables -L or ufw status on the target server",
+        "Check if port 22 is listening: ss -tlnp | grep :22 on target",
+        "Check security groups / firewall rules on cloud provider / router",
+        "Test with verbose SSH: ssh -vvv user@host to see where it hangs"
+      ],
+      "commonMistakes": [
+        "Assuming ping reachability means all ports are reachable",
+        "Not checking the SSH daemon status on the target",
+        "Forgetting about host-based firewalls (iptables/firewalld) even with cloud SGs",
+        "Not checking if Fail2ban or similar has blocked the source IP"
+      ],
+      "answerStructure": [
+        "Gather information: is the server reachable (ping), is port 22 open (nc -zv)",
+        "Run SSH with verbose flags to see where connection stalls",
+        "Check sshd on target: is it running, is it listening on correct interface/port",
+        "Check firewall rules on target and any intermediate firewalls",
+        "Check for IP blocking (Fail2ban, /etc/hosts.deny, security groups)"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A Docker build takes 15 minutes locally. The Dockerfile installs system packages and application dependencies, then copies the source code. How do you optimize the build time?",
+    "difficulty": "EASY",
+    "skills": ["Docker", "Build Optimization", "Layer Caching"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Identify which layers are invalidating the cache by looking at build output (+ signs)",
+        "Reordering instructions: system deps first, app deps second, source code last",
+        "Copy package manager files separately before running install commands",
+        "Use Docker's --cache-from to reuse cache from previous builds or registries",
+        "Combine RUN commands with && to reduce layer count (but not essential for caching)",
+        "Consider multi-stage builds to separate build tools from runtime"
+      ],
+      "commonMistakes": [
+        "Copying the entire source directory before installing dependencies",
+        "Not pinning package versions, causing cache misses on apt update",
+        "Using too many RUN instructions (each creates a layer, but caching is the real issue)",
+        "Running apt-get upgrade which changes every time and invalidates cache"
+      ],
+      "answerStructure": [
+        "Analyze current Dockerfile and identify cache invalidation points",
+        "Restructure: OS packages → dependency manifests → dependency install → app code",
+        "Demonstrate before/after ordering with build output showing cache hits",
+        "Add multi-stage build if build tools aren't needed at runtime",
+        "Measure improvement: compare build times before and after optimization"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Logs for a critical application stopped updating an hour ago. The service is still running and responding to requests. Where would you look and what commands would you run?",
+    "difficulty": "EASY",
+    "skills": ["Log Management", "Debugging", "Linux"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Check if the log file still exists and its size: ls -la, stat logfile",
+        "Check if the file descriptor is still valid: lsof -p <PID> | grep logfile",
+        "If log was rotated, the app may still write to the deleted file (lsof shows deleted)",
+        "Check log rotation config and disk space on log partition",
+        "Check the application's logging config — maybe log level changed or file path changed",
+        "Restart the logging mechanism or send SIGHUP to reopen log files"
+      ],
+      "commonMistakes": [
+        "Only checking the log file with tail and seeing no new lines",
+        "Restarting the service without understanding why logging stopped",
+        "Not checking for deleted file descriptors held by the running process",
+        "Assuming log rotation ran correctly"
+      ],
+      "answerStructure": [
+        "Check if the log file exists, has recent mtime, and has space on the partition",
+        "Check file descriptors: lsof +L1 and lsof -p <PID> | grep log",
+        "Review logrotate config and last rotation time",
+        "Check app config: log level, output destination, buffer settings",
+        "Resolve: SIGHUP the process, fix logrotate config, or restart if needed"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A service fails to start on boot with 'Unit entered failed state'. Running systemctl start manually works fine. What could cause this and how do you debug it?",
+    "difficulty": "EASY",
+    "skills": ["systemd", "Boot Process", "Service Management"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Check systemd dependency ordering: After= and Requires= in the unit file",
+        "Network may not be ready at boot: add After=network-online.target and Wants=network-online.target",
+        "Check if a filesystem or mount point isn't available at boot time",
+        "Look at boot-time logs: journalctl -b -u <service>",
+        "Check if there's a time-based condition: OnBootSec may need adjustment",
+        "The service may depend on another service that starts later"
+      ],
+      "commonMistakes": [
+        "Adding only After= without Wants= or Requires= for the dependency",
+        "Not checking boot-order dependencies for network or storage",
+        "Assuming manual start exercises the same environment as boot start",
+        "Disabling the service instead of fixing the root cause"
+      ],
+      "answerStructure": [
+        "Check the service status and failure logs from the current boot",
+        "Review the systemd unit file for dependency ordering",
+        "Check boot-time environment: network, mounts, other services",
+        "Compare journalctl output for boot vs manual start",
+        "Fix: add proper dependency ordering or ConditionPathExists guards"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you had to learn a new technology quickly to solve a problem. What was your approach and how did you ensure you understood it well enough to deploy it?",
+    "difficulty": "EASY",
+    "skills": ["Learning", "Adaptability", "Self-Improvement"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Demonstrate structured learning approach: official docs → hands-on labs → production",
+        "Show how you validated understanding before deploying",
+        "Mention specific resources used (docs, courses, mentorship)",
+        "Describe how you handled uncertainty during the learning process",
+        "Show outcome and how the learning benefitted the team",
+        "Highlight that you continue to deepen knowledge after initial deployment"
+      ],
+      "commonMistakes": [
+        "Claiming to learn everything perfectly before touching the tool",
+        "Not mentioning any validation or testing steps",
+        "Choosing an example where the outcome was negative",
+        "Focusing only on reading without hands-on practice"
+      ],
+      "answerStructure": [
+        "Set context: what was the problem and why was a new technology needed",
+        "Describe your learning plan: resources, timeline, hands-on approach",
+        "Explain how you validated your understanding (labs, proof of concept, review)",
+        "Share the deployment outcome and lessons learned",
+        "Reflect on what you'd do differently or what you continued to learn"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a situation where you disagreed with a teammate about how to solve a problem. How did you handle the disagreement and what was the outcome?",
+    "difficulty": "EASY",
+    "skills": ["Collaboration", "Communication", "Conflict Resolution"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Show respect for the teammate's perspective even while disagreeing",
+        "Focus on data and evidence rather than opinion",
+        "Describe the process of finding common ground",
+        "Mention if you escalated appropriately or sought a third opinion",
+        "Show that the outcome improved the team or the solution",
+        "Demonstrate that you can disagree without damaging relationships"
+      ],
+      "commonMistakes": [
+        "Portraying yourself as always right and the other person as wrong",
+        "Avoiding the conflict entirely instead of addressing it",
+        "Getting personal instead of sticking to technical arguments",
+        "Not reaching any resolution or compromise"
+      ],
+      "answerStructure": [
+        "Describe the situation and what the disagreement was about",
+        "Explain your position and the teammate's position",
+        "Walk through how you communicated and what evidence you brought",
+        "Describe how you reached resolution (compromise, escalation, data-driven decision)",
+        "Share what you learned from the experience about collaboration"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you made a mistake that caused a production issue or delayed a deployment. What happened and how did you handle it?",
+    "difficulty": "EASY",
+    "skills": ["Accountability", "Incident Response", "Growth Mindset"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Take ownership without making excuses or blaming others",
+        "Describe what you did immediately to fix the issue",
+        "Explain what you learned and how you changed your process",
+        "Show that you participated in a postmortem without being defensive",
+        "Mention any systemic improvements that came from the mistake",
+        "Demonstrate that the mistake made you a better engineer"
+      ],
+      "commonMistakes": [
+        "Downplaying the severity of the mistake",
+        "Blaming others or external factors",
+        "Not having a clear remediation or learning outcome",
+        "Choosing a trivial mistake that doesn't demonstrate growth"
+      ],
+      "answerStructure": [
+        "Set context: what was being deployed or changed",
+        "Describe the mistake honestly and what caused it",
+        "Explain your immediate response: how you detected and fixed it",
+        "Share the postmortem: root cause, action items, systemic fixes",
+        "Conclude with what changed in your workflow because of this experience"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you prioritize your work when you have multiple tasks competing for your attention? Give a specific example.",
+    "difficulty": "EASY",
+    "skills": ["Time Management", "Prioritization", "Organization"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Show a clear prioritization framework: impact, urgency, dependencies",
+        "Mention how you communicate with stakeholders about priorities",
+        "Describe how you handle interruptions (incidents, urgent requests)",
+        "Show that you balance short-term fixes with long-term improvements",
+        "Demonstrate awareness of when to ask for help reprioritizing",
+        "Include a real example with measurable outcomes"
+      ],
+      "commonMistakes": [
+        "Claiming you never have competing priorities",
+        "Saying everything is top priority without a system",
+        "Not involving stakeholders in priority decisions",
+        "Focusing only on urgent items and never completing important ones"
+      ],
+      "answerStructure": [
+        "Describe the framework you use (urgency/impact matrix, MoSCoW, etc.)",
+        "Give a specific example with competing tasks",
+        "Explain how you evaluated each task and made the decision",
+        "Share how you communicated with stakeholders",
+        "Describe the outcome and whether you would prioritize differently in hindsight"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a time you had to explain a technical DevOps concept to a non-technical stakeholder. How did you approach it?",
+    "difficulty": "EASY",
+    "skills": ["Communication", "Stakeholder Management", "Technical Translation"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Tailor the explanation to the audience's interests (cost, reliability, speed)",
+        "Use analogies from non-technical domains",
+        "Focus on outcomes rather than implementation details",
+        "Check for understanding and invite questions",
+        "Provide written follow-up with key takeaways",
+        "Show that you can bridge the gap between engineering and business"
+      ],
+      "commonMistakes": [
+        "Using jargon without explaining it",
+        "Assuming the stakeholder needs to understand implementation details",
+        "Talking down to the stakeholder or making them feel foolish",
+        "Not preparing for the conversation ahead of time"
+      ],
+      "answerStructure": [
+        "Set context: what was the concept and who was the audience",
+        "Describe how you prepared: what analogies, what simplification strategy",
+        "Walk through the conversation and how you gauged understanding",
+        "Share the outcome: did the stakeholder make a better decision afterward",
+        "Reflect on what made the communication effective"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you went beyond your assigned responsibilities to improve a system or process. What motivated you and what was the result?",
+    "difficulty": "EASY",
+    "skills": ["Initiative", "Proactiveness", "Ownership"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Show intrinsic motivation for improvement, not just doing assigned tasks",
+        "Describe a specific problem you noticed and took action on",
+        "Explain how you got buy-in if needed",
+        "Quantify the impact: saved time, reduced errors, improved reliability",
+        "Show that you followed through beyond just identifying the problem",
+        "Demonstrate that you care about the team's long-term success"
+      ],
+      "commonMistakes": [
+        "Describing something that was actually part of your job responsibilities",
+        "Claiming credit for a team effort without acknowledging others",
+        "Not having measurable results",
+        "Choosing a trivial improvement that didn't require initiative"
+      ],
+      "answerStructure": [
+        "Describe the situation and what prompted you to act",
+        "Explain what you did beyond your assigned responsibilities",
+        "Share any obstacles you overcame to make the improvement happen",
+        "Detail the measurable outcome and who benefitted",
+        "Reflect on how this shaped your approach to work"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you handle feedback on your work, especially when it's critical? Give a specific example of feedback you received and how you acted on it.",
+    "difficulty": "EASY",
+    "skills": ["Feedback", "Growth Mindset", "Self-Awareness"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Show that you receive feedback graciously without being defensive",
+        "Demonstrate that you actively seek feedback, not just wait for it",
+        "Describe how you evaluate feedback and decide what to act on",
+        "Give a specific example where feedback led to behavior change",
+        "Show that you follow up after acting on feedback",
+        "Demonstrate that you see feedback as a tool for growth"
+      ],
+      "commonMistakes": [
+        "Claiming you've never received critical feedback",
+        "Describing feedback you disagreed with and dismissed",
+        "Not showing any behavior change from the feedback",
+        "Getting defensive when describing the situation"
+      ],
+      "answerStructure": [
+        "Describe the situation and the feedback you received",
+        "Explain your initial reaction and how you processed it",
+        "Detail what you did differently as a result of the feedback",
+        "Share the outcome and whether the feedback provider noticed the change",
+        "Reflect on your overall approach to receiving and acting on feedback"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a time when you had to work under a tight deadline. How did you manage the pressure and ensure you delivered quality work?",
+    "difficulty": "EASY",
+    "skills": ["Pressure Management", "Time Management", "Quality Focus"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Show how you broke down the work into manageable pieces",
+        "Describe how you communicated timeline risks early",
+        "Explain how you maintained quality even under pressure",
+        "Mention any trade-offs you made and how you justified them",
+        "Show that you didn't sacrifice reliability or security for speed",
+        "Demonstrate that you can perform well under realistic deadlines"
+      ],
+      "commonMistakes": [
+        "Claiming you never feel pressure or stress",
+        "Sacrificing testing and quality to meet the deadline",
+        "Not communicating with stakeholders about timeline concerns",
+        "Working unsustainable hours as a regular practice"
+      ],
+      "answerStructure": [
+        "Set context: what was the deadline and why was it tight",
+        "Describe your approach: prioritization, scope management, communication",
+        "Explain how you maintained quality (testing, reviews, validation)",
+        "Share the outcome: did you meet the deadline with quality work",
+        "Reflect on what you learned about managing pressure effectively"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How does the Kubernetes scheduler decide which node to place a Pod on? Explain the predicate (filtering) and priority (scoring) phases in detail. How do taints, tolerations, node affinity, and pod affinity/anti-affinity influence scheduling decisions?",
+    "difficulty": "MEDIUM",
+    "skills": ["Kubernetes", "Scheduling", "Taints/Tolerations", "Affinity"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Scheduler uses a two-phase algorithm: predicates (filters) then priorities (scores)",
+        "Predicates check node readiness, resource sufficiency, port conflicts, volume zone matching",
+        "Taints prevent pods without matching tolerations from scheduling on a node",
+        "Node affinity uses matching expressions; pod affinity/anti-affinity uses topology keys",
+        "Scoring factors: resource fit, pod spreading, inter-pod topology preferences",
+        "Scheduler extender and scheduler plugins allow custom scheduling logic"
+      ],
+      "commonMistakes": [
+        "Thinking taints repel pods that are already running (they only affect scheduling)",
+        "Confusing nodeSelector (simple matchLabels) with nodeAffinity (expressions)",
+        "Not understanding that pod anti-affinity can prevent scheduling if topology is too broad",
+        "Believing the scheduler is the only component that assigns pods to nodes"
+      ],
+      "answerStructure": [
+        "Describe the scheduler's watch loop and scheduling queue",
+        "List common predicate plugins and what they check",
+        "Score metrics: LeastRequestedPriority, BalancedResourceAllocation, etc.",
+        "Explain taint/toleration mechanics with NoSchedule, PreferNoSchedule, NoExecute",
+        "Cover affinity types: required vs preferred, topology key semantics"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How does Docker container networking work internally? Explain the bridge network driver, network namespaces, veth pairs, and iptables NAT. How does container-to-container communication differ on the same host vs across hosts?",
+    "difficulty": "MEDIUM",
+    "skills": ["Docker", "Networking", "Network Namespaces", "iptables"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Each container gets its own network namespace with its own routing table and iptables",
+        "veth pairs connect container namespace to the host network namespace (one end in container, one on the bridge)",
+        "Docker bridge (docker0) routes traffic between containers on the same host using L2",
+        "iptables NAT (MASQUERADE) translates container IPs to host IP for external access",
+        "Across hosts: requires overlay network (VXLAN or host port mapping)",
+        "User-defined bridge networks provide DNS resolution between containers"
+      ],
+      "commonMistakes": [
+        "Thinking containers on the default bridge can resolve each other by name",
+        "Confusing host network mode (no namespace isolation) with bridge mode",
+        "Not understanding that --publish creates iptables DNAT rules",
+        "Believing overlay networks are set up automatically without a CNI plugin"
+      ],
+      "answerStructure": [
+        "Explain network namespaces and how they isolate container networking",
+        "Describe veth pair mechanics connecting container ↔ bridge",
+        "Walk through docker0 bridge and how containers communicate on the same host",
+        "Explain outbound access: iptables MASQUERADE and FORWARD rules",
+        "Introduce overlay networks for multi-host communication with VXLAN encapsulation"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How does Terraform manage state? Explain the purpose of terraform.tfstate, how Terraform detects drift, and how state locking prevents corruption. What happens during a state migration from local to remote backend?",
+    "difficulty": "MEDIUM",
+    "skills": ["Terraform", "State Management", "Infrastructure as Code"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "State maps real-world infrastructure to configuration; stores resource metadata and dependencies",
+        "Drift detection: terraform plan compares state (last known) with real-world API responses",
+        "State locking prevents concurrent modifications — supported by DynamoDB, GCS, etc.",
+        "State migration: terraform init copies local state to remote backend; backend config in provider block",
+        "State can contain secrets (passwords, connection strings); use encryption at rest",
+        "Remote state data sources allow one workspace to read another's outputs without sharing state"
+      ],
+      "commonMistakes": [
+        "Committing raw state files to version control (contains secrets, binary format)",
+        "Running apply concurrently without state locking",
+        "Editing state files manually instead of using terraform state commands",
+        "Forgetting to migrate state when switching backends — losing track of resources"
+      ],
+      "answerStructure": [
+        "Explain the anatomy of a state file: resource instances, dependencies, attributes",
+        "Describe how plan works: refresh → compare → diff generation",
+        "Discuss state locking mechanisms and why they are critical in team environments",
+        "Walk through a backend migration: local → S3+DynamoDB",
+        "Cover state security: encryption, least-privilege access, secret management"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How does Prometheus collect and store metrics internally? Explain its pull model, time-series database structure, recording rules, and alerting pipeline. How does PromQL evaluate a query over a time range?",
+    "difficulty": "MEDIUM",
+    "skills": ["Prometheus", "Monitoring", "Time-Series Database", "PromQL"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Prometheus pulls metrics from targets via HTTP /metrics endpoints at configured intervals",
+        "TSDB stores data as (metric_name, labels) → set of (timestamp, value) tuples, indexed by labels",
+        "Recording rules pre-compute expensive queries and store results as new time series",
+        "Alerting rules trigger alerts that are pushed to Alertmanager for dedup/grouping/routing",
+        "PromQL range queries select all samples within [now-duration, now] and aggregate over time",
+        "Compaction merges overlapping blocks and downsampling is optional (only for remote storage)"
+      ],
+      "commonMistakes": [
+        "Thinking Prometheus uses a push model (it's pull; Pushgateway is for short-lived jobs)",
+        "Not understanding that recording rules reduce query load, not storage",
+        "Confusing alerting rules (in Prometheus) with notification routing (in Alertmanager)",
+        "Believing Prometheus can horizontally scale without federation or remote write"
+      ],
+      "answerStructure": [
+        "Explain the pull architecture: service discovery, target scraping, staleness",
+        "Describe TSDB storage layout: blocks, chunks, index, WAL",
+        "Show recording rule syntax and when to use them",
+        "Trace the alerting pipeline: rule evaluation → Alertmanager → notification",
+        "Walk through a PromQL range query: selector → range vector → aggregation"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "What is a service mesh and how does it work at the data plane level? Explain how Envoy proxy intercepts traffic via iptables, how mTLS is established between sidecars, and how traffic splitting is implemented without application changes.",
+    "difficulty": "MEDIUM",
+    "skills": ["Service Mesh", "Envoy", "mTLS", "Traffic Management"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Envoy runs as a sidecar: iptables rules redirect inbound/outbound traffic through the proxy",
+        "mTLS entre sidecars: each Envoy has a certificate issued by the mesh CA, authenticates peer before forwarding",
+        "Control plane (Istiod) distributes Envoy configuration via xDS APIs (LDS, RDS, CDS, EDS)",
+        "Traffic splitting uses Envoy's weighted clusters and route matching for canary deployments",
+        "Envoy maintains connection pools, circuit breakers, and retry budgets per upstream cluster",
+        "Protocol (HTTP/1.1, HTTP/2, gRPC) is automatically detected and decoded for advanced routing"
+      ],
+      "commonMistakes": [
+        "Thinking the service mesh manages traffic without any Envoy configuration",
+        "Confusing east-west (service-to-service) with north-south (ingress) traffic",
+        "Believing mutual TLS requires application changes",
+        "Not accounting for the resource overhead of sidecars (CPU/memory per proxy)"
+      ],
+      "answerStructure": [
+        "Describe sidecar injection pattern and iptables traffic interception",
+        "Explain mTLS handshake between two Envoy proxies",
+        "Show how the control plane configures Envoy via xDS discovery APIs",
+        "Walk through a traffic splitting scenario: canary with weighted routing",
+        "Discuss operational considerations: resource usage, startup race conditions, troubleshooting"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How does HashiCorp Vault manage secrets internally? Explain the encryption barrier, secret engines, dynamic secrets, and lease lifecycle. How does Vault ensure that a compromised client can be revoked without affecting other clients?",
+    "difficulty": "MEDIUM",
+    "skills": ["Vault", "Secrets Management", "Encryption", "Lease Lifecycle"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Vault uses an encryption barrier: data is encrypted with a master key before storage in the backend",
+        "Secret engines are isolated mounts that handle different secret types (KV, database, AWS, PKI)",
+        "Dynamic secrets are generated on-demand with TTL; when the lease expires, the credential is automatically revoked",
+        "Each lease has a unique lease ID; revoke one client's lease without affecting others",
+        "Vault uses Shamir's secret sharing or an auto-unseal mechanism to unseal the barrier",
+        "Policies are path-based and evaluated for every request; token carries policy metadata"
+      ],
+      "commonMistakes": [
+        "Storing long-lived static secrets instead of using dynamic secrets with short TTLs",
+        "Not understanding that unsealing is required after every Vault restart",
+        "Confusing the encryption barrier key with individual secret encryption keys",
+        "Ignoring lease renewal and letting dynamic secrets expire in production"
+      ],
+      "answerStructure": [
+        "Explain Vault's architecture: storage backend, encryption barrier, seal/unseal",
+        "Describe the secret engine abstraction and how database dynamic secrets work",
+        "Walk through lease lifecycle: request → TTL → renewal → revocation",
+        "Show how revocation scoping works with lease IDs",
+        "Cover authentication methods and policy evaluation at request time"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How does Helm manage Kubernetes application releases? Explain the chart structure, template rendering with Go templates, release versioning, and three-way strategic merge patch on upgrades. How does Helm detect drift between the release and the live cluster?",
+    "difficulty": "MEDIUM",
+    "skills": ["Helm", "Kubernetes", "Templating", "Release Management"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Helm chart: Chart.yaml, values.yaml, templates/, and optional crds/, charts/",
+        "Template rendering: Go templates with Sprig functions; values injected from --values and --set",
+        "Release history stored in Secrets (v3) with revision numbers; rollback applies the previous manifest",
+        "Three-way merge patch: compares old manifest, new manifest, and current live state",
+        "Helm detects drift during upgrade by comparing the computed manifest against the live cluster state",
+        "Hooks (pre-install, post-upgrade, etc.) run as Jobs with cleanup policies"
+      ],
+      "commonMistakes": [
+        "Forgetting to run helm diff before helm upgrade to preview changes",
+        "Using --replace or --force without understanding three-way merge conflicts",
+        "Not managing chart dependencies with helm dependency update",
+        "Storing secrets in values.yaml instead of using a secrets plugin or external values"
+      ],
+      "answerStructure": [
+        "Break down the chart directory structure and each file's purpose",
+        "Explain template rendering: values injection, named templates, scope",
+        "Describe the three-way merge patch algorithm with examples",
+        "Walk through helm upgrade: diff → apply → revision bump → history storage",
+        "Cover rollback mechanics: helm rollback uses the stored manifest of the target revision"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "How does container security work at the runtime level? Explain seccomp profiles, AppArmor/SELinux, Linux capabilities, and rootless containers. How does a container breakout happen and what controls prevent it?",
+    "difficulty": "MEDIUM",
+    "skills": ["Container Security", "seccomp", "AppArmor", "Linux Capabilities"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Seccomp restricts system calls available to a container; Docker ships a default profile blocking ~44 of ~300 syscalls",
+        "AppArmor and SELinux enforce mandatory access control (MAC) beyond standard discretionary access control (DAC)",
+        "Linux capabilities (CAP_NET_RAW, CAP_SYS_ADMIN, etc.) grant fine-grained privileges; drop all and add only needed",
+        "Rootless containers run the container runtime without root privileges using user namespaces",
+        "Container breakout typically exploits: missing caps drop, privileged mode, mounted host paths, kernel vulns",
+        "Runtime security tools (Falco, Tracee) monitor syscalls and detect anomalous behavior in real time"
+      ],
+      "commonMistakes": [
+        "Running containers with --privileged or adding CAP_SYS_ADMIN without justification",
+        "Mounting the Docker socket (/var/run/docker.sock) inside a container (gives host root access)",
+        "Assuming non-root user inside the container prevents host access (kernel namespaces still matter)",
+        "Disabling seccomp or AppArmor profiles for debugging and leaving them disabled"
+      ],
+      "answerStructure": [
+        "Explain seccomp: how it intercepts syscalls, default Docker profile, custom profiles",
+        "Describe AppArmor/SELinux and the difference between DAC and MAC",
+        "List critical Linux capabilities and the principle of least privilege",
+        "Discuss container breakout vectors and the security controls that block each",
+        "Cover runtime detection: Falco rules, syscall monitoring, and alerting"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A Kubernetes Pod has been in Pending state for 30 minutes. Describe every possible reason and how you would investigate each one using kubectl commands.",
+    "difficulty": "MEDIUM",
+    "skills": ["Kubernetes", "Scheduling", "Debugging", "Troubleshooting"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "kubectl describe pod shows events: FailedScheduling, Insufficient resources, etc.",
+        "Check node status: kubectl get nodes — taints, conditions, resource pressure",
+        "Check PVC: if pod uses a PVC, ensure the PV is bound and available in the same zone",
+        "Check if the scheduler exists and is healthy: kube-system scheduler pod and leader election",
+        "Check container image: typo in image name, private registry without pull secret, bad tag",
+        "Check resource requests vs allocatable: sum of requests may exceed any node's capacity"
+      ],
+      "commonMistakes": [
+        "Only checking kubectl get pods and not kubectl describe for detailed events",
+        "Not checking for taints on nodes that don't match pod tolerations",
+        "Forgetting about node selectors and affinity rules that limit eligible nodes",
+        "Not checking if the scheduler itself is running and functional"
+      ],
+      "answerStructure": [
+        "Start with kubectl describe pod and explain events section",
+        "Check node capacity and allocatable resources across all nodes",
+        "Verify PVC/PV binding and StorageClass availability",
+        "Check image pull errors and registry authentication",
+        "Check scheduler logs and leader election status"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A Terraform apply fails with state lock error: 'Error acquiring the state lock'. The engineer who ran the previous apply is on vacation. How do you safely unlock the state and ensure no corruption?",
+    "difficulty": "MEDIUM",
+    "skills": ["Terraform", "State Management", "Incident Response"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Identify the locking mechanism: DynamoDB (AWS), GCS object, etc.",
+        "Check if the lock holder process is still running: terraform apply on another terminal",
+        "Use terraform force-unlock <lock_id> after confirming no active operation",
+        "If using S3+DynamoDB, check DynamoDB table for lock item and remove if stale",
+        "If using GCS, check object generation for lock file",
+        "Prevention: use CI/CD runners that lock per workspace; always use remote state with locking"
+      ],
+      "commonMistakes": [
+        "force-unlocking without verifying that no process is actively applying",
+        "Manually deleting state files instead of using force-unlock",
+        "Not checking if a CI/CD pipeline is running the apply",
+        "Assuming the lock is stale without investigating"
+      ],
+      "answerStructure": [
+        "Check if any engineer or pipeline might be running terraform now",
+        "Identify the lock ID and holder info from the error message",
+        "Verify with the team that no active apply is in progress",
+        "Run terraform force-unlock <LOCK_ID> with documented justification",
+        "Post-incident: discuss automatic lock release or TTL-based locking"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "Prometheus is consuming 8 GB of memory. The metrics retention is set to 15 days. How do you diagnose the memory usage and reduce it without losing important data?",
+    "difficulty": "MEDIUM",
+    "skills": ["Prometheus", "Monitoring", "Performance Tuning"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Prometheus memory usage correlates with: number of time series, label cardinality, scrape interval, retention",
+        "High cardinality labels (user_id, request_id, email) explode memory — use tsdb-status and promtool to analyze",
+        "Check TSDB stats: /api/v1/status/tsdb shows label pairs count and series per metric",
+        "Reduce retention if acceptable, or increase scrape interval for low-priority targets",
+        "Use recording rules to pre-aggregate, reducing raw series needed at query time",
+        "Consider remote write to long-term storage and reduce local retention"
+      ],
+      "commonMistakes": [
+        "Increasing scrape interval without understanding the cardinality issue",
+        "Adding more RAM without investigating root cause",
+        "Deleting the TSDB WAL without graceful shutdown (causes data loss)",
+        "Not identifying which metric or label is the cardinality offender"
+      ],
+      "answerStructure": [
+        "Check Prometheus memory usage and compare to baseline",
+        "Use the TSDB status API to find high-cardinality metrics",
+        "Identify problematic labels with relabel_config or metric relabeling",
+        "Optimize: reduce label cardinality, increase scrape interval, lower retention",
+        "Implement aggregation via recording rules before adding remote storage"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "After enabling a service mesh (Istio), you observe a 15% increase in P99 latency for a critical service. How do you identify whether the overhead is from the sidecar proxy or the control plane, and what optimizations would you apply?",
+    "difficulty": "MEDIUM",
+    "skills": ["Service Mesh", "Istio", "Performance", "Latency Analysis"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Sidecar overhead: iptables redirect, Envoy connection handling, mTLS encryption",
+        "Measure latency with and without the sidecar using request-level tracing (Jaeger/Zipkin)",
+        "Check Envoy access logs and metrics for upstream request timing breakdown",
+        "Common optimizations: disable mTLS for internal traffic, tune Envoy's connection pool settings",
+        "Check if the sidecar is CPU-starved — Envoy may buffer requests if not enough CPU",
+        "Consider direct pod-to-pod communication for some traffic (skip sidecar with traffic.sidecar.istio.io/excludeOutboundIPRanges)"
+      ],
+      "commonMistakes": [
+        "Assuming all latency is from mTLS encryption (iptables redirection adds more)",
+        "Not measuring baseline latency before and after sidecar injection",
+        "Tuning Envoy settings without understanding the bottleneck location",
+        "Disabling the sidecar globally instead of selectively optimizing"
+      ],
+      "answerStructure": [
+        "Measure baseline latency: compare requests with and without sidecar",
+        "Use distributed tracing to identify where time is spent in the request path",
+        "Check Envoy metrics: upstream_rq_time, cluster.upstream_cx_rx_bytes_total",
+        "Optimize mTLS: disable for internal cluster traffic if security posture allows",
+        "Tune Envoy: connection pool size, idle timeout, and buffer limits"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A database password stored in Kubernetes Secrets was rotated, but the application pods still use the old password. The application reads secrets from environment variables. How do you rotate secrets without downtime?",
+    "difficulty": "MEDIUM",
+    "skills": ["Kubernetes", "Secrets", "Rotation", "Zero-Downtime"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Kubernetes Secrets mounted as env vars are not updated when the Secret changes — only file mounts are synced",
+        "Strategies: restart pods (rolling update), use sidecar that watches secrets, or mount as volumes",
+        "For env vars: update Secret → trigger new rollout of the Deployment with kubectl rollout restart",
+        "Better: mount secrets as volumes — file contents are updated in-place (with propagation delay)",
+        "Applications should watch for file changes and reload connections, or use a sidecar to signal reload",
+        "Tools like Reloader, Stakater can auto-roll Deployments when Secrets change"
+      ],
+      "commonMistakes": [
+        "Expecting env vars from Secrets to update automatically (they don't)",
+        "Updating the Secret but not rolling the pods",
+        "Not testing the rollback scenario: if new secret is bad, how do you restore connectivity",
+        "Using a single Secret for the entire fleet — use per-instance or per-shard secrets"
+      ],
+      "answerStructure": [
+        "Explain why env var secrets don't auto-refresh (kubelet env injection happens at pod start)",
+        "Outline the rotation plan: update database to accept both old and new passwords",
+        "Update the Kubernetes Secret with the new password",
+        "Roll out new pods (rolling update) — old pods keep old password, new pods get new password",
+        "After all pods are updated, remove old password from database"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A helm upgrade --install fails midway, leaving the release in a failed state. Some resources were created, others weren't. How do you recover, and what would you do differently to prevent this?",
+    "difficulty": "MEDIUM",
+    "skills": ["Helm", "Kubernetes", "Release Management", "Recovery"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Check release status: helm list -a, helm status <release> shows last revision and failure reason",
+        "Recovery options: helm rollback <release> <previous-revision>, or fix and helm upgrade --atomic",
+        "Resources created before the failure are orphaned — rollback cleans them up (template-based GC)",
+        "If rollback also fails, helm history and helm get manifest help understand the state",
+        "Prevention: use --atomic (auto-rollback on failure), --wait (wait for ready), helm diff before upgrade",
+        "Test upgrades in a staging environment with the same chart version"
+      ],
+      "commonMistakes": [
+        "Running a second helm install instead of fixing and upgrading",
+        "Not using --atomic or --wait on critical deployments",
+        "Manually deleting resources and then re-running helm (creates state mismatch)",
+        "Ignoring helm diff output before running the upgrade"
+      ],
+      "answerStructure": [
+        "Assess the failure: helm status and describe the failed release",
+        "Decide: rollback to previous working revision or fix forward",
+        "Execute rollback and verify resources match the previous manifest",
+        "If rollback fails, manually clean up orphaned resources and run helm with --atomic",
+        "Postmortem: add helm diff to CI, use --atomic in pipelines, test in staging"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A container is running with more privileges than intended. You suspect it might have been exploited. How do you confirm the current security posture, contain the threat, and harden the configuration?",
+    "difficulty": "MEDIUM",
+    "skills": ["Container Security", "Incident Response", "Forensics"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Check current security context: kubectl describe pod or docker inspect for CapAdd, privileged, securityContext",
+        "Check if host resources are accessible: mount, cgroups, namespaces, Docker socket",
+        "Check running processes and open sockets inside the container",
+        "Contain: cordon the node, drain it, or use network policies to isolate",
+        "Forensics: capture container filesystem snapshot (docker export), runtime logs, and run Falco/Tracee analysis",
+        "Harden: drop ALL capabilities, set readOnlyRootFilesystem, runAsNonRoot, seccomp profile"
+      ],
+      "commonMistakes": [
+        "Killing the container before capturing forensic evidence",
+        "Assuming the container is safe because it runs as non-root (capabilities still apply)",
+        "Not checking if the container had host network access or volume mounts",
+        "Focusing only on this container without checking if the attacker moved laterally"
+      ],
+      "answerStructure": [
+        "Immediate containment: isolate the pod with network policies, cordon the node",
+        "Collect evidence: container security context, running processes, open connections, mounted filesystems",
+        "Analyze: check for anomalous processes, outbound connections, changes to binaries",
+        "Remediate: harden the deployment manifest (securityContext, readOnlyRootFilesystem, drop all caps)",
+        "Post-incident: audit other deployments, add runtime security monitoring, update incident response playbook"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "You need to deploy a service across multiple Kubernetes clusters in different regions. Traffic should failover if one region goes down. How would you design the multi-cluster service discovery and DNS resolution?",
+    "difficulty": "MEDIUM",
+    "skills": ["Multi-Cluster", "DNS", "Service Discovery", "High Availability"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Service discovery options: global DNS (GeoDNS), Kubernetes Federation, Submariner, Istio multi-primary mesh",
+        "DNS-based failover: latency-based or geo-proximity routing with Route53 / Cloud DNS",
+        "Istio multi-primary mesh allows cross-cluster service discovery with DNS resolution via CoreDNS",
+        "Health checks must be at the application level, not just cluster level",
+        "Session affinity may break during failover if clients cache DNS",
+        "Data replication between regions adds complexity — consider read replicas or global tables"
+      ],
+      "commonMistakes": [
+        "Assuming DNS TTL of 0 is sufficient for fast failover (clients and resolvers cache)",
+        "Not considering data locality — writing to a different region causes latency",
+        "Using a single control plane for multi-cluster management (creates SPOF)",
+        "Not testing the failover scenario before relying on it in production"
+      ],
+      "answerStructure": [
+        "Assess requirements: latency, data consistency, failover time, team expertise",
+        "Choose DNS strategy: latency-based routing with health checks",
+        "Design multi-cluster service mesh or federation for cross-cluster discovery",
+        "Plan data layer: global database or region-local with async replication",
+        "Test failover: chaos experiments, gradual traffic shifting, observability validation"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you led a migration from one infrastructure technology to another (e.g., from a monolith to microservices, or from on-prem to cloud). How did you plan and execute the migration?",
+    "difficulty": "MEDIUM",
+    "skills": ["Migration", "Planning", "Technical Leadership"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the migration strategy: big bang vs incremental vs strangler fig",
+        "Explain risk mitigation: rollback plan, feature flags, canary deployments",
+        "Show stakeholder communication: timeline, expected impact, coordination",
+        "Mention data migration challenges: schema changes, data consistency, rollback",
+        "Describe how you validated the new system before cutting over",
+        "Share metrics that proved the migration was successful"
+      ],
+      "commonMistakes": [
+        "Choosing a risky big-bang approach without justifying it",
+        "Not having a rollback plan or testing it before the cutover",
+        "Underestimating data migration complexity and timeline",
+        "Not communicating the migration impact to dependent teams"
+      ],
+      "answerStructure": [
+        "Describe the before state: what was the problem with the old system",
+        "Explain your migration strategy and why you chose it",
+        "Walk through the planning: timeline, rollback plan, testing, communication",
+        "Detail the execution: how the actual migration happened, any issues encountered",
+        "Share the outcome: improvements in reliability, performance, or developer velocity"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Describe your approach to mentoring a junior team member who is struggling with a technology you are proficient in. Give a specific example.",
+    "difficulty": "MEDIUM",
+    "skills": ["Mentoring", "Teaching", "Patience", "Communication"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Show that you adapted your teaching to the individual's learning style",
+        "Describe how you diagnosed what specifically they were struggling with",
+        "Explain how you broke down complex concepts into smaller pieces",
+        "Mention that you encouraged them to try before asking for help",
+        "Show that you celebrated their progress and built their confidence",
+        "Demonstrate that mentoring improved both their skills and your own"
+      ],
+      "commonMistakes": [
+        "Just giving them the answer instead of teaching them to solve it",
+        "Becoming frustrated or showing impatience",
+        "Not following up to ensure they retained the knowledge",
+        "Taking over the task instead of guiding them to complete it"
+      ],
+      "answerStructure": [
+        "Set context: who were you mentoring and what were they struggling with",
+        "Describe your diagnostic approach: what specifically was blocking them",
+        "Explain your teaching method: examples, pair programming, documentation",
+        "Share how their skills improved and how you measured growth",
+        "Reflect on what you learned as a mentor from this experience"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you had to collaborate with another team (e.g., development, security, or product) that had different priorities than yours. How did you find common ground?",
+    "difficulty": "MEDIUM",
+    "skills": ["Cross-Team Collaboration", "Communication", "Alignment"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe how you empathized with the other team's constraints and goals",
+        "Explain how you framed the problem in terms of shared outcomes",
+        "Show that you built trust by delivering on commitments",
+        "Mention specific compromises or trade-offs that were made",
+        "Describe the communication channels and cadence you established",
+        "Demonstrate that the collaboration improved the end result"
+      ],
+      "commonMistakes": [
+        "Portraying your team as reasonable and the other as unreasonable",
+        "Not acknowledging legitimate competing priorities",
+        "Blaming organizational structure or management",
+        "Not reaching a concrete outcome from the collaboration"
+      ],
+      "answerStructure": [
+        "Set context: what were the two teams' priorities and why did they conflict",
+        "Describe your approach: listening, finding shared goals, proposing options",
+        "Walk through how you negotiated and what compromises were made",
+        "Share the outcome: what was built and how the collaboration worked",
+        "Reflect on what made cross-team collaboration successful"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Describe a production incident you handled that required you to stay calm under pressure. What was your role and how did you ensure timely resolution?",
+    "difficulty": "MEDIUM",
+    "skills": ["Incident Response", "Pressure", "Communication", "Leadership"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the incident and its severity clearly (blast radius, user impact)",
+        "Explain your role in the response: incident commander, subject matter expert, or communicator",
+        "Show how you triaged: what was the first action and why",
+        "Describe communication: status updates, stakeholder escalation, timeline",
+        "Mention how you balanced speed with careful action",
+        "Show post-incident: what was the RCA and what systemic fixes were applied"
+      ],
+      "commonMistakes": [
+        "Making the incident sound like it wasn't a big deal",
+        "Not describing your specific role and actions",
+        "Taking actions without communicating to the team",
+        "Not having a clear post-incident follow-up or learning"
+      ],
+      "answerStructure": [
+        "Describe the incident: what happened, what was the impact, how was it detected",
+        "Explain your role and immediate actions taken",
+        "Walk through the timeline: detection → triage → mitigation → resolution",
+        "Describe how you communicated with stakeholders and the team",
+        "Share the postmortem findings and systemic improvements made"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you had to make a technical decision with incomplete information. How did you decide, and what was the outcome?",
+    "difficulty": "MEDIUM",
+    "skills": ["Decision-Making", "Risk Assessment", "Technical Judgment"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the decision and what information was missing",
+        "Explain how you evaluated trade-offs and risks",
+        "Show that you consulted others or ran experiments to gather more data",
+        "Describe the decision framework: cost of being wrong vs cost of delay",
+        "Mention how you validated the decision after implementation",
+        "Demonstrate that you can make decisions without analysis paralysis"
+      ],
+      "commonMistakes": [
+        "Waiting for perfect information that never came (analysis paralysis)",
+        "Making a decision without consulting domain experts",
+        "Not having a clear rollback or mitigation plan",
+        "Claiming the decision was right without acknowledging any negative outcomes"
+      ],
+      "answerStructure": [
+        "Describe the decision context: what was at stake, what information was available",
+        "Explain your decision process: trade-off analysis, risk assessment, expert input",
+        "Detail the decision you made and how you mitigated uncertainty",
+        "Share the outcome and whether you validated the decision afterward",
+        "Reflect on what you learned about making decisions with incomplete information"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "How do you approach technical debt management in infrastructure? Describe a time you chose to address or defer technical debt and how you made that call.",
+    "difficulty": "MEDIUM",
+    "skills": ["Technical Debt", "Prioritization", "Engineering Judgment"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Classify technical debt by impact: reliability risk, velocity drag, security exposure",
+        "Describe a framework for when to fix vs defer: cost of delay vs cost of fix",
+        "Show that you balance new feature velocity with infrastructure health",
+        "Explain how you communicate technical debt to stakeholders",
+        "Mention that you track technical debt items and revisit them regularly",
+        "Demonstrate that you don't let debt accumulate indefinitely"
+      ],
+      "commonMistakes": [
+        "Never addressing technical debt until it causes an incident",
+        "Fixing every small inefficiency instead of focusing on high-impact items",
+        "Not documenting technical debt or communicating it to the team",
+        "Claiming the team has no technical debt (unrealistic)"
+      ],
+      "answerStructure": [
+        "Describe the technical debt you encountered and its impact",
+        "Explain how you evaluated whether to fix or defer",
+        "Share the decision and the reasoning behind it",
+        "Detail the outcome: did the deferral cause issues or was it the right call",
+        "Reflect on your overall approach to managing technical debt"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Describe a situation where you had to balance infrastructure reliability with shipping new features quickly. How did you prioritize?",
+    "difficulty": "MEDIUM",
+    "skills": ["Reliability vs Velocity", "Prioritization", "Risk Management"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the tension between reliability and speed in concrete terms",
+        "Explain how you quantified risk: blast radius, recovery time, user impact",
+        "Show that you used progressive delivery (canary, feature flags) to balance both",
+        "Mention Service Level Objectives as a shared language for trade-offs",
+        "Describe how you communicated the trade-off to product stakeholders",
+        "Demonstrate that you found a solution that mostly satisfied both goals"
+      ],
+      "commonMistakes": [
+        "Always prioritizing reliability and blocking all feature velocity",
+        "Always prioritizing speed and letting reliability degrade",
+        "Not using data to quantify the risk of a reliability incident",
+        "Making the trade-off decision alone without stakeholder input"
+      ],
+      "answerStructure": [
+        "Set context: what feature was being requested and what reliability concern existed",
+        "Explain your analysis: risk assessment, blast radius, recovery plan",
+        "Describe the balanced approach: canary deployment, feature flags, monitoring",
+        "Share the outcome: was the feature delivered without reliability degradation",
+        "Reflect on how you approach the reliability vs velocity tension in general"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you had to communicate a complex technical issue to a non-technical audience (e.g., executives, product managers). How did you make it understandable?",
+    "difficulty": "MEDIUM",
+    "skills": ["Communication", "Stakeholder Management", "Technical Translation"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Identify what matters to the audience: cost, reliability, timeline, risk",
+        "Use business language and analogies, not technical jargon",
+        "Provide options with trade-offs presented in business terms",
+        "Use visual aids: charts showing trends before/after, impact matrices",
+        "Focus on outcomes and recommendations, not implementation details",
+        "Follow up with a written summary that non-technical stakeholders can reference"
+      ],
+      "commonMistakes": [
+        "Diving into technical details the audience doesn't care about",
+        "Using jargon or acronyms without explanation",
+        "Presenting one option as the only choice without discussing trade-offs",
+        "Talking down to the audience or making them feel uninformed"
+      ],
+      "answerStructure": [
+        "Set context: what was the technical issue and who was the audience",
+        "Describe your preparation: what framing, what simplification approach",
+        "Walk through the conversation: what you said and how they reacted",
+        "Share the outcome: was the decision made, was the stakeholder satisfied",
+        "Reflect on what makes technical communication effective with non-technical audiences"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the Kubernetes control plane internals. How does the kube-scheduler make scheduling decisions? Walk through what happens when a new Pod is created — from the API server to the kubelet. How does etcd ensure consistency in a multi-master setup?",
+    "difficulty": "HARD",
+    "skills": ["Kubernetes", "etcd", "Scheduling", "Control Plane"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "API server is the only component that talks to etcd",
+        "Scheduler uses predicates (filters) and priorities (scoring) to pick nodes",
+        "Controller manager watches desired vs actual state via informers",
+        "kubelet watches for new pod assignments on its node",
+        "etcd uses Raft consensus for consistency across replicas",
+        "Admission controllers can mutate or validate requests before persistence"
+      ],
+      "commonMistakes": [
+        "Thinking kube-scheduler directly communicates with kubelet",
+        "Not understanding that etcd is a key-value store, not a relational DB",
+        "Confusing admission controllers with RBAC",
+        "Believing the scheduler assigns Pods — it actually binds them"
+      ],
+      "answerStructure": [
+        "Trace the request: kubectl → API server → admission → etcd",
+        "Explain scheduler's predicate/priority algorithm",
+        "Describe binding and how kubelet discovers assigned pods",
+        "Cover etcd Raft consensus and failure scenarios",
+        "Discuss control plane HA: leader election and component redundancy"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How does etcd's Raft consensus work under the hood? Explain leader election, log replication, quorum, and what happens during a network partition. How do etcd reads (linearizable vs serializable) differ, and when would you use each?",
+    "difficulty": "HARD",
+    "skills": ["etcd", "Raft", "Consensus", "Distributed Systems"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Raft ensures consensus via leader election, log replication, and safety guarantees",
+        "Leader election: nodes start as followers, timeout → become candidate → request votes → become leader",
+        "Quorum = majority of nodes (N/2 + 1): cluster of 3 can tolerate 1 failure, 5 tolerates 2",
+        "Log replication: leader appends entry → replicates to followers → commits when majority acknowledge",
+        "Network partition: minority partition cannot form quorum, so it stops accepting writes",
+        "Linearizable reads go through the leader with a quorum check; serializable reads use local data and may be stale"
+      ],
+      "commonMistakes": [
+        "Thinking etcd requires all nodes to be healthy (only quorum is needed)",
+        "Confusing Raft with Paxos: Raft is simpler and more widely understood",
+        "Believing snapshotting and compaction delete the data (they compact the WAL, not the store)",
+        "Assuming linearizable reads are always necessary (serializable is fine for many use cases)"
+      ],
+      "answerStructure": [
+        "Explain Raft's three roles and leader election protocol with timeouts",
+        "Describe log replication flow: client write → leader entry → follower replication → commit",
+        "Discuss quorum math and fault tolerance with cluster sizes",
+        "Walk through a partition scenario: what works, what breaks, how it recovers",
+        "Compare linearizable vs serializable reads and their performance implications"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How do Kubernetes autoscaling mechanisms interact? Explain the decision chain from Horizontal Pod Autoscaler (HPA) to Vertical Pod Autoscaler (VPA) to Cluster Autoscaler. When would HPA and VPA conflict, and how do you resolve it?",
+    "difficulty": "HARD",
+    "skills": ["Kubernetes", "Autoscaling", "HPA", "VPA", "Cluster Autoscaler"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "HPA scales replicas based on CPU/memory or custom metrics; VPA adjusts resource requests/limits of existing pods",
+        "HPA and VPA should not run on the same workload — VPA can't recalculate if HPA changes replica count",
+        "Cluster Autoscaler adds/removes nodes when pods are unschedulable or nodes are underutilized",
+        "Decision order: metric threshold → HPA scales replicas → new pods may be Pending → CA scales nodes",
+        "VPA recommender uses historical usage and OOM events to compute recommended requests",
+        "Cluster Autoscaler respects PodDisruptionBudgets and scale-down cool-down to avoid flapping"
+      ],
+      "commonMistakes": [
+        "Running HPA and VPA on the same Deployment (creates a feedback loop)",
+        "Setting HPA target utilization too low, causing premature scaling",
+        "Not configuring PodDisruptionBudget for Cluster Autoscaler scale-down",
+        "Forgetting that CA can take 5-10 minutes to provision new nodes"
+      ],
+      "answerStructure": [
+        "Describe HPA: metrics pipeline, target utilization calculation, replica count formula",
+        "Describe VPA: recommender, updater, admission controller; how it mutates pod specs",
+        "Explain why HPA and VPA conflict and how to use VPA only for initial recommendations",
+        "Walk through Cluster Autoscaler: unschedulable pod detection, cloud provider node group scaling",
+        "Trace a full autoscaling scenario: traffic spike → HPA → Pending pods → CA → steady state"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How does GitOps work at scale with ArgoCD? Explain the reconciliation loop, sync strategies (automated vs manual), and how ArgoCD detects and remediates drift. How would you handle a multi-cluster, multi-tenant GitOps deployment with hundreds of applications?",
+    "difficulty": "HARD",
+    "skills": ["GitOps", "ArgoCD", "Reconciliation", "Multi-Cluster"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "ArgoCD continuously compares the desired state in Git with the live cluster state",
+        "Reconciliation loop: poll Git (or webhook) → diff → auto-sync or alert on drift",
+        "Sync strategies: automated (prune, self-heal), manual with approval, sync waves for ordering",
+        "Drift detection compares the live manifest with the desired manifest using a three-way diff",
+        "Multi-cluster: ArgoCD manages multiple clusters via cluster secrets; RBAC per cluster per app",
+        "App of Apps pattern: one root Application manages child Applications for large-scale deployments"
+      ],
+      "commonMistakes": [
+        "Enabling auto-sync without prune prevention or self-heal safeguards",
+        "Not understanding that manual changes to the cluster will cause drift and possible overwrite",
+        "Using a monorepo without proper access controls or path restrictions",
+        "Not using sync waves for dependent resources (CRDs before CRs)"
+      ],
+      "answerStructure": [
+        "Explain the GitOps principle: Git as the single source of truth",
+        "Describe ArgoCD architecture: API server, repo server, application controller, redis",
+        "Walk through the reconciliation loop: compare state → detect drift → sync",
+        "Discuss auto-sync vs manual sync, sync waves, and prune behavior",
+        "Design a multi-cluster setup: App of Apps, cluster RBAC, secret management, notification policies"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "What are the principles of chaos engineering and how do you implement them in a production environment? Explain the scientific method applied to chaos experiments, blast radius control, and how you would design a chaos experiment for a Kubernetes cluster running stateful workloads.",
+    "difficulty": "HARD",
+    "skills": ["Chaos Engineering", "Resilience", "Kubernetes", "Reliability"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Chaos engineering: experiment on a system to build confidence in its ability to withstand turbulent conditions",
+        "Scientific method for chaos: define steady state → hypothesize → run experiment → compare → fix gap",
+        "Blast radius control: gradual rollout, canary clusters, feature flags, time-boxed experiments",
+        "Tools: Chaos Mesh, Litmus, Gremlin — each implements different fault injection mechanisms",
+        "Stateful workloads require careful handling: persistent volumes, quorum, data consistency checks",
+        "Automated experiments: integrate into CI/CD pipeline with gated rollouts and observability checks"
+      ],
+      "commonMistakes": [
+        "Running chaos experiments without a hypothesis or success criteria",
+        "Not having monitoring or observability to measure steady state violation",
+        "Starting with production before testing in staging environments",
+        "Focusing on infrastructure faults but ignoring application-level faults (latency, errors, timeouts)"
+      ],
+      "answerStructure": [
+        "Define chaos engineering principles and distinguish from testing",
+        "Walk through the scientific method with a concrete example",
+        "Design a Kubernetes experiment: kill a pod, measure recovery time, check SLO compliance",
+        "Blast radius: namespace isolation, experiment duration limits, automatic rollback",
+        "Build a chaos program: game days, experiment catalog, CI/CD integration"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How do you design a multi-cloud infrastructure strategy? Discuss provider abstraction layers, data gravity, network interconnectivity, and the operational challenges of running the same workload across AWS, GCP, and Azure.",
+    "difficulty": "HARD",
+    "skills": ["Multi-Cloud", "Cloud Architecture", "Provider Abstraction"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Provider abstraction: Terraform providers, Kubernetes (portable control plane), cloud-agnostic services",
+        "Data gravity: moving large data across clouds is expensive and slow — design for data locality",
+        "Network interconnectivity: direct connects / VPN between clouds, service mesh for cross-cloud traffic",
+        "Observability: metrics, logs, tracing must aggregate across providers with common tooling",
+        "CI/CD must work consistently across clouds: container images are portable, cloud-specific config is not",
+        "Operational cost: multi-cloud requires expertise in each provider, increasing team complexity"
+      ],
+      "commonMistakes": [
+        "Assuming all cloud services have direct equivalents (e.g., Lambda vs Cloud Functions vs ACS)",
+        "Underestimating egress costs when moving data between clouds",
+        "Building the same infrastructure manually in each cloud instead of using IaC",
+        "Choosing multi-cloud as a risk mitigation strategy but not testing failover"
+      ],
+      "answerStructure": [
+        "Discuss motivations for multi-cloud: vendor lock-in avoidance, regulatory, capability-specific",
+        "Design the abstraction layer: Kubernetes for compute, Terraform for infrastructure, cross-cloud networking",
+        "Address data gravity: where does data live, how is it replicated, what are the latency requirements",
+        "Operational challenges: team expertise, cost management, consistent observability, security policies",
+        "Recommend a pragmatic approach: primary + secondary cloud with proven failover"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How do you automate SOC 2 compliance evidence collection? Describe the control framework mapping, continuous monitoring architecture, and how you would design a system that proves controls are operating effectively at all times, not just during audit windows.",
+    "difficulty": "HARD",
+    "skills": ["SOC2", "Compliance", "Audit Automation", "Security"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Map controls to technical signals: access reviews → IAM audit logs, change management → Git history and CI/CD logs",
+        "Continuous monitoring: collect evidence from cloud APIs, Kubernetes audit logs, CI/CD pipelines, VCS history",
+        "Evidence types: system-generated (logs), manual (screenshots), observed (video) — automate system-generated",
+        "Tools: CloudSploit, Prowler, Checkov for IaC scanning; Falco for runtime security; OpenPolicyAgent for policy",
+        "Store evidence immutably: append-only log sink, encrypted object storage, with hash-chain integrity",
+        "Build a compliance dashboard showing real-time control status, drift, and evidence trail"
+      ],
+      "commonMistakes": [
+        "Collecting evidence manually during audit periods instead of continuously",
+        "Not mapping technical controls to specific SOC 2 criteria (CC6, CC7, etc.)",
+        "Storing evidence without integrity verification (checksums, digital signatures)",
+        "Only proving controls exist, not that they operate effectively over time"
+      ],
+      "answerStructure": [
+        "Explain the SOC 2 trust services criteria relevant to infrastructure",
+        "Design the control mapping: map each criterion to a technical control and evidence source",
+        "Architect continuous evidence collection: event-driven, immutable storage, retention policies",
+        "Discuss automated testing of controls: periodic control tests vs real-time monitoring",
+        "Show an audit-readiness dashboard: control status, evidence gaps, trend analysis"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How do you design an incident management process at scale? Define severity levels, escalation paths, and the incident command system. How do you measure incident response effectiveness with SLIs, SLOs, and error budgets? What makes a postmortem effective?",
+    "difficulty": "HARD",
+    "skills": ["Incident Management", "SLO", "Postmortem", "Reliability"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Severity levels: SEV1 (critical user impact), SEV2 (partial impact), SEV3 (minor), SEV4 (inquiry)",
+        "Incident command system: incident commander (coordinator), comms lead, subject matter experts, scribe",
+        "SLIs measure service health (latency, error rate, throughput); SLOs set targets; error budgets measure tolerance",
+        "Error budget burn rate alerts when remaining budget is depleting faster than expected",
+        "Effective postmortems: blameless, detailed timeline, root cause + contributing factors, action items with owners",
+        "Postmortem action items should be SLO-justified: invest in reliability proportional to error budget burn"
+      ],
+      "commonMistakes": [
+        "Having too many severity levels that are indistinguishable in practice",
+        "The incident commander also acting as an SME (conflict of roles)",
+        "Postmortems that blame individuals instead of systemic failures",
+        "Not tracking postmortem action items to completion"
+      ],
+      "answerStructure": [
+        "Define severity levels with concrete examples and response time targets",
+        "Explain the incident command roles and escalation path",
+        "Describe SLI/SLO/error budget framework and how it drives reliability investment",
+        "Walk through an incident lifecycle: detection → triage → mitigation → resolution → postmortem",
+        "Share postmortem best practices: blameless culture, timeline accuracy, measurable action items"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "An etcd cluster is experiencing high leader election frequency. The cluster has 3 members and runs on the same set of Kubernetes nodes. How do you diagnose the cause and stabilize the cluster?",
+    "difficulty": "HARD",
+    "skills": ["etcd", "Consensus", "Kubernetes", "Performance Debugging"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "High leader election usually means network latency, disk I/O spikes, or resource starvation",
+        "Check etcd metrics: leader_elections_total, wal_fsync_duration, heartbeat_send_failures",
+        "Shared Kubernetes nodes: resource contention (CPU throttling, disk IOPS limits) affects etcd",
+        "etcd is sensitive to disk latency — fsync must complete within the heartbeat interval (default 100ms)",
+        "Check node resources: CPU throttling (cgroup), disk IOPS/throughput, network latency between members",
+        "Solutions: dedicate nodes to etcd, use SSD with high IOPS, increase heartbeat interval, or move to 5 nodes"
+      ],
+      "commonMistakes": [
+        "Increasing the heartbeat interval as the first step without diagnosing the root cause",
+        "Not checking if the underlying Kubernetes nodes have resource contention",
+        "Ignoring disk performance — etcd is extremely sensitive to fsync latency",
+        "Thinking more etcd members always improves stability (more nodes = more network round trips)"
+      ],
+      "answerStructure": [
+        "Check etcd leader election metrics and logs for the failure pattern",
+        "Measure disk latency (fsync duration) and network latency between cluster members",
+        "Check Kubernetes node resource usage: CPU, memory, disk IO — look for contention",
+        "Verify etcd resource requests/limits are appropriate and not CPU-throttled",
+        "Implement fix: dedicate nodes, tune heartbeat/election timeouts, or re-architect cluster topology"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "You need to upgrade a production Kubernetes cluster from 1.27 to 1.29. The cluster runs 200+ microservices, stateful workloads with PVCs, and custom admission webhooks. Design the upgrade strategy including rollback plan, validation gates, and communication.",
+    "difficulty": "HARD",
+    "skills": ["Kubernetes", "Upgrade", "Migration", "Risk Management"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Kubernetes supports only one minor version upgrade at a time (1.27 → 1.28 → 1.29)",
+        "Check API deprecations: resources removed in 1.28 and 1.29 must be migrated before upgrade",
+        "Admission webhooks must be verified against new version — they can block the upgrade if incompatible",
+        "Upgrade order: etcd → control plane → nodes; canary a node pool before upgrading all workers",
+        "Rollback: restore etcd snapshot, downgrade kube-apiserver first, then kubelets",
+        "Validation gates: run conformance tests, verify PVC access, check all pods are healthy post-upgrade"
+      ],
+      "commonMistakes": [
+        "Skipping intermediate versions (going 1.27 → 1.29 directly — not supported)",
+        "Not checking API deprecations before upgrading",
+        "Upgrading all nodes simultaneously instead of using a canary node pool",
+        "Not testing admission webhooks against the new API version before the upgrade"
+      ],
+      "answerStructure": [
+        "Audit current cluster: API resources, webhooks, deprecated APIs, workload types",
+        "Plan the upgrade path: 1.27 → 1.28 → 1.29 with validation gates at each step",
+        "Design rollback: etcd snapshot strategy, control plane downgrade procedure",
+        "Execute: upgrade control plane, canary node pool, then remaining nodes",
+        "Post-upgrade validation: conformance tests, workload health, performance baseline"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A multi-region application experiences 5-second latency spikes every few minutes when cross-region traffic fails over. The application uses a global DNS with health checks. How do you diagnose and design a more resilient cross-region networking strategy?",
+    "difficulty": "HARD",
+    "skills": ["Multi-Region", "DNS", "Networking", "Resilience"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Trace the latency spike: is it DNS failover, connection pooling, TLS handshake, or data replication lag",
+        "DNS TTL combined with client DNS caching causes delayed failover (browser caches for TTL duration)",
+        "Health check design: passive (Envy circuit breakers) vs active (DNS health checks) — each has different detection time",
+        "Connection pooling: failover opens new connections to the other region, which has TCP slow start",
+        "Data replication lag: async replication means the failover region may have stale data",
+        "Solutions: client-side load balancing with hedging, global anycast, active-active with local reads"
+      ],
+      "commonMistakes": [
+        "Assuming DNS failover is instant (DNS caching at multiple levels delays it)",
+        "Not pre-warming connections to the secondary region",
+        "Using active-passive without testing failover regularly",
+        "Not considering that the database is the bottleneck, not the application"
+      ],
+      "answerStructure": [
+        "Analyze the latency spike: what changes at the time of the spike (traces, metrics, logs)",
+        "Check DNS resolution timing and TTL configuration",
+        "Evaluate connection pooling and TLS session resumption between regions",
+        "Assess data replication lag and consistency requirements",
+        "Design improved strategy: active-active, global load balancing with proximity routing, connection pre-warming"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "During a SOC 2 audit, the auditor finds that your change management evidence is insufficient. You have CI/CD pipelines, code reviews, and deployment approvals, but the auditor can't trace a specific infrastructure change to an authorized ticket. How do you retrofit auditable change tracking?",
+    "difficulty": "HARD",
+    "skills": ["SOC2", "Change Management", "Audit", "Compliance"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "The gap is traceability: each change must link from ticket → PR → CI build → deployment",
+        "Use commit hooks to require ticket references in commit messages (e.g., JIRA-123)",
+        "CI/CD pipeline stages should emit signed metadata: git SHA, PR link, ticket ID, approver, timestamp",
+        "Store immutable change logs: cloud audit trails (CloudTrail, Activity Log), Kubernetes audit logs, CI metadata",
+        "Automated evidence collection: tool like CloudSight or custom pipeline that generates a change compliance report",
+        "For retrospective: reconstruct change history from Git logs, CI/CD run history, and cloud provider audit logs"
+      ],
+      "commonMistakes": [
+        "Asking developers to manually document changes after the fact",
+        "Only tracking application changes, not infrastructure changes (Terraform applies, Helm upgrades)",
+        "Not capturing who approved the change in the audit trail",
+        "Using ephemeral CI/CD logs that don't meet retention requirements"
+      ],
+      "answerStructure": [
+        "Identify the evidence gap: what exactly is the auditor asking for",
+        "Design the traceability chain: ticket → PR → commit → build → artifact → deployment",
+        "Implement automated metadata collection in CI/CD pipelines",
+        "Retrofit existing evidence: extract from VCS history, CI logs, and cloud trails",
+        "Build continuous compliance dashboard: real-time change traceability status"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A Kubernetes cluster is experiencing periodic performance degradation every 2 hours. CPU and memory appear normal, but API server latency spikes and pod readiness probes start failing. How do you find the root cause?",
+    "difficulty": "HARD",
+    "skills": ["Kubernetes", "Performance Debugging", "API Server", "Observability"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Check if the 2-hour pattern correlates with cron jobs, log rotation, metrics scraping, or backup jobs",
+        "API server latency: check etcd request latency, watch event count, audit log volume",
+        "Pod readiness probe failures may be cascading — check if the issue starts at the control plane or the node",
+        "Check if heavy informer watches or expensive list calls are causing API server CPU/memory spikes",
+        "Common periodic causes: Prometheus heavy scrape schedule, CronJob bursts, log rotation on nodes, TLS cert rotation",
+        "Check Kubernetes audit logs for a spike in request volume at the onset of the incident"
+      ],
+      "commonMistakes": [
+        "Only looking at pod-level metrics and ignoring control plane metrics",
+        "Assuming the readiness probe failure is an application issue, not a control plane issue",
+        "Not correlating the timing with known periodic jobs",
+        "Restarting pods without understanding the root cause"
+      ],
+      "answerStructure": [
+        "Correlate the timing: what happens every 2 hours (crons, scrapes, rotations, jobs)",
+        "Check API server metrics: request latency, rate, error codes, etcd operation latency",
+        "Check etcd metrics: fsync duration, leader elections, db size, compaction timing",
+        "Identify the workload causing the spike: audit log analysis, kube-state-metrics trends",
+        "Implement fix: stagger cron schedules, reduce scrape load, optimize watch informers"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "ArgoCD reports OutOfSync for a critical application. Someone manually edited a Deployment in the cluster. You need to restore alignment with Git without losing any critical configuration. Git has the correct version. How do you proceed?",
+    "difficulty": "HARD",
+    "skills": ["GitOps", "ArgoCD", "Drift Remediation"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "First, understand what drifted: argo diff shows the delta between Git and live state",
+        "If Git is correct: sync with Prune=true to restore Git state (overwrites manual changes)",
+        "If the manual change contains critical config not in Git: first commit the change to Git, then sync",
+        "If the manual change was a hotfix that should persist temporarily: sync with Prune=false, then backport to Git",
+        "Prevent recurrence: restrict RBAC so manual kubectl edits are not possible for this namespace",
+        "Consider enabling ArgoCD's automated sync with self-heal for this application"
+      ],
+      "commonMistakes": [
+        "Running auto-sync without reviewing the diff first",
+        "Not checking if the manual change added something critical that Git doesn't have",
+        "Enabling prune without checking if there are resources that should be kept",
+        "Assuming all drift is bad — the manual change may have been a valid emergency fix"
+      ],
+      "answerStructure": [
+        "Assess the drift: use argo diff to see what changed and whether the manual change is important",
+        "If the manual change is critical: commit it to Git first, then let ArgoCD sync",
+        "If Git is authoritative: run sync with prune, verify the app becomes healthy",
+        "Post-incident: investigate who made the change and why (was there a process failure)",
+        "Harden: restrict direct cluster access, enable self-heal, set up drift alerts"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A chaos engineering experiment that kills random pods in a production namespace accidentally triggers a cascading failure across multiple services. The experiment exceeded its blast radius. How do you contain the incident, and what would you change about your chaos engineering program?",
+    "difficulty": "HARD",
+    "skills": ["Chaos Engineering", "Incident Response", "Blast Radius"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Immediate containment: stop the chaos experiment, identify all affected services, and stabilize",
+        "Check if the experiment's namespace isolation was configured correctly",
+        "Assess blast radius: did it affect shared infrastructure (DNS, ingress, service mesh control plane)",
+        "Restore affected services: scale up replicas, restart control plane components, restore from backup",
+        "Root cause analysis: why did the cascade happen (tight coupling, no circuit breakers, missing retry limits)",
+        "Program improvements: blast radius guardrails, approval gates for production experiments, automatic rollback triggers"
+      ],
+      "commonMistakes": [
+        "Not stopping the experiment immediately (continuing to collect data)",
+        "Blaming the chaos tool instead of improving the system's resilience",
+        "Not having a kill switch for experiments before running them in production",
+        "Running experiments without a rollback plan or success criteria defined"
+      ],
+      "answerStructure": [
+        "Immediate response: halt the chaos experiment, declare incident, assess blast radius",
+        "Stabilize: restore affected services, confirm the control plane is healthy",
+        "Investigate: why did the cascade exceed the expected blast radius",
+        "Fix systemic issues: circuit breakers, retry budgets, bulkheads, rate limiters",
+        "Improve chaos program: blast radius limits, automatic experiment termination, staging-first requirement"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your cloud costs have doubled in the past quarter with no corresponding traffic increase. Engineering teams own their infrastructure but have no cost visibility. How do you build a cost optimization program that scales across multiple teams?",
+    "difficulty": "HARD",
+    "skills": ["Cloud Costs", "FinOps", "Optimization", "Organizational Change"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "First, understand the cost breakdown: compute, storage, networking, data transfer — identify the biggest driver",
+        "Implement cost allocation: tag resources by team, environment, service, and cost center",
+        "Build a cost observability dashboard: per-team spend trends, anomalies, and efficiency metrics (cost per request)",
+        "Identify waste: orphaned resources, over-provisioned instances, unattached volumes, unused IPs",
+        "Right-sizing: analyze resource utilization (CPU/memory) and switch to rightsized instance types or reserved instances",
+        "Cultural change: create a FinOps practice with regular cost reviews, team budgets, and cost efficiency goals"
+      ],
+      "commonMistakes": [
+        "Not tagging resources properly before trying to optimize",
+        "Focusing only on compute Reserved Instances when data transfer is the cost driver",
+        "Turning off resources without understanding dependencies or usage patterns",
+        "Making optimization a top-down mandate without team buy-in"
+      ],
+      "answerStructure": [
+        "Analyze the current cost: identify which services, accounts, and teams are driving spend",
+        "Implement resource tagging and cost allocation — enforce with policy-as-code",
+        "Build cost observability: dashboards, anomaly detection, cost-per-unit-metric",
+        "Identify and remediate waste: automated orphan resource cleanup, right-sizing recommendations",
+        "Scale: FinOps reviews, team budgets, cost efficiency as a reliability metric"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you built a platform or tool that other engineering teams adopted. How did you design for usability, reliability, and adoption?",
+    "difficulty": "HARD",
+    "skills": ["Platform Engineering", "Product Thinking", "Adoption"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe how you identified the pain point that the platform solves",
+        "Explain how you designed the interface (API, CLI, UI) for developer experience",
+        "Show that you considered reliability: SLOs, error budgets, graceful degradation",
+        "Describe the adoption strategy: documentation, brown bags, migration support",
+        "Mention how you gathered feedback and iterated after launch",
+        "Share adoption metrics: teams using it, velocity improvement, reliability impact"
+      ],
+      "commonMistakes": [
+        "Building a platform in isolation without understanding user needs",
+        "Not providing migration tooling or support for existing workflows",
+        "Treating the platform as a finished product instead of iterating with users",
+        "Not defining success metrics before building"
+      ],
+      "answerStructure": [
+        "Set context: what problem were teams facing, and why build a platform",
+        "Describe your design approach: user research, API design, reliability requirements",
+        "Explain the adoption strategy: how you got the first users and scaled",
+        "Share metrics: adoption rate, team satisfaction, operational impact",
+        "Reflect on what you would do differently building the next platform"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a time you drove organizational change in how infrastructure or operations are managed. How did you get buy-in from teams that were resistant to change?",
+    "difficulty": "HARD",
+    "skills": ["Organizational Change", "Influence", "Leadership"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the current state and why change was necessary",
+        "Explain how you built a coalition of supporters across teams",
+        "Show empathy for resistance: what were people afraid of, and how did you address it",
+        "Describe the rollout strategy: pilot team, incremental adoption, quick wins",
+        "Mention metrics that proved the change was working",
+        "Demonstrate that the change persisted after you moved on"
+      ],
+      "commonMistakes": [
+        "Mandating change from the top without building grassroots support",
+        "Not understanding why teams were resistant (fear of extra work, breaking things, learning curve)",
+        "Trying to change everything at once instead of a phased approach",
+        "Not celebrating or communicating early wins"
+      ],
+      "answerStructure": [
+        "Describe the problem that required organizational change",
+        "Explain your strategy: who you recruited as champions, how you built the case",
+        "Walk through the rollout: pilot, feedback, iteration, scaling",
+        "Share the outcome: adoption rate, operational improvements, team satisfaction",
+        "Reflect on what made the change successful and what you learned about influence"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "How do you build a culture of reliability and operational excellence in an engineering organization? Give specific examples of practices you've implemented.",
+    "difficulty": "HARD",
+    "skills": ["Reliability Culture", "SRE Principles", "Organizational Design"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Start with SLIs and SLOs — define what reliability means in measurable terms",
+        "Implement error budgets: teams can decide when to invest in reliability vs features",
+        "Blameless postmortem culture: focus on systemic failures, not individual mistakes",
+        "Game days and chaos experiments: practice failure scenarios in a safe environment",
+        "On-call excellence: fair rotation, runbooks, incident management training",
+        "Reliability reviews: include reliability as a design requirement in all new projects"
+      ],
+      "commonMistakes": [
+        "Mandating reliability practices without developer buy-in",
+        "Setting SLO targets that are too aggressive or too lax",
+        "Using postmortems to assign blame instead of finding systemic improvements",
+        "Not allocating time for reliability improvements (error budget should drive prioritization)"
+      ],
+      "answerStructure": [
+        "Explain your philosophy on reliability culture",
+        "Describe specific practices you introduced: SLOs, error budgets, postmortems, game days",
+        "Share how you got teams to adopt these practices",
+        "Provide metrics on the impact: reduced incidents, faster recovery, improved developer satisfaction",
+        "Reflect on the challenges of maintaining reliability culture and how you sustain it"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about the most challenging production incident you led. What made it difficult, how did you coordinate the response, and what systemic changes resulted?",
+    "difficulty": "HARD",
+    "skills": ["Incident Leadership", "Crisis Management", "Systemic Improvement"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the incident: scope, user impact, why it was particularly challenging",
+        "Explain your role: what did you do as the incident commander or lead responder",
+        "Show coordination across teams: how did you keep communication structured",
+        "Describe how you balanced fixing the immediate issue with preserving evidence for postmortem",
+        "Share the most difficult decision you had to make during the incident",
+        "Detail systemic changes that prevented recurrence"
+      ],
+      "commonMistakes": [
+        "Not clearly defining your role in the incident response",
+        "Focusing only on technical details without mentioning coordination and communication",
+        "Making it sound like everything went perfectly (real incidents have ambiguity)",
+        "Not having clear action items or systemic improvements after the incident"
+      ],
+      "answerStructure": [
+        "Set context: what was the incident, how severe, how was it detected",
+        "Describe the challenges: ambiguity, pressure, coordination across teams",
+        "Walk through your leadership: how you structured the response, kept calm, made decisions",
+        "Share the outcome: how the incident was resolved, what was the impact",
+        "Detail systemic changes: the postmortem findings and how the organization improved"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a time you set a technical vision or roadmap for infrastructure. How did you align stakeholders, prioritize investments, and measure progress?",
+    "difficulty": "HARD",
+    "skills": ["Technical Vision", "Roadmapping", "Strategy"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe how you assessed the current state and identified gaps",
+        "Explain the vision: where should infrastructure be in 12-24 months",
+        "Show how you aligned stakeholders: engineering, product, security, finance",
+        "Describe prioritization: what goes first, what is deferred, and why",
+        "Mention how you measured progress: OKRs, adoption metrics, reliability improvements",
+        "Demonstrate that the vision evolved based on feedback and changing priorities"
+      ],
+      "commonMistakes": [
+        "Creating a roadmap in isolation without stakeholder input",
+        "Making the vision too vague or too detailed without strategic direction",
+        "Not connecting roadmap items to business outcomes or developer pain points",
+        "Not revisiting the roadmap regularly as priorities change"
+      ],
+      "answerStructure": [
+        "Describe how you assessed the current infrastructure landscape",
+        "Explain the vision you set and the rationale behind it",
+        "Walk through the roadmapping process: stakeholder interviews, prioritization, timeline",
+        "Share how you communicated the roadmap and got alignment",
+        "Measure success: what metrics improved, what milestones were achieved"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you had to evaluate and choose between vendors or open-source technologies for a critical infrastructure need. How did you make the decision?",
+    "difficulty": "HARD",
+    "skills": ["Vendor Evaluation", "Technical Decision", "Cost-Benefit Analysis"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the infrastructure need and why existing solutions weren't sufficient",
+        "Explain your evaluation criteria: functionality, scalability, operational cost, community, support",
+        "Show how you conducted the evaluation: POCs, benchmarks, team feedback",
+        "Discuss the trade-offs: open source vs commercial, build vs buy, maturity vs innovation",
+        "Describe how you involved the team and stakeholders in the decision",
+        "Share the outcome and whether the decision proved correct over time"
+      ],
+      "commonMistakes": [
+        "Making the decision based only on feature checklists without operational testing",
+        "Not considering total cost of ownership (licensing, training, operational overhead)",
+        "Choosing a technology because it's popular, not because it fits the need",
+        "Not evaluating exit costs: how hard is it to migrate away if the choice is wrong"
+      ],
+      "answerStructure": [
+        "Set context: what capability was needed and what options existed",
+        "Describe your evaluation framework: criteria, weighting, POC methodology",
+        "Walk through the comparison and how you assessed each option",
+        "Explain the decision and how you communicated it",
+        "Share the outcome: did the technology meet expectations, would you choose differently in hindsight"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "How have you scaled an infrastructure team as the organization grew? Describe how you changed team structure, processes, and hiring to support 10x growth.",
+    "difficulty": "HARD",
+    "skills": ["Team Scaling", "Leadership", "Process Design", "Hiring"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the team's starting size and scope of responsibility",
+        "Explain how you identified that the team needed to scale",
+        "Show how you restructured: platform teams vs SRE vs DevOps, ownership boundaries",
+        "Describe process evolution: from ad-hoc to on-call rotation, change management, incident response",
+        "Hiring strategy: what roles did you hire first, what skills were critical",
+        "Mention how you maintained culture and quality during rapid growth"
+      ],
+      "commonMistakes": [
+        "Adding headcount without changing processes (more people doing the same broken process)",
+        "Creating too many sub-teams too early, causing coordination overhead",
+        "Not investing in documentation and onboarding as the team grows",
+        "Hiring for the same profile instead of diversifying skills"
+      ],
+      "answerStructure": [
+        "Set context: team size, responsibility, and growth trajectory",
+        "Describe how you assessed what needed to change as headcount grew",
+        "Explain the team structure evolution and rationale",
+        "Share process changes: incident management, on-call, project planning",
+        "Reflect on hiring strategy and what you learned about scaling teams"
+      ]
+    }
+  },
+  {
+    "role": "DEVOPS",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Describe a time when you had to balance shipping a critical feature against maintaining platform stability. How did you make the call, and what was the outcome?",
+    "difficulty": "HARD",
+    "skills": ["Risk Assessment", "Decision-Making", "Reliability vs Velocity"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Describe the feature request and the reliability concern in concrete terms",
+        "Explain how you quantified the risk: blast radius, recovery time, user impact",
+        "Show that you considered alternatives: progressive delivery, feature flags, phased rollout",
+        "Describe how you communicated the trade-off to product stakeholders",
+        "Share the decision and the rationale behind it",
+        "Reflect on whether the decision was the right one in hindsight"
+      ],
+      "commonMistakes": [
+        "Always prioritizing velocity over reliability (or vice versa)",
+        "Making the decision alone without stakeholder input",
+        "Not having a rollback plan or safety mechanisms if things went wrong",
+        "Framing it as a binary choice when progressive delivery could achieve both"
+      ],
+      "answerStructure": [
+        "Set context: what feature was requested and what stability concern existed",
+        "Describe your risk analysis: blast radius, failure modes, recovery plan",
+        "Explain the balanced approach you proposed (e.g., feature flags, canary, gradual rollout)",
+        "Share the outcome: was the feature delivered without incident",
+        "Reflect on how you approach the reliability vs velocity trade-off as a senior leader"
+      ]
+    }
+  }
+]

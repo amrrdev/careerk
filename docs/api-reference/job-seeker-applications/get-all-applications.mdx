@@ -85,20 +85,81 @@ GET /api/v1/job-seekers/me/applications
 }
 ```
 
-## Examples
+## Request Examples
+
+### Pagination only
 
 ```bash
-# All pending and reviewed applications
+# Page 1, 20 items (defaults)
+GET /api/v1/job-seekers/me/applications
+
+# Page 2, 10 items per page
+GET /api/v1/job-seekers/me/applications?page=2&limit=10
+```
+
+### Filter by status (single)
+
+```bash
+# All pending applications
+GET /api/v1/job-seekers/me/applications?status=PENDING
+
+# All rejected applications
+GET /api/v1/job-seekers/me/applications?status=REJECTED
+```
+
+### Filter by status (multi-value)
+
+```bash
+# Pending + Reviewed
 GET /api/v1/job-seekers/me/applications?status=PENDING&status=REVIEWED
 
-# Search for applications related to a specific company or skill
-GET /api/v1/job-seekers/me/applications?search=software
+# Shortlisted + Interview scheduled + Hired
+GET /api/v1/job-seekers/me/applications?status=SHORTLISTED&status=INTERVIEW_SCHEDULED&status=HIRED
 
-# Applications from the last 7 days
+# All non-rejected applications
+GET /api/v1/job-seekers/me/applications?status=PENDING&status=REVIEWED&status=SHORTLISTED&status=INTERVIEW_SCHEDULED&status=HIRED
+
+# All non-withdrawn applications
+GET /api/v1/job-seekers/me/applications?status=PENDING&status=REVIEWED&status=SHORTLISTED&status=INTERVIEW_SCHEDULED&status=REJECTED&status=HIRED
+```
+
+### Filter by search
+
+```bash
+# Search by job title or company name
+GET /api/v1/job-seekers/me/applications?search=software+engineer
+
+# Search for a specific company
+GET /api/v1/job-seekers/me/applications?search=tech+corp
+
+# Search by technology
+GET /api/v1/job-seekers/me/applications?search=react
+```
+
+### Filter by date range
+
+```bash
+# Last 24 hours
+GET /api/v1/job-seekers/me/applications?dateApplied=Last+24+hours
+
+# Last 7 days
 GET /api/v1/job-seekers/me/applications?dateApplied=Last+7+days
 
-# Combined: search + status + date
-GET /api/v1/job-seekers/me/applications?search=engineer&status=PENDING&dateApplied=Last+24+hours
+# Last 30 days
+GET /api/v1/job-seekers/me/applications?dateApplied=Last+30+days
+```
+
+### Combined filters
+
+```bash
+# Pending applications in the last 24 hours
+GET /api/v1/job-seekers/me/applications?status=PENDING&dateApplied=Last+24+hours
+
+# Active (pending + reviewed) applications matching "engineer"
+GET /api/v1/job-seekers/me/applications?search=engineer&status=PENDING&status=REVIEWED
+
+# All filters combined
+GET /api/v1/job-seekers/me/applications?search=senior&status=PENDING&status=REVIEWED&status=INTERVIEW_SCHEDULED&dateApplied=Last+7+days&page=1&limit=20
 ```
 
 ## Error Responses

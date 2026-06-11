@@ -1,0 +1,2234 @@
+[
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the internal execution order of SQL clauses in a relational database. How does the logical processing order differ from the written order? Walk through what happens at each step when the database processes a query with SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, and LIMIT.",
+    "difficulty": "EASY",
+    "skills": ["SQL", "Query Execution", "Relational Database", "Logical Processing"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "SQL logical processing order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT",
+        "FROM identifies the source tables and performs joins first",
+        "WHERE filters rows before aggregation, HAVING filters after aggregation",
+        "Column aliases defined in SELECT are not available in WHERE or GROUP BY",
+        "LIMIT is applied last, after ordering"
+      ],
+      "commonMistakes": [
+        "Confusing logical execution order with syntax order in the query",
+        "Thinking WHERE can filter on aggregated values without subqueries",
+        "Assuming column aliases from SELECT are available in the WHERE clause",
+        "Believing ORDER BY affects which rows are selected"
+      ],
+      "answerStructure": [
+        "Start by listing the logical execution order from first to last step",
+        "Explain each step's role: what data is available and what transformations occur",
+        "Contrast with the written order (SELECT-FROM-WHERE) to highlight the difference",
+        "Provide a concrete example showing WHERE vs HAVING behavior with aggregation",
+        "Discuss practical implications for query writing and performance"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "What is the difference between a star schema and a snowflake schema in dimensional modeling? Describe the structure of each, when you would choose one over the other, and how they impact query performance and ETL complexity.",
+    "difficulty": "EASY",
+    "skills": ["Data Modeling", "Star Schema", "Snowflake Schema", "Dimensional Modeling"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Star schema has a central fact table with directly joined denormalized dimension tables",
+        "Snowflake schema normalizes dimension tables into sub-dimensions with multiple join levels",
+        "Star schema reduces join depth improving query performance in OLAP workloads",
+        "Snowflake schema reduces data redundancy and storage costs",
+        "ETL for snowflake is more complex due to additional surrogate key management"
+      ],
+      "commonMistakes": [
+        "Thinking snowflake schema is always better because it is more normalized",
+        "Not understanding that star schema denormalization is intentional for analytics",
+        "Confusing OLTP normalization with OLAP dimensional modeling best practices",
+        "Assuming both schemas perform identically for all query patterns"
+      ],
+      "answerStructure": [
+        "Define star schema with its key components: fact and dimension tables",
+        "Define snowflake schema and how dimensions are further normalized",
+        "Compare storage efficiency, query complexity, and maintenance overhead",
+        "Discuss use cases: star for BI/reporting, snowflake for heavily regulated data",
+        "Conclude with trade-offs and how modern columnar databases affect the choice"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Describe the internals of Parquet file format. How does the columnar storage layout differ from row-oriented formats like CSV? Explain row groups, column chunks, and pages. Why does Parquet's predicate pushdown improve query performance?",
+    "difficulty": "EASY",
+    "skills": ["Parquet", "Columnar Storage", "File Formats", "Predicate Pushdown"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Parquet stores data column by column within row groups, unlike CSV which stores row by row",
+        "A Parquet file consists of row groups, each containing column chunks with pages",
+        "Row group size typically matches HDFS block size (128-256 MB) for optimal I/O",
+        "Predicate pushdown reads only the row groups and column chunks that contain matching data",
+        "Columnar layout enables better compression since similar data types are stored together"
+      ],
+      "commonMistakes": [
+        "Claiming Parquet is always faster than CSV regardless of the use case",
+        "Not understanding that reading a subset of columns is Parquet's main advantage",
+        "Confusing row groups with file splits in distributed processing",
+        "Thinking Parquet compresses data better at the row level rather than column level"
+      ],
+      "answerStructure": [
+        "Explain the high-level difference between row-oriented and column-oriented storage",
+        "Describe the Parquet file structure: magic bytes, row groups, column chunks, pages",
+        "Explain how min/max statistics at the page level enable predicate pushdown",
+        "Discuss encoding methods: dictionary encoding, run-length encoding, delta encoding",
+        "Summarize when Parquet is beneficial and when simpler formats may suffice"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Walk through the components of a basic ETL pipeline. What happens at each stage from source extraction to loading into a data warehouse? How do you handle incremental vs full loads? What checks should exist at each stage to ensure data integrity?",
+    "difficulty": "EASY",
+    "skills": ["ETL", "Data Pipeline", "Batch Processing", "Data Integrity"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "ETL stages: Extract → Transform (staging) → Load → (optionally Transform in warehouse for ELT)",
+        "Extraction involves connecting to source systems, handling pagination, and change detection",
+        "Transform stage applies cleansing, validation, deduplication, and business logic",
+        "Load stage can be full refresh, append-only incremental, or merge/upsert incremental",
+        "Row counts, checksums, and null-rate checks should validate data at each stage boundary"
+      ],
+      "commonMistakes": [
+        "Skipping data quality checks in extraction, assuming source data is clean",
+        "Not handling late-arriving data in incremental loads",
+        "Confusing ETL with ELT and when each paradigm is appropriate",
+        "Neglecting idempotency: running the same pipeline twice should produce the same result"
+      ],
+      "answerStructure": [
+        "Outline the three main stages: Extract, Transform, Load",
+        "Describe the extraction step: CDC, full dump, or API polling with offset tracking",
+        "Explain transformation: what happens in staging vs in the warehouse",
+        "Discuss load strategies: truncate-and-reload, incremental append, merge/upsert",
+        "Cover data quality monitoring: checks at each stage and alerting on anomalies"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Explain how Python's Pandas library handles data internally. What is a DataFrame in terms of underlying data structures? How does Pandas manage memory when reading large CSV files? What is the difference between vectorized operations and iterating over rows with loops?",
+    "difficulty": "EASY",
+    "skills": ["Python", "Pandas", "DataFrame", "Memory Management"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Pandas DataFrame is built on top of NumPy arrays organized as a dict of Series",
+        "Each column is a homogeneous NumPy array enabling columnar vectorized operations",
+        "Vectorized operations run in C-level loops, orders of magnitude faster than Python row iteration",
+        "Reading large CSV files uses chunking: reading in chunks and processing incrementally",
+        "Pandas stores data in blocks: numeric blocks (int64/float64), object blocks (strings/mixed)"
+      ],
+      "commonMistakes": [
+        "Using for loops with iterrows() instead of vectorized operations for performance",
+        "Not realizing that object dtype columns prevent NumPy optimizations",
+        "Assuming Pandas can handle datasets larger than available RAM without chunking",
+        "Thinking inplace=True operations never allocate new memory"
+      ],
+      "answerStructure": [
+        "Describe the internal architecture: BlockManager, NumPy arrays, and dict of Series",
+        "Explain how vectorization works: C-level loops over contiguous memory",
+        "Compare performance: vectorized (microseconds) vs loop iteration (milliseconds)",
+        "Discuss memory management: chunking, dtypes, and memory usage optimization",
+        "Provide concrete example: reading a 10GB CSV by chunking with read_csv(chunksize)"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "What is a primary key and a foreign key in relational databases? How do they enforce referential integrity? Explain the different types of joins (INNER, LEFT, RIGHT, FULL OUTER, CROSS) and what happens internally when each is executed. How do NULL values behave in join conditions?",
+    "difficulty": "EASY",
+    "skills": ["SQL", "Joins", "Referential Integrity", "Relational Database"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Primary keys uniquely identify each row and enforce entity integrity via unique index + NOT NULL",
+        "Foreign keys maintain referential integrity: a value in the child table must exist in the parent",
+        "INNER JOIN returns only matching rows from both sides; LEFT returns all left-side rows",
+        "NULL values never match each other in join conditions because NULL != NULL in SQL",
+        "CROSS JOIN produces a Cartesian product with no join condition"
+      ],
+      "commonMistakes": [
+        "Assuming NULL = NULL evaluates to true in join conditions",
+        "Confusing LEFT JOIN with INNER JOIN when there are unmatched rows on the right",
+        "Thinking foreign keys are required for joins to work",
+        "Not understanding that FULL OUTER JOIN includes unmatched rows from both tables"
+      ],
+      "answerStructure": [
+        "Define primary and foreign keys with examples",
+        "Explain referential integrity and what happens on DELETE/UPDATE with CASCADE/RESTRICT",
+        "Walk through each join type using a simple two-table example with data",
+        "Show how NULL values interact with each join type",
+        "Discuss performance implications: joins without proper indexes cause full table scans"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the concept of data quality checks in a data pipeline. What types of checks should be implemented and at which stages? How do you detect and handle duplicate records, NULL violations, referential integrity failures, and schema changes without human intervention?",
+    "difficulty": "EASY",
+    "skills": ["Data Quality", "Data Validation", "Pipeline Monitoring", "Data Governance"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Data quality checks should exist at extraction, transformation, and loading stages",
+        "Common checks: completeness (NOT NULL), uniqueness (no duplicates), consistency (referential integrity), accuracy (range checks)",
+        "Schema checks: column count, column names, data types, and nullability before load",
+        "Automated handling: quarantine bad records, alert on threshold violations, retry on transient failures",
+        "Freshness monitoring: detect stalled pipelines with expected delivery time SLAs"
+      ],
+      "commonMistakes": [
+        "Only checking data quality at the final output rather than at each pipeline stage",
+        "Setting thresholds too tight causing noisy alerts or too loose missing real issues",
+        "Not distinguishing between hard failures (stop pipeline) and soft failures (alert and continue)",
+        "Ignoring schema drift: source systems adding/removing columns without notice"
+      ],
+      "answerStructure": [
+        "Categorize data quality dimensions: completeness, uniqueness, timeliness, accuracy, consistency",
+        "Map checks to pipeline stages: pre-load source validation, in-flight transformation checks, post-load warehouse checks",
+        "Describe automated remediation: dead-letter queues, parking bad data, self-healing retries",
+        "Discuss alerting and dashboards: severity levels, escalation paths, SLA monitoring",
+        "Cover schema evolution: automated detection, backward-compatible changes, breaking change workflows"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "TECHNICAL",
+    "question": "Describe the basic architecture of a data warehouse. How does it differ from an operational (OLTP) database in terms of storage, query patterns, indexing, and concurrency? What is the role of staging, integration, and presentation layers in a warehouse?",
+    "difficulty": "EASY",
+    "skills": ["Data Warehousing", "OLAP", "OLTP", "Warehouse Architecture"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "OLTP is row-oriented optimized for high-volume transactions; OLAP is column-oriented for analytics",
+        "Data warehouse uses a multi-tier architecture: staging (raw), integration (cleansed), presentation (dimensional)",
+        "Staging layer stores raw source data with minimal transformations for reprocessing capability",
+        "Integration layer applies business rules, deduplication, and Slowly Changing Dimensions",
+        "Presentation layer exposes fact and dimension views for BI tools with aggregations and security"
+      ],
+      "commonMistakes": [
+        "Thinking a data warehouse is just a larger OLTP database with different data",
+        "Confusing staging tables with final presentation tables in reporting",
+        "Not understanding that warehouse queries scan millions of rows while OLTP queries fetch single rows",
+        "Believing warehouses do not need indexes; they use different indexing like bitmap and zone maps"
+      ],
+      "answerStructure": [
+        "Contrast OLTP vs OLAP: row vs column storage, index types, query patterns",
+        "Describe the three-tier warehouse architecture with purpose of each layer",
+        "Explain ETL flow through the layers: source → staging → integration → presentation",
+        "Discuss how the presentation layer supports star/snowflake schemas for BI tools",
+        "Cover concurrency and workload management: separating ETL queries from user queries"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "You are loading a 5GB CSV file into a PostgreSQL data warehouse but the load fails halfway every time with an out-of-memory error. The production data must be available by morning. What approaches do you consider? Which factors determine whether you use chunking, increase server memory, or change the file format?",
+    "difficulty": "EASY",
+    "skills": ["ETL", "Troubleshooting", "Memory Management", "PostgreSQL"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "CSV is loaded as a single transaction by default, consuming memory for the entire dataset",
+        "Chunking breaks the file into smaller batches, committing each batch independently",
+        "COPY with BATCHSIZE or splitting the file client-side reduces memory pressure",
+        "Memory settings on the server like work_mem and maintenance_work_mem affect load performance",
+        "Converting to Parquet with compression can reduce I/O and memory requirements"
+      ],
+      "commonMistakes": [
+        "Immediately increasing server memory without understanding the root cause",
+        "Loading data without disabling indexes and constraints, then rebuilding them",
+        "Not considering that a single large transaction blocks readers with table locks",
+        "Assuming the CSV format is immutable and cannot be preprocessed into smaller files"
+      ],
+      "answerStructure": [
+        "Diagnose the problem: identify it is a memory issue by checking logs and resource utilization",
+        "Evaluate option 1: chunked loading with batch commits and transaction management",
+        "Evaluate option 2: split CSV into smaller files using command-line tools or custom script",
+        "Evaluate option 3: preprocess CSV to Parquet or convert columns to optimal data types",
+        "Recommend the approach based on time constraints and infrastructure: chunking first, format change second"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your daily ETL pipeline produces a table with 10 million rows, but a downstream report shows the row count dropped by 15% compared to yesterday. There are no errors in the pipeline logs. How do you systematically investigate what went wrong? Walk through your debugging process step by step.",
+    "difficulty": "EASY",
+    "skills": ["Debugging", "ETL", "Data Quality", "Root Cause Analysis"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Compare row counts at each pipeline stage to isolate where the drop occurs",
+        "Check source system data volume: did the source generate fewer records today?",
+        "Verify if the pipeline ran an incremental vs full refresh and check watermark logic",
+        "Look for silent deduplication: a change in the dedup key could collapse more rows",
+        "Examine join logic: an INNER JOIN replacing a LEFT JOIN would drop unmatched rows"
+      ],
+      "commonMistakes": [
+        "Assuming the pipeline code is correct since no errors were logged",
+        "Only checking the final output table without tracing back through intermediate stages",
+        "Not comparing the distribution of key dimensions to see if filtering is too aggressive",
+        "Overlooking timezone issues in date-range filters causing fewer rows to match"
+      ],
+      "answerStructure": [
+        "Start at the output: verify the row count change with a time-bounded comparison query",
+        "Trace backward through transformations: check staging tables row counts",
+        "Examine source extraction: query the source directly to verify volume",
+        "Inspect incremental load watermarks: check the last_updated value and time window",
+        "Check for silent logic changes: was a LEFT JOIN replaced, or a filter added in a recent deployment?"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A SQL query that worked fine on a small test dataset is running for over an hour on production data and timing out. The query joins four tables, each with 50-100 million rows. How do you analyze the query plan to identify the bottleneck? What specific patterns would you look for in an EXPLAIN ANALYZE output?",
+    "difficulty": "EASY",
+    "skills": ["SQL", "Query Optimization", "EXPLAIN ANALYZE", "Performance Tuning"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "EXPLAIN ANALYZE shows actual row counts vs estimated row counts at each operation node",
+        "Nested Loop joins on large tables suggest missing join indexes and cause O(n²) complexity",
+        "Seq Scan on a large table without filters indicates a missing WHERE clause index",
+        "Hash Join with large hash tables may spill to disk if work_mem is insufficient",
+        "Sort operations without LIMIT indicate unnecessary ordering that blocks pipelined execution"
+      ],
+      "commonMistakes": [
+        "Only looking at total execution time without examining individual node costs",
+        "Not comparing estimated rows vs actual rows to detect stale statistics",
+        "Assuming all sequential scans are bad; some are optimal for small tables",
+        "Forgetting to run ANALYZE after large data loads to update table statistics"
+      ],
+      "answerStructure": [
+        "Run EXPLAIN (ANALYZE, BUFFERS) on the query to get the execution plan with timing",
+        "Identify the most expensive node: look for high cost-per-row or large row count discrepancies",
+        "Check join types: Nested Loop on large tables indicates missing indexes",
+        "Examine filter and scan nodes: Seq Scan on highly filtered columns suggests a missing index",
+        "Propose specific fixes: add composite indexes, rewrite joins, break into CTEs, or increase work_mem"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your pipeline reads from a production PostgreSQL database using a SELECT * FROM table query. As the table grows, the daily extraction takes longer and longer, eventually causing replication lag on the source database. How do you redesign the extraction to minimize impact on the source system while still getting all new and updated data?",
+    "difficulty": "EASY",
+    "skills": ["Data Extraction", "Incremental Loading", "Change Data Capture", "PostgreSQL"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Full table scans on every run are unsustainable and block source database writes",
+        "Incremental extraction using a timestamp column (updated_at) reduces the data volume per run",
+        "Add a WHERE clause filtering on updated_at > last_run_timestamp with an index on updated_at",
+        "For deletes or multiple updates within the same timestamp, use a watermark table tracking max(updated_at)",
+        "If the source has no timestamp column, consider triggers, logical replication, or an audit table"
+      ],
+      "commonMistakes": [
+        "Using SELECT * without specifying columns, wasting bandwidth and memory",
+        "Assuming updated_at always increases monotonically without clock skew issues",
+        "Not handling the case where updated_at is the same for batches that span a timestamp boundary",
+        "Thinking index-only scans eliminate all table reads; MVCC still requires heap lookups"
+      ],
+      "answerStructure": [
+        "Analyze the problem: full scan blocks writers, replication lag grows unboundedly",
+        "Propose incremental extraction with updated_at timestamp and watermarks",
+        "Design watermark table: track table name, last_max_timestamp, row count for each run",
+        "Handle edge cases: clock skew, updates during extraction window, no timestamp column",
+        "Consider CDC as an alternative: Debezium + Kafka for near-real-time without impact"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "A stakeholder reports that a daily revenue dashboard shows two different totals: the data warehouse reports $1.2M while the source CRM reports $1.5M for the same day. Both teams insist their numbers are correct. How do you systematically reconcile these numbers and identify the discrepancy?",
+    "difficulty": "EASY",
+    "skills": ["Data Reconciliation", "Root Cause Analysis", "Data Quality", "Stakeholder Management"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Start by comparing totals at the most granular level: per-order or per-transaction",
+        "Check row counts first: if the warehouse has fewer rows, data was lost or filtered",
+        "Compare date-range boundaries: timezone conversion is a common source of discrepancies",
+        "Check for deduplication: the CRM might include pending/canceled orders the warehouse excludes",
+        "Trace the pipeline: check if all CRM records passed through transformations unchanged"
+      ],
+      "commonMistakes": [
+        "Arguing about which system is correct without data evidence",
+        "Only comparing aggregated totals instead of drilling into individual records",
+        "Not accounting for timezone differences in date-filtered reports",
+        "Assuming the CRM is the source of truth; the pipeline may have applied correct business rules"
+      ],
+      "answerStructure": [
+        "Pull the granular transaction-level data from both systems for the affected date range",
+        "Use a FULL OUTER JOIN on the transaction ID to find rows in one system but not the other",
+        "Reconcile column by column: find which field differs when IDs match",
+        "Check transformation logic: are filters, dedup rules, or currency conversions causing differences?",
+        "Document findings and present to stakeholders with a clear action plan to fix the gap"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your pipeline is writing CSV files that are read by a downstream ML team. They report that some rows have extra commas inside quoted fields, breaking their parser. You cannot change the downstream parser. How do you handle embedded commas, newlines, and quotes in CSV output? What edge cases must you consider?",
+    "difficulty": "EASY",
+    "skills": ["CSV", "Data Serialization", "Data Parsing", "Edge Cases"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "CSV standard (RFC 4180): fields containing commas, double quotes, or newlines must be quoted",
+        "If a field contains double quotes, escape them by doubling: \"\" becomes a single literal quote",
+        "Newlines within quoted fields are valid but break naive line-by-line parsers",
+        "Not all CSV parsers handle RFC 4180 correctly; use a robust writer like Python's csv module",
+        "Consider switching to a self-describing format like Parquet or Avro if CSV issues persist"
+      ],
+      "commonMistakes": [
+        "Wrapping all fields in quotes unnecessarily, creating ambiguity for downstream consumers",
+        "Only escaping commas but ignoring embedded newlines or tabs",
+        "Not testing with realistic data containing special characters like quotes and line breaks",
+        "Assuming every CSV parser follows the same escaping rules (e.g., backslash vs quote doubling)"
+      ],
+      "answerStructure": [
+        "Understand the RFC 4180 standard for CSV: quoting, escaping, and line termination",
+        "Use a proper CSV writer library that handles all edge cases automatically",
+        "Test with synthetic data containing quotes, commas, newlines, and Unicode characters",
+        "If the downstream parser is non-standard, agree on a custom escaping convention",
+        "Recommend migrating to Parquet or Avro for robust schema enforcement and serialization"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "You need to merge two datasets on a customer_id field but the IDs do not match exactly: one system stores IDs as integers and the other stores them as strings with leading zeros (e.g., '00123'). Some records also have whitespace differences. What is your approach to clean and join these datasets without data loss?",
+    "difficulty": "EASY",
+    "skills": ["Data Cleaning", "Data Matching", "ETL", "Data Transformation"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Cast the integer ID to string and strip leading zeros to create a normalized join key",
+        "TRIM whitespace and standardize case (UPPER/LOWER) before matching",
+        "After the join, profile unmatched records to check for deeper issues like hash collisions",
+        "Consider fuzzy matching techniques (Levenshtein distance) for IDs that differ beyond formatting",
+        "Log the mapping from original to cleaned keys for auditability and debugging"
+      ],
+      "commonMistakes": [
+        "Applying transformations to one side only and losing matches due to asymmetric cleaning",
+        "Using CAST without handling NULLs or non-numeric characters",
+        "Destroying original values by overwriting them instead of creating a new join_key column",
+        "Not verifying after the join that matched records actually correspond to the same entity"
+      ],
+      "answerStructure": [
+        "Profile both datasets: examine distinct values of customer_id, detect patterns",
+        "Design normalization: INT → padded string, trim whitespace, consistent casing",
+        "Implement in the ETL: create a new join_key column on both sides preserving original IDs",
+        "Execute the join and analyze unmatched records for deeper issues",
+        "Document the transformation logic and edge cases for future maintenance"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "You are processing a JSON file containing nested arrays of user events. Each event has a timestamp, but some events are missing the timestamp field entirely while others have null values. You must calculate the average events per user per day. How do you handle the missing timestamps? What validation do you add to prevent this from happening again?",
+    "difficulty": "EASY",
+    "skills": ["JSON", "Data Validation", "Null Handling", "Data Aggregation"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Missing and null timestamps must be excluded from time-based aggregations or imputed",
+        "Imputation options: drop the record, use a default timestamp, or use surrounding record timestamps",
+        "Excluded records should be counted in a separate data quality metric and monitored for trends",
+        "Add schema validation at ingestion: enforce timestamp as required field with a JSON schema",
+        "Implement a dead-letter queue for records failing validation so they can be recovered later"
+      ],
+      "commonMistakes": [
+        "Silently dropping null records without logging or alerting",
+        "Imputing with a default value that skews the aggregation (e.g., using the current timestamp)",
+        "Not distinguishing between structurally missing key vs present but null value",
+        "Assuming the upstream system will fix the issue without creating a formal data quality agreement"
+      ],
+      "answerStructure": [
+        "Assess impact: count records with missing/null timestamps and decide whether to drop or impute",
+        "Implement a two-step pipeline: validation layer first, then processing",
+        "For records with valid timestamps, compute events per user per day normally",
+        "For invalid records: if count is below threshold, drop and log; if above, alert and pause",
+        "Add upstream validation: request schema enforcement and coordinate with the data producer"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you had to debug a data pipeline issue in production. What steps did you take to identify the root cause and resolve it? How did you communicate the incident to stakeholders and what did you do to prevent it from happening again?",
+    "difficulty": "EASY",
+    "skills": ["Incident Response", "Communication", "Root Cause Analysis", "Production Support"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Use STAR method: Situation, Task, Action, Result to structure the response",
+        "Emphasize systematic debugging: isolating stages, checking logs, reproducing in lower environment",
+        "Communication matters: timely status updates to stakeholders with expected resolution time",
+        "Post-incident: write a postmortem, implement monitoring, add tests for the gap",
+        "Show ownership: followed through even after the immediate fix to prevent recurrence"
+      ],
+      "commonMistakes": [
+        "Making it sound like the fix was obvious when it required deep investigation",
+        "Not mentioning how you communicated with non-technical stakeholders",
+        "Focusing only on the technical fix without discussing preventive measures",
+        "Taking sole credit without acknowledging team members who helped"
+      ],
+      "answerStructure": [
+        "Set the context: what pipeline was affected and what was the impact to the business",
+        "Describe your investigation process: what logs you checked, hypotheses tested",
+        "Explain the root cause and how you found it",
+        "Describe the fix and how you validated the pipeline was producing correct data",
+        "Discuss preventive measures: monitoring, alerts, tests, or process changes implemented"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Your manager asks you to design a data pipeline for a requirement that is poorly defined and keeps changing. How do you approach building something robust while the requirements are in flux? How do you balance getting started quickly with avoiding rework?",
+    "difficulty": "EASY",
+    "skills": ["Agile", "Requirement Management", "Engineering Decision Making", "Communication"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Ask clarifying questions to define the minimum viable scope before starting",
+        "Build in layers: start with raw data ingestion, then add transformations incrementally",
+        "Use configuration-driven logic that can adapt without code changes",
+        "Document assumptions about the data and requirements so changes are visible",
+        "Set expectations with stakeholders that early outputs are iterative and will evolve"
+      ],
+      "commonMistakes": [
+        "Waiting for perfect requirements before writing any code",
+        "Over-engineering for future requirements that may never materialize",
+        "Not regularly validating assumptions with stakeholders during development",
+        "Building rigid, monolithic pipelines that require major rewrites for small changes"
+      ],
+      "answerStructure": [
+        "Acknowledge the challenge and describe how you handle ambiguity",
+        "Explain your approach: start with the stable core (extraction layer), leave transformations flexible",
+        "Describe how you validate direction: frequent check-ins with stakeholders, minimal demos",
+        "Explain technical strategies: parameterized configurations, feature flags, incremental delivery",
+        "Share lessons learned: what went well and what you would do differently"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "You discover that a data pipeline you built has been producing incorrect numbers for the past week. A critical business decision was already made based on that data. How do you handle this situation? Walk through your immediate actions, communication strategy, and long-term fixes.",
+    "difficulty": "EASY",
+    "skills": ["Accountability", "Incident Management", "Communication", "Data Integrity"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "First, stop further damage: pause the pipeline or alert downstream consumers immediately",
+        "Quantify the impact: how many reports, dashboards, or decisions were affected",
+        "Communicate transparently: acknowledge the issue, provide a timeline for corrected data",
+        "Roll back to correct data: reprocess historical data with the fix applied",
+        "Implement safeguards: add automated data quality checks that would have caught this"
+      ],
+      "commonMistakes": [
+        "Trying to hide or minimize the issue rather than being transparent",
+        "Fixing the pipeline without addressing the incorrect data already consumed",
+        "Not communicating proactively; letting stakeholders find out through their own reports",
+        "Focusing only on blame rather than process improvement to prevent recurrence"
+      ],
+      "answerStructure": [
+        "Describe immediate containment: paused the pipeline and identified affected downstream consumers",
+        "Explain communication: informed manager and stakeholders with the facts and expected fix timeline",
+        "Walk through the fix: root cause analysis, code fix, reprocessing of affected data",
+        "Discuss the business impact: how the incorrect decision was addressed",
+        "Cover systemic improvements: data quality checks, monitoring, testing that were added"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "You are assigned to work on a data migration project that involves transforming a legacy system's data into a new schema. The domain is completely unfamiliar to you. How do you ramp up on the business domain and ensure the migration is accurate?",
+    "difficulty": "EASY",
+    "skills": ["Learning Agility", "Domain Analysis", "Data Migration", "Collaboration"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Start by understanding the business concepts behind the data, not just the schema",
+        "Review existing documentation, query patterns, and data dictionaries",
+        "Talk to domain experts: product managers, business analysts, and legacy system owners",
+        "Build exploratory queries to validate your understanding against actual data",
+        "Create a reconciliation framework: row counts, column distributions, and sample value comparisons"
+      ],
+      "commonMistakes": [
+        "Diving straight into writing transformation code without understanding the data",
+        "Assuming the legacy schema documentation is complete and accurate",
+        "Not verifying edge cases: nulls, empty strings, default values, deprecated fields",
+        "Working in isolation without regularly validating assumptions with domain experts"
+      ],
+      "answerStructure": [
+        "Explain how you approach unfamiliar domains: read documentation, then talk to people",
+        "Describe your data exploration process: profiling queries, sample analysis, anomaly detection",
+        "Discuss how you validate the migration: reconciliation reports, manual spot checks, test datasets",
+        "Explain how you handle ambiguity: documenting assumptions, getting sign-off on edge cases",
+        "Reflect on what made the approach effective and what you would do differently"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "You and a teammate disagree on how to architect a new ETL pipeline. They want to use a Python script with Pandas; you think a SQL-based ELT approach in the warehouse is better. How do you resolve this disagreement constructively? How do you decide which approach is right?",
+    "difficulty": "EASY",
+    "skills": ["Collaboration", "Technical Decision Making", "Conflict Resolution", "Architecture"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Ground the discussion in objective criteria: data volume, latency, maintainability, team skills",
+        "Propose a lightweight spike: both approaches implemented on a small sample to compare metrics",
+        "Consider the team's long-term maintenance burden: SQL is declarative, Python requires testing",
+        "Look at existing patterns in the codebase: consistency matters for team velocity",
+        "Document the decision and trade-offs so future engineers understand the rationale"
+      ],
+      "commonMistakes": [
+        "Making the disagreement personal rather than focusing on technical trade-offs",
+        "Escalating to a manager before attempting to resolve directly",
+        "Refusing to compromise: one solution could work for certain pipelines, the other for different use cases",
+        "Ignoring operational concerns: how will each approach be monitored, tested, and debugged?"
+      ],
+      "answerStructure": [
+        "Describe the context: what the pipeline does and the two proposed approaches",
+        "Explain how you resolved it: focused on data volume, complexity, and team expertise",
+        "Share the criteria used: performance benchmarks, maintainability, integration with existing stack",
+        "Discuss the outcome: compromise, decision, or combination of both approaches",
+        "Highlight what you learned about collaborative decision-making"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "A non-technical stakeholder asks you to run a SQL query and send them the results immediately. You realize the query will take hours to run on the full dataset. How do you handle this situation? What alternatives do you offer while managing expectations about query performance?",
+    "difficulty": "EASY",
+    "skills": ["Stakeholder Management", "Communication", "Query Optimization", "Expectation Setting"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Understand what the stakeholder actually needs: do they need real-time data or a recurring report?",
+        "Explain the technical constraint: full-dataset scan vs sampling or pre-aggregated data",
+        "Offer alternatives: sampled data for immediate needs, or build a pre-aggregated table for recurring use",
+        "Set realistic timelines: the full query might complete overnight, a subset is available now",
+        "Educate on self-service options: show them how to use an existing dashboard or pre-built report"
+      ],
+      "commonMistakes": [
+        "Just saying no without offering alternatives",
+        "Running the long query without explaining the timeline, then missing expectations",
+        "Assuming the stakeholder needs the raw full dataset when an aggregation would suffice",
+        "Not proactively suggesting a robust solution: building a summary table for future requests"
+      ],
+      "answerStructure": [
+        "Describe the scenario: the stakeholder's request and the performance constraint",
+        "Explain how you engaged: asked about the intent behind the request",
+        "Describe the alternatives you offered: sampled data, pre-aggregated view, scheduled report",
+        "Discuss the outcome: what solution was chosen and how it served the stakeholder's needs",
+        "Reflect on how the relationship improved through transparent communication"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "What steps do you take to ensure your data engineering code is reliable and maintainable? How do you test ETL pipelines? Describe your approach to version control, code review, and documentation for data workflows.",
+    "difficulty": "EASY",
+    "skills": ["Code Quality", "Testing", "Version Control", "Documentation"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "ETL testing: test source data assumptions, transformation logic, and output data quality",
+        "Unit tests for transformation functions with mocked inputs, integration tests with small datasets",
+        "Version control: all pipeline code, SQL scripts, configuration, and DDL in git with meaningful commits",
+        "Code review: catch logic errors, enforce style consistency, and share domain knowledge",
+        "Documentation: data lineage diagrams, pipeline READMEs, and inline comments for complex logic"
+      ],
+      "commonMistakes": [
+        "Skipping tests for SQL transformations because SQL is hard to test",
+        "Only testing the happy path without edge cases: nulls, empty datasets, type mismatches",
+        "Not testing with production-like data volumes to catch performance issues",
+        "Assuming documented requirements are the same as the actual business logic"
+      ],
+      "answerStructure": [
+        "Describe your testing pyramid: unit tests for transformations, integration for end-to-end flow",
+        "Explain version control practices: branching strategy, meaningful commit messages",
+        "Discuss code review: what you look for in data pipeline PRs",
+        "Cover documentation: what you document and where (README, data catalog, inline)",
+        "Provide an example of how these practices caught a bug before it reached production"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "JUNIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you had to explain a complex technical concept about data engineering to a non-technical audience. How did you make it understandable without oversimplifying? What analogies or visuals did you use?",
+    "difficulty": "EASY",
+    "skills": ["Communication", "Technical Explanation", "Knowledge Transfer", "Data Literacy"],
+    "estimatedTime": "2-4 min",
+    "guidance": {
+      "keyPoints": [
+        "Tailor the explanation to the audience's background and what they care about",
+        "Use familiar analogies: ETL is like mail sorting, data warehouse is like a library",
+        "Avoid jargon without immediate explanation: schema, partition, idempotency",
+        "Use visuals: whiteboard diagrams, flowcharts, or data lineage drawings",
+        "Check for understanding: ask questions to confirm, not just 'does that make sense?'"
+      ],
+      "commonMistakes": [
+        "Using technical jargon like ACID, OLAP, or columnar without explaining",
+        "Overexplaining details that are irrelevant to the audience's concerns",
+        "Assuming one explanation works for everyone; not reading the room for confusion",
+        "Making the explanation so high-level that it loses all usefulness"
+      ],
+      "answerStructure": [
+        "Set the context: who was the audience and what did they need to understand",
+        "Describe your approach: what analogy or framework you used to bridge the gap",
+        "Give examples of specific concepts you explained and how you framed them",
+        "Discuss the feedback: did the audience understand? How did you confirm?",
+        "Reflect on what made the communication effective"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Explain Apache Spark's execution model in depth. How does Spark convert a DataFrame into an optimized physical plan? What is the role of the Catalyst optimizer at each phase? How does whole-stage code generation in Tungsten eliminate virtual function calls and improve cache locality?",
+    "difficulty": "MEDIUM",
+    "skills": ["Apache Spark", "Catalyst Optimizer", "Tungsten", "Query Planning"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Spark SQL goes through: unresolved logical plan → resolved logical plan → optimized logical plan → physical plans → selected physical plan → RDDs",
+        "Catalyst has four phases: analysis (resolve columns/types), logical optimization (rule-based), physical planning (strategy selection), code generation (Tungsten)",
+        "Tungsten uses off-heap memory via sun.misc.Unsafe, avoiding JVM garbage collection overhead",
+        "Whole-stage code generation collapses multiple operator chains into a single generated function, eliminating virtual function dispatch",
+        "BroadcastHashJoin is chosen when one table fits in memory; SortMergeJoin is the default for large tables"
+      ],
+      "commonMistakes": [
+        "Thinking Catalyst applies all optimizations equally regardless of data source format",
+        "Not understanding that whole-stage code generation is invalidated when unsupported data types appear",
+        "Confusing Spark's lazy evaluation with no analysis happening at all until an action is called",
+        "Assuming all joins use SortMergeJoin; Spark's planner chooses based on cost estimates"
+      ],
+      "answerStructure": [
+        "Explain the four Catalyst phases: analysis, logical optimization, physical planning, code generation",
+        "Describe rule-based optimizations: predicate pushdown, projection pruning, constant folding, null propagation",
+        "Explain Tungsten memory management: off-heap, cache-line-aware data structures",
+        "Discuss whole-stage code generation: the generated Java code eliminates per-row virtual calls",
+        "Cover physical plan selection: how Spark chooses between BroadcastHashJoin, SortMergeJoin, and ShuffledHashJoin"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Compare data lake and data warehouse architectures. What are the fundamental differences in storage format, schema enforcement, ACID compliance, and query performance? Under what conditions would you choose a lakehouse architecture (e.g., Delta Lake, Iceberg) over a traditional warehouse?",
+    "difficulty": "MEDIUM",
+    "skills": ["Data Lake", "Data Warehouse", "Lakehouse", "Delta Lake", "Apache Iceberg"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Data lake: schema-on-read, cheap object storage (S3/ADLS), supports diverse data types (raw, unstructured)",
+        "Data warehouse: schema-on-write, expensive compute+storage, ACID transactions, optimized for SQL analytics",
+        "Lakehouse layers ACID transactions and schema enforcement on top of data lake storage via table formats",
+        "Delta Lake adds transaction log, time travel, and schema evolution to Parquet files on object storage",
+        "Lakehouse reduces ETL overhead but introduces complexity in transaction management and performance tuning"
+      ],
+      "commonMistakes": [
+        "Thinking data lakes are just storage with no structure; they still need cataloging and governance",
+        "Believing lakehouse replaces all warehouse use cases; warehouses still excel at concurrent BI workloads",
+        "Not understanding that Delta Lake transactions rely on optimistic concurrency with OCC conflicts",
+        "Assuming data lake storage is free; egress costs and partition pruning inefficiency add hidden costs"
+      ],
+      "answerStructure": [
+        "Define data lake: schema-on-read, cheap storage, raw data, no ACID on writes",
+        "Define data warehouse: schema-on-write, expensive storage, ACID, structured SQL",
+        "Introduce lakehouse as the middle ground with the Delta/Iceberg table format layer",
+        "Compare across dimensions: cost, performance, freshness, schema flexibility, governance",
+        "Provide guidance on choosing: real-time analytics → warehouse; ML/AI workloads → lakehouse; raw data archival → lake"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Describe partitioning strategies in distributed data systems like Spark and Hive. What is the difference between static and dynamic partitioning? How does partition pruning work conceptually? What are common partitioning schemes (by date, by hash, by range) and when should each be used?",
+    "difficulty": "MEDIUM",
+    "skills": ["Partitioning", "Apache Spark", "Hive", "Partition Pruning", "Distributed Systems"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Static partitioning: partitions known at write time, data written into specific partition directories",
+        "Dynamic partitioning: Spark determines partition columns from data at runtime, requires resources to enumerate",
+        "Partition pruning: query engine skips reads of entire partition directories using partition metadata",
+        "Date-based partitioning aligns with query patterns (daily/weekly reports) but can create small file problems",
+        "Hash partitioning distributes data evenly but makes range queries expensive; range partitioning enables efficient scans"
+      ],
+      "commonMistakes": [
+        "Over-partitioning: too many small partitions cause metadata overhead and slow listing operations",
+        "Under-partitioning: large partitions force full scans when pruning is expected",
+        "Choosing partition columns with low cardinality (boolean) leading to only 2 partitions",
+        "Thinking partition pruning works on all expressions; it only works on simple equality and range filters on partition columns"
+      ],
+      "answerStructure": [
+        "Define partitioning in distributed storage: splitting data into independent directories/files",
+        "Contrast static vs dynamic partitioning with use cases for each",
+        "Explain partition pruning mechanics: metadata scan → file skipping → data scan",
+        "Compare date, hash, and range partitioning schemes with examples",
+        "Discuss anti-patterns: small file problem, partition explosion, partition column cardinality"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Explain columnar storage internals. How do columnar formats like Parquet encode and compress data differently from row-oriented formats? What are the specific encoding techniques used internally (dictionary encoding, run-length encoding, delta encoding)? How does vectorized processing take advantage of columnar layout?",
+    "difficulty": "MEDIUM",
+    "skills": ["Columnar Storage", "Parquet", "Encoding", "Compression", "Vectorized Processing"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Columnar stores values from the same column contiguously, enabling better compression due to data homogeneity",
+        "Dictionary encoding replaces repeated values with small integer IDs and a dictionary page",
+        "Run-length encoding compresses consecutive identical values into (value, count) pairs",
+        "Delta encoding stores differences between consecutive values, efficient for sorted or monotonic data",
+        "Vectorized processing reads batches of column values into CPU registers and applies SIMD instructions"
+      ],
+      "commonMistakes": [
+        "Thinking columnar storage is always more space-efficient; narrow tables with high cardinality may compress worse",
+        "Not understanding that reading all columns from a columnar file is actually slower than a row-oriented format",
+        "Assuming all compression codecs work the same way; Gzip compresses more than Snappy but much slower",
+        "Confusing vectorized processing with parallel processing; vectorization is about CPU-level parallelism"
+      ],
+      "answerStructure": [
+        "Contrast row vs column layout: what data looks like on disk in each format",
+        "Explain Parquet page types: data page, dictionary page, index page",
+        "Detail encoding techniques: dictionary (low cardinality), RLE (runs), delta (sorted), plain (fallback)",
+        "Discuss compression codecs: Snappy for speed, Zstd for balance, Gzip for maximum compression",
+        "Describe vectorized reads: batch-oriented processing, SIMD, cache-line awareness"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Describe Apache Kafka's internal architecture for data streaming. How do topics, partitions, consumer groups, and offsets work together? What guarantees does Kafka provide regarding message ordering and delivery semantics? How does Kafka achieve its high throughput with persistent disk storage?",
+    "difficulty": "MEDIUM",
+    "skills": ["Apache Kafka", "Streaming", "Event-Driven Architecture", "Distributed Systems"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Topics are logical categories; partitions are the unit of parallelism and ordering within a topic",
+        "Each partition is an ordered, immutable sequence of messages with sequential offsets",
+        "Consumer groups enable load-balanced consumption: each partition is consumed by exactly one consumer in a group",
+        "Kafka guarantees order within a partition but not across partitions in a topic",
+        "Kafka uses sequential I/O on disk with zero-copy transfer, enabling high throughput despite being disk-based"
+      ],
+      "commonMistakes": [
+        "Assuming Kafka is a message queue (not a distributed log); messages are retained after consumption",
+        "Thinking partition count should match consumer count exactly; consumers can be fewer but not more (active consumers per group)",
+        "Not understanding that increasing partitions reduces ordering guarantees within a topic",
+        "Believing Kafka's disk-based storage makes it slow; sequential reads from disk are faster than random reads from memory"
+      ],
+      "answerStructure": [
+        "Define core abstractions: topic, partition, offset, broker, consumer group",
+        "Explain the pub-sub model: producers write to partitions, consumers read from partitions",
+        "Detail the commit log: append-only, immutable, sequential writes for high throughput",
+        "Discuss partitioning strategy: key-based hashing for ordering, round-robin for load distribution",
+        "Cover delivery semantics: at-most-once, at-least-once, exactly-once (with idempotence + transactions)"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "What is schema evolution and why is it challenging in data pipelines? How do Avro, Protobuf, and Parquet handle schema changes like adding fields, removing fields, or changing data types? What are forward and backward compatibility and how do schema registries enforce them?",
+    "difficulty": "MEDIUM",
+    "skills": ["Schema Evolution", "Apache Avro", "Protocol Buffers", "Schema Registry", "Compatibility"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Schema evolution allows data written with an old schema to be read with a new schema and vice versa",
+        "Backward compatibility: new schema can read old data (default fields for new columns, missing fields tolerated)",
+        "Forward compatibility: old schema can read new data (unknown fields are ignored or preserved)",
+        "Avro uses reader/writer schemas with full type information embedded; resolution is done at read time",
+        "Schema registries (Confluent) store schemas by ID and enforce compatibility rules (BACKWARD, FORWARD, FULL, NONE)"
+      ],
+      "commonMistakes": [
+        "Thinking all formats handle schema evolution the same way; Parquet (write-once) has different rules from Avro (streaming)",
+        "Removing a required field breaks backward compatibility if consumers expect it",
+        "Changing data type (INT to STRING) is not compatible in most schema evolution rules",
+        "Not using a schema registry and tracking schemas in application code leads to deserialization failures"
+      ],
+      "answerStructure": [
+        "Define schema evolution and why it is needed in long-running data systems",
+        "Explain Avro's reader/writer schema resolution with default values and promoted types",
+        "Describe Protobuf field numbering: unknown fields are preserved in binary but not re-parsed by old code",
+        "Discuss Parquet's schema merge: adding columns is compatible if nullable or defaulted",
+        "Cover schema registry: compatibility types, versioning, and enforcement in CI/CD"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Explain the concept of incremental processing in data pipelines. What is the difference between full refresh, append-only incremental, and upsert-based incremental (merge)? How do you handle late-arriving data and out-of-order events in incremental pipelines? What is idempotency and why is it critical?",
+    "difficulty": "MEDIUM",
+    "skills": ["Incremental Processing", "ETL", "Idempotency", "Late Data", "Merge"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Full refresh reprocesses all data every run; simple but scales poorly as data grows",
+        "Append-only incremental processes only new data based on a monotonically increasing watermark (timestamp, ID)",
+        "Upsert incremental (merge) inserts new rows and updates existing ones based on a business key",
+        "Late-arriving data falls outside the current batch window; must use lookback windows or reprocessing",
+        "Idempotency ensures running the same pipeline twice produces identical results, enabling safe retries"
+      ],
+      "commonMistakes": [
+        "Using append-only for fact tables that need updates, causing duplicate or stale records",
+        "Not handling watermarks correctly: clock skew, missing timezone, or granularity mismatch cause data loss",
+        "Assuming late data never arrives or always arrives within a fixed delay window",
+        "Thinking idempotency is automatic; it requires careful dedup logic or MERGE with snapshot isolation"
+      ],
+      "answerStructure": [
+        "Define the three incremental processing strategies with examples",
+        "Compare when each is appropriate: full refresh (small dimensions), append (event data), merge (transactional facts)",
+        "Explain watermark management: tracking last processed value with offset tables and checkpointing",
+        "Discuss late data strategies: lookback windows, re-processing, separate late-arriving data pipeline",
+        "Cover idempotency: how to achieve it with upserts, deduplication, and transactional writes"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "TECHNICAL",
+    "question": "Describe Apache Airflow's execution model. How does the scheduler, executor, and worker interact to run a DAG? What is the difference between the sequential, local, Celery, and Kubernetes executors? How does Airflow handle task retries, dependencies, and concurrency at the DAG, task, and pool levels?",
+    "difficulty": "MEDIUM",
+    "skills": ["Apache Airflow", "Workflow Orchestration", "DAG", "Executors"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Airflow has four components: web server, scheduler, executor, and worker (metastore shared via database)",
+        "Scheduler parses DAGs, evaluates dependencies, and creates TaskInstances in the metastore",
+        "Executor determines how tasks run: locally (LocalExecutor), distributed (CeleryExecutor), or dynamic (KubernetesExecutor)",
+        "Task retries are controlled by retries, retry_delay, and retry_exponential_backoff parameters",
+        "Concurrency is managed at multiple levels: pool (slots), task-level parallelism, DAG max_active_tasks"
+      ],
+      "commonMistakes": [
+        "Confusing the scheduler with the executor; scheduler creates tasks, executor runs them",
+        "Overloading a single DAG with hundreds of independent tasks instead of using sub-DAGs or dynamic DAGs",
+        "Not understanding that the scheduler parses DAG files periodically; expensive top-level code slows the scheduler",
+        "Setting pool sizes without considering total worker capacity, causing tasks to queue indefinitely"
+      ],
+      "answerStructure": [
+        "Describe the four components and their responsibilities: scheduler, executor, worker, web server",
+        "Walk through a DAG run lifecycle: parsing → scheduling → queuing → execution → completion",
+        "Compare executors with their scaling characteristics and limitations",
+        "Explain retry mechanics: exponential backoff, retry limits, and how failures cascade to downstream tasks",
+        "Discuss concurrency controls: pool slots, task concurrency, DAG run concurrency, and priority weights"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your Spark job processing 500GB of data is running slowly with excessive shuffling. You notice the job creates 10,000+ shuffle partitions for a 5-second aggregation stage. How do you diagnose and fix this? What parameters (spark.sql.shuffle.partitions, spark.shuffle.file.buffer, spark.reducer.maxSizeInFlight) would you tune and why?",
+    "difficulty": "MEDIUM",
+    "skills": ["Apache Spark", "Performance Tuning", "Shuffle Optimization", "Spark Configuration"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Too many shuffle partitions creates small tasks with high scheduling overhead and small shuffle blocks",
+        "spark.sql.shuffle.partitions defaults to 200; 10,000+ means each partition processes ~50MB, creating millions of small files on disk",
+        "Excessive partitions cause many small shuffle blocks requiring many network connections in the reduce phase",
+        "spark.shuffle.file.buffer controls the in-memory buffer for shuffle writes; too small causes many disk IOs",
+        "spark.reducer.maxSizeInFlight limits how much data each reducer fetches at once; increasing it improves throughput"
+      ],
+      "commonMistakes": [
+        "Setting spark.sql.shuffle.partitions to arbitrarily high values hoping for more parallelism",
+        "Not considering that shuffle blocks must fit in the reducer's memory for fetch operations",
+        "Tuning shuffle parameters without looking at the Spark UI's stage and task breakdown first",
+        "Assuming all shuffle is bad; some joins and aggregations inherently require shuffles"
+      ],
+      "answerStructure": [
+        "Analyze the Spark UI: look at stage duration, task metrics, shuffle read/write sizes, and task count",
+        "Diagnose the problem: calculate ideal partition size (target 100-200MB per partition after shuffle)",
+        "Fix: reduce spark.sql.shuffle.partitions from 10,000 to a value based on data size (500GB / 200MB = ~2500 partitions)",
+        "Tune shuffle buffers: increase spark.shuffle.file.buffer to reduce disk IFS writes",
+        "Monitor: re-run and verify task parallelism, duration, and shuffle throughput in the UI"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "You are building a real-time streaming pipeline consuming from Kafka with 24 partitions. The processing logic involves a stateful join between two streams. The pipeline starts falling behind under traffic spikes; consumer lag grows continuously. How do you identify the bottleneck and what strategies can you use to catch up?",
+    "difficulty": "MEDIUM",
+    "skills": ["Streaming", "Apache Kafka", "Stateful Processing", "Backpressure", "Streaming Architecture"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Consumer lag growing indicates processing throughput is lower than ingestion rate",
+        "Bottleneck could be: state store (RocksDB) compaction, join operator CPU, serialization, or downstream sink",
+        "Check Kafka consumer metrics: poll latency, commit latency, processing time per record",
+        "Strategies: increase consumers (max one per partition), optimize state store (RocksDB tuning, memory allocation), parallelize internal processing",
+        "Consider bumping partition count and re-keying if the join operation is the bottleneck"
+      ],
+      "commonMistakes": [
+        "Adding more consumers beyond the partition count (they will idle)",
+        "Not separating the join's state store onto dedicated faster storage (SSD vs HDD)",
+        "Ignoring the downstream sink: if the DB write is slow, no amount of streaming optimization helps",
+        "Using checkpointing too frequently, adding overhead from state store snapshots"
+      ],
+      "answerStructure": [
+        "Measure the lag: kafka-consumer-groups tool shows per-partition offset lag",
+        "Identify bottleneck: use Thread Dumps, CPU profiling, and sink latency measurements",
+        "If join is CPU-bound: optimize serialization (Avro/Protobuf), increase parallelism within the operator",
+        "If state store is the bottleneck: tune RocksDB (block cache size, memtable, compaction), use SSD",
+        "If sink is the bottleneck: batch writes, use async sink, or add a buffer layer (Kafka again)"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "A schema change in the source system adds three new columns to a table your pipeline ingests. The pipeline uses a fixed-column SELECT statement and breaks because the column count no longer matches the schema on read. How do you make the pipeline resilient to schema changes? Design a robust ingestion pattern that handles both additive and breaking schema changes.",
+    "difficulty": "MEDIUM",
+    "skills": ["Schema Evolution", "Data Ingestion", "ETL Robustness", "Change Management"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Fixed-column SELECT is fragile; use schema-on-read or table metadata discovery instead",
+        "SELECT * with explicit column ordering is slightly better but still breaks on column removal",
+        "Use a schema registry or metadata service to discover current table schema before generating queries",
+        "Implement schema drift detection: compare incoming columns against expected schema then alert on mismatches",
+        "For additive changes: automatically include new columns; for breaking changes: pause pipeline and notify"
+      ],
+      "commonMistakes": [
+        "Using SELECT * in production which reorders columns on schema change and breaks insert statements",
+        "Not having a schema diff tool that compares source and target schemas before each run",
+        "Assuming all schema changes are backward compatible; column type changes break silently",
+        "Handling schema changes in application code without a formal schema evolution policy"
+      ],
+      "answerStructure": [
+        "Describe the problem: fixed-column SELECT fails silently or with cryptic errors on schema change",
+        "Propose a discovery-based ingestion: query INFORMATION_SCHEMA or use a schema registry",
+        "Design the schema drift detection: compare discovered columns with expected mapping and diff on each run",
+        "Define handling policy: additive changes (auto-accept), renaming (manual mapping), removal (alert, pause), type change (alert)",
+        "Implement: store expected schema in metadata, diff on each pipeline run, auto-adapt for allowed changes"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your data warehouse query is slow despite all the right indexes. Looking at the EXPLAIN plan, you see the database chose a Nested Loop join instead of a Hash Join, and it's reading all rows from a large table despite a selective filter. The table statistics are up to date. What internal factors could cause the optimizer to make a bad choice, and how do you fix it?",
+    "difficulty": "MEDIUM",
+    "skills": ["Query Optimization", "Database Internals", "Cost-Based Optimizer", "Join Strategies"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Cost-based optimizer chooses Nested Loop when it estimates the inner table is small or highly selective",
+        "Stale or skewed statistics: if column histograms are missing, optimizer assumes uniform distribution",
+        "Parameterized queries: the plan is cached for the first parameter value and reused for very different values",
+        "Nested Loop can be optimal when the driving table returns very few rows and the inner table has an index",
+        "Force a different plan with join hints (e.g., /*+ HASH_JOIN(t1 t2) */) or by rewriting the query to change cardinality estimates"
+      ],
+      "commonMistakes": [
+        "Assuming up-to-date basic stats (row count) are sufficient; column-level histograms and correlation stats matter",
+        "Thinking the optimizer is infallible; it makes estimation errors on complex multi-table joins with filters",
+        "Using join hints as the first resort instead of fixing the underlying statistics or query structure",
+        "Not considering correlated columns: two individually selective filters combined may be less selective than estimated"
+      ],
+      "answerStructure": [
+        "Analyze the plan: identify the Nested Loop and understand the optimizer's estimated vs actual rows",
+        "Check statistics: run basic stats check, look for missing histogram on filter columns and column correlation",
+        "Examine the query structure: are there correlated filters, functions on columns, or implicit type conversions?",
+        "Fix: update extended statistics, rewrite the query to break it into CTEs, or use join hints as a last resort",
+        "Verify: re-run EXPLAIN ANALYZE to confirm the new plan has correct row estimates and better execution time"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "You need to migrate a 10TB data warehouse from a legacy on-premise system to a cloud data warehouse (Snowflake/BigQuery/Redshift). The migration must have minimal downtime. How do you approach the migration? What strategies can you use for schema migration, historical data transfer, and incremental sync? How do you validate data consistency?",
+    "difficulty": "MEDIUM",
+    "skills": ["Data Migration", "Cloud Migration", "Data Validation", "Warehouse Architecture"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Use a dual-write strategy: write to both old and new systems during transition for cut-over flexibility",
+        "Schema migration: extract DDL from the old system, translate to cloud-native DDL (partitioning, clustering, sorting keys)",
+        "Historical transfer: export to Parquet in S3, then bulk load into the cloud warehouse with COPY/INSERT",
+        "Incremental sync: use CDC (Debezium) or timestamp-based incremental loads between systems during migration window",
+        "Validation: row count comparisons, checksums, and sample-based column value reconciliation at each migration batch"
+      ],
+      "commonMistakes": [
+        "Migrating schema as-is without optimizing for the cloud warehouse's native features",
+        "Not accounting for different SQL dialects and built-in functions between the two platforms",
+        "Assuming the migration window is long enough for the full data transfer; network bandwidth is the bottleneck",
+        "Skipping iterative validation: validate small batches before doing the full historical transfer"
+      ],
+      "answerStructure": [
+        "Plan the migration: assess data volume, network bandwidth, and acceptable downtime window",
+        "Describe schema migration: automated DDL conversion, optimize partitioning/clustering for the target",
+        "Detail historical data transfer: export to Parquet → compress → upload to cloud storage → COPY",
+        "Explain incremental sync: CDC pipeline or timestamp-based delta during the migration window",
+        "Cover cut-over: dual writes, final validation, redirect queries, decommission old system"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your Airflow DAG that processes daily customer data takes 6 hours to complete. There is a strict SLA of 8 AM delivery. A new data source is being added that will increase processing time by an estimated 50%. How do you redesign the DAG to meet the SLA? Consider parallelism, task optimization, and alternative execution strategies.",
+    "difficulty": "MEDIUM",
+    "skills": ["Apache Airflow", "DAG Optimization", "Parallelism", "SLA Management"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Analyze the current DAG's critical path: identify which sequential tasks are the bottleneck",
+        "Introduce parallelism: split tasks that operate on independent partitions of data into concurrent branches",
+        "Use Airflow pools and priority weights to ensure critical tasks get resources first",
+        "Consider dynamic task mapping: fan-out per-partition tasks that run in parallel",
+        "If tasks share computations, combine them into a single optimized step to avoid redundant I/O"
+      ],
+      "commonMistakes": [
+        "Throwing more worker resources at the problem without addressing the critical path bottleneck",
+        "Making tasks parallel that share a common dependency, actually increasing total resource contention",
+        "Not using Airflow's SLA monitoring or SLAs to get early warning when the DAG is running late",
+        "Assuming the new source requires the same processing logic; it may benefit from a separate optimized pipeline"
+      ],
+      "answerStructure": [
+        "Profile the current DAG: identify critical path tasks and their individual durations",
+        "Optimize slow tasks: examine SQL queries for optimization, increase partition parallelism, tune Spark jobs",
+        "Add parallelism: use task groups with fan-out patterns for the new data source's partitions",
+        "Implement SLA monitoring: set sla=N hours on the final task, set up alerts for missed SLAs",
+        "Consider alternatives: move to an event-triggered architecture, pre-aggregate overnight, or use incremental processing"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your streaming pipeline uses Kafka exactly-once semantics with transactions, but you are encountering frequent TransactionCoordinator failures causing the entire pipeline to stall. What is happening under the hood? How do Kafka transactions work internally and what failure scenarios can cause the coordinator to fail? How do you make the pipeline more resilient?",
+    "difficulty": "MEDIUM",
+    "skills": ["Apache Kafka", "Exactly-Once Semantics", "Kafka Transactions", "Fault Tolerance"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Kafka transactions use a Transaction Coordinator broker and a __transaction_state internal topic",
+        "Producers mark messages as 'aborted' or 'committed' via a commit marker in the transaction log",
+        "Consumers must set isolation.level=read_committed to filter out aborted messages",
+        "Coordinator failures cause pending transactions to be aborted after transaction.timeout.ms",
+        "Producer fencing (epoch numbers) prevents zombie producers from writing to the same transaction"
+      ],
+      "commonMistakes": [
+        "Not understanding that transactions add 2 network round-trips per batch (initTransaction, commitTransaction)",
+        "Assuming exactly-once semantics means no duplicate writes; duplicates can still occur on producer retries",
+        "Setting transaction.timeout.ms too low causes premature aborts during normal processing spikes",
+        "Thinking all consumers must use read_committed; read_uncommitted consumers silently read aborted messages"
+      ],
+      "answerStructure": [
+        "Explain Kafka transactions: coordinator, transaction log, and the two-phase commit protocol",
+        "Describe the Transaction Coordinator: its role in tracking ongoing transactions and handling timeouts",
+        "Diagnose the failures: check broker logs for coordinator election, transaction timeout in consumer metrics",
+        "Fix: increase transaction.timeout.ms, ensure stable broker cluster, add retries with exponential backoff",
+        "Improve resilience: use a separate transaction for each micro-batch, avoid long-running transactions"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "PROBLEM_SOLVING",
+    "question": "You have a pipeline that processes daily transactional data for a financial reconciliation report. The pipeline starts failing intermittently with duplicate key violations when inserting into the target table. However, some runs succeed. What could cause intermittent duplicate key errors? How would you redesign the pipeline to be idempotent regardless of retries?",
+    "difficulty": "MEDIUM",
+    "skills": ["Idempotency", "ETL", "Error Handling", "Data Deduplication", "Pipeline Reliability"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Intermittent duplicate errors suggest the pipeline retries partial batches, re-inserting already-committed records",
+        "Without idempotency, a retry after a partial failure re-processes already-succeeded records",
+        "Use MERGE (upsert) with a unique business key instead of INSERT to handle retries safely",
+        "Implement batch-level idempotency: use a run_id and delete the batch before re-inserting",
+        "Watermark-based deduplication: track the last successfully processed record ID or timestamp"
+      ],
+      "commonMistakes": [
+        "Adding try-catch to ignore duplicate errors, which masks real data integrity issues",
+        "Only fixing the symptom (removing duplicates post-hoc) rather than preventing them at insert time",
+        "Not considering that transaction boundaries may span multiple records; partial commits cause duplicates",
+        "Assuming the pipeline runs exactly once; always design for at-least-once execution with idempotent sinks"
+      ],
+      "answerStructure": [
+        "Diagnose the intermittent nature: identify it is caused by pipeline retries after partial completion",
+        "Explain why insert-only fails: first run inserts partially, retry attempts to insert already-committed records",
+        "Propose solution 1: use MERGE/upsert instead of INSERT for the target table",
+        "Propose solution 2: use batch-level idempotency with a run_id and delete-before-insert pattern",
+        "Propose solution 3: implement watermark tracking to ensure each batch processes exactly one range of records"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you optimized a slow data pipeline that was critical to the business. How did you identify the bottleneck? What metrics did you collect before and after? How did you communicate the performance improvements to stakeholders?",
+    "difficulty": "MEDIUM",
+    "skills": ["Performance Optimization", "Data Pipelines", "Metrics", "Communication"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Start by instrumenting the pipeline: add timing metrics at each stage to isolate the bottleneck",
+        "Use the Pareto principle: find the single task or stage consuming the most time",
+        "Measure baseline metrics: duration, data volume, error rates, resource utilization",
+        "After optimization, measure the same metrics and calculate improvement (percentage and absolute time savings)",
+        "Translate technical improvements to business value: earlier data delivery, cost savings, fewer failures"
+      ],
+      "commonMistakes": [
+        "Optimizing without baseline measurements; you cannot prove improvement without data",
+        "Only focusing on a single metric (duration) while ignoring resource cost or failure rates",
+        "Not involving downstream stakeholders in prioritizing which optimizations matter most",
+        "Making changes without a rollback plan, risking regression without quick recovery"
+      ],
+      "answerStructure": [
+        "Set the context: what pipeline, what was the performance problem, and what was the business impact",
+        "Describe your diagnosis: how you measured, what tooling you used, what the bottleneck was",
+        "Explain the optimization: specific changes made and the reasoning behind them",
+        "Show results: before/after metrics with concrete numbers",
+        "Discuss ongoing monitoring: how you ensured the improvement stuck and what you learned"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "You are leading a project to build a new data platform. The team has competing priorities and stakeholders disagree on the technical direction. How do you align the team and stakeholders around a common vision? How do you handle disagreements about technology choices (e.g., batch vs streaming, warehouse vs lake)?",
+    "difficulty": "MEDIUM",
+    "skills": ["Technical Leadership", "Stakeholder Management", "Architecture Decision", "Team Alignment"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Gather requirements from all stakeholders first before proposing any technology",
+        "Use an Architecture Decision Record (ADR) to document trade-offs and decisions transparently",
+        "Run a lightweight evaluation: score each candidate technology against weighted criteria agreed upon by the team",
+        "Acknowledge valid points in opposing views and seek hybrid solutions where appropriate",
+        "Build consensus by demonstrating a working proof-of-concept rather than arguing abstractly"
+      ],
+      "commonMistakes": [
+        "Making technical decisions in isolation without stakeholder input",
+        "Favoring a technology based on personal preference rather than objective evaluation criteria",
+        "Treating disagreements as conflicts rather than opportunities to find better solutions",
+        "Committing to an architecture before understanding the primary use case requirements"
+      ],
+      "answerStructure": [
+        "Describe the project: what was being built and who were the key stakeholders",
+        "Explain the disagreement: what were the competing technical opinions and the reasoning behind each",
+        "Detail your approach: how you facilitated discussion, gathered requirements, and ran an evaluation",
+        "Describe the resolution: what decision was made and how it addressed stakeholders' core concerns",
+        "Reflect on the outcome: did the platform succeed? What would you do differently?"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "A production pipeline fails at 3 AM with a cryptic error that you have never seen before. You are the on-call engineer. Walk through your incident response process from the alert to resolution. How do you triage, debug, decide whether to roll back or fix forward, and communicate during the incident?",
+    "difficulty": "MEDIUM",
+    "skills": ["Incident Response", "On-Call", "Debugging", "Communication"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "First: assess severity and impact — is data being lost, is downstream blocked, is it a single run or failing consistently?",
+        "Triage: check recent deployments, monitoring dashboards, and error logs to narrow down the scope",
+        "Decision framework: if the fix is quick (<15 min), fix forward; otherwise roll back to the last known good version",
+        "Communication: write in the incident channel with timestamps, updates every 15-30 min, estimated resolution time",
+        "After resolution: write a postmortem with root cause, timeline, and action items to prevent recurrence"
+      ],
+      "commonMistakes": [
+        "Spending too long trying to understand the root cause instead of restoring service first",
+        "Fixing without communicating, leaving stakeholders guessing about the status",
+        "Making changes directly in production without testing in a lower environment",
+        "Forgetting to check if the same failure will happen in the next scheduled run"
+      ],
+      "answerStructure": [
+        "Describe the alert and initial assessment: error type, affected systems, severity",
+        "Explain your triage process: where you looked first and how you narrowed the cause",
+        "Discuss the fix/rollback decision: what factors drove your choice",
+        "Detail your communication: who you updated, how often, and through what channels",
+        "Cover the postmortem: root cause, action items, and process improvements implemented"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "You are mentoring a junior data engineer who keeps making the same mistakes: not handling NULLs in transformations, not testing edge cases, and deploying code without running the pipeline on test data. How do you help them improve without micromanaging? What feedback approach do you use?",
+    "difficulty": "MEDIUM",
+    "skills": ["Mentoring", "Feedback", "Code Review", "Technical Leadership"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Pair on a difficult bug together to demonstrate the debugging and testing process rather than just telling them",
+        "Use specific, actionable feedback in code reviews: 'add a test for NULL input here' instead of 'test more'",
+        "Create shared resources: a checklist for common pitfalls, a template for tests, examples of good patterns",
+        "Set up automated safeguards: linting, pre-commit hooks, CI tests that catch common issues",
+        "After they make a mistake, focus on the process and learning rather than blame"
+      ],
+      "commonMistakes": [
+        "Giving vague feedback like 'be more careful' without concrete examples",
+        "Fixing their code silently instead of using the opportunity to teach",
+        "Setting unrealistic expectations that they should never make mistakes",
+        "Comparing them negatively to more experienced team members"
+      ],
+      "answerStructure": [
+        "Describe the situation: what mistakes the junior was making and the impact",
+        "Explain your approach: how you addressed it in a constructive, not punitive, way",
+        "Give specific examples: a code review comment, a pair programming session, or a shared guide",
+        "Discuss the outcome: how the junior improved and how the relationship evolved",
+        "Reflect on what you learned as a mentor and how you adjusted your approach"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "A downstream team built a critical dashboard depending on your pipeline's data. They start seeing incorrect numbers and blame your pipeline. Upon investigation, you discover the bug is in their dashboard query, not your data. How do you handle this diplomatically while maintaining a good cross-team relationship?",
+    "difficulty": "MEDIUM",
+    "skills": ["Cross-Team Collaboration", "Conflict Resolution", "Communication", "Ownership"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Do not immediately blame the other team; start by presenting evidence neutrally",
+        "Walk through the data together: show the correct source data and trace through their query to find the discrepancy",
+        "Focus on the shared goal: correct dashboard, not whose fault it is",
+        "Offer to help fix the query and add validation tests to prevent future mismatches",
+        "Strengthen the relationship by making it easy for them to verify data independently going forward"
+      ],
+      "commonMistakes": [
+        "Saying 'it's not my bug' in a way that sounds defensive or dismissive",
+        "Proving your data is correct but not helping them understand why their query is wrong",
+        "Not checking your own pipeline thoroughly before claiming it is correct",
+        "Creating a hostile dynamic where teams are afraid to flag potential data issues"
+      ],
+      "answerStructure": [
+        "Describe the situation: the dashboard, the incorrect numbers, and the initial blame",
+        "Explain your reaction: how you investigated without being defensive",
+        "Detail the discovery process: how you traced the discrepancy to their query logic",
+        "Describe the resolution: how you communicated the findings and helped fix it",
+        "Discuss the systemic improvement: what tests or validation prevented future issues"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "You are designing a data pipeline that needs to comply with GDPR and CCPA regulations. Users can request their data to be deleted or exported. What architectural considerations do you need to make for compliance? How do you handle deletion in append-only storage systems like Kafka or object stores?",
+    "difficulty": "MEDIUM",
+    "skills": ["Data Governance", "GDPR", "CCPA", "Compliance", "Data Privacy"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Right to erasure (GDPR Article 17): data must be deleted across all systems including backups and archives",
+        "Right to portability: provide user data in a machine-readable format within 30 days",
+        "Append-only systems cannot physically delete; use tombstone records or compaction to mark data as deleted",
+        "Implement a data catalog that tracks PII fields and lineage so you know where user data lives",
+        "Design a deletion request workflow: validate request → find all data for user → delete/anonymize → confirm"
+      ],
+      "commonMistakes": [
+        "Assuming only production databases need deletion; backups, logs, and data science snapshots also contain PII",
+        "Thinking physical deletion is always required; anonymization or pseudonymization is often acceptable",
+        "Not considering that Kafka compacted topics retain the latest value; tombstone messages must be produced",
+        "Ignoring the 30-day SLA: manual deletion processes cannot scale for large user bases"
+      ],
+      "answerStructure": [
+        "Identify compliance requirements: GDPR right to erasure, right to portability, and data minimization",
+        "Design the data model: separate PII from analytics data, use pseudonymized IDs for core tables",
+        "Implement deletion: for databases, mark rows as deleted; for object stores, write delete markers; for Kafka, produce tombstones",
+        "Design the export pipeline: query all user data across systems, package in JSON/Parquet, deliver securely",
+        "Automate: build a self-service portal for privacy requests with audit logging and SLA tracking"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "Your team maintains 50 different ETL pipelines. There is no documentation, and the only person who understood most of them is leaving the company. What do you do to preserve knowledge and ensure the pipelines remain maintainable? How do you prioritize which ones to document and refactor first?",
+    "difficulty": "MEDIUM",
+    "skills": ["Knowledge Transfer", "Documentation", "Code Maintainability", "Technical Debt"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Run knowledge extraction sessions with the departing engineer: record walkthroughs of each pipeline's logic and failure modes",
+        "Prioritize based on business criticality: pipelines feeding executive dashboards and financial reports first",
+        "Create a pipeline inventory: input source, output destination, frequency, owner, SLA, and known issues",
+        "Add inline documentation and runbooks: common failure modes, restart procedures, and data lineage",
+        "Implement pipeline health monitoring: automated tests and validation so tribal knowledge is less critical"
+      ],
+      "commonMistakes": [
+        "Trying to document all 50 pipelines equally instead of prioritizing the critical ones",
+        "Only creating high-level documentation without failure scenarios and recovery steps",
+        "Not addressing the root cause: lack of coding standards and documentation culture",
+        "Assuming the leaving engineer can transfer all knowledge in their notice period; prioritize ruthlessly"
+      ],
+      "answerStructure": [
+        "Assess the situation: inventory all pipelines, identify business criticality and the departing engineer's knowledge",
+        "Plan knowledge transfer: schedule focused sessions on the highest-priority pipelines first",
+        "Create documentation: pipeline READMEs, data lineage diagrams, and runbooks with recovery procedures",
+        "Refactor the most fragile pipelines: add tests, monitoring, and error handling where missing",
+        "Establish a standard: define documentation and testing requirements for all future pipelines"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "MID",
+    "category": "BEHAVIORAL",
+    "question": "You are tasked with building a data quality monitoring framework for a data platform that serves 10 different teams. Each team has different quality requirements and different tolerance for bad data. How do you design a framework that is flexible enough for all teams while maintaining consistency? How do you get teams to adopt it?",
+    "difficulty": "MEDIUM",
+    "skills": ["Data Quality", "Platform Design", "Cross-Team Collaboration", "Adoption Strategy"],
+    "estimatedTime": "3-5 min",
+    "guidance": {
+      "keyPoints": [
+        "Define a core set of quality metrics (completeness, uniqueness, timeliness, freshness) that apply to all datasets",
+        "Allow teams to configure thresholds per dataset: critical vs non-critical, hard fail vs soft warning",
+        "Provide a self-service framework: teams define expectations in YAML/config, the platform runs checks automatically",
+        "Offer tiered quality guarantees: gold datasets (highest SLA, monitored 24/7), silver, bronze",
+        "Show value first: onboard one team with a quick win, then iterate based on their feedback"
+      ],
+      "commonMistakes": [
+        "Building a monolithic quality framework that leaves no room for team-specific requirements",
+        "Making quality a blocking gate; teams will bypass it if it slows them down",
+        "Assuming all teams have the same understanding of data quality; start with a shared taxonomy",
+        "Rolling out to all teams simultaneously without piloting and iterating"
+      ],
+      "answerStructure": [
+        "Describe the challenge: diverse teams, different quality needs, no one-size-fits-all approach",
+        "Design the framework: core metrics + per-dataset configuration, tiered SLAs, automated alerting",
+        "Explain the self-service model: teams define expectations in code, monitored by the platform",
+        "Discuss the adoption strategy: pilot with a willing team, show results, iterate, then roll out",
+        "Reflect on the outcome: what worked, what resisted, and how the framework evolved"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "Compare Lambda and Kappa architectures for real-time data processing. What are the fundamental trade-offs between maintaining separate batch and stream processing layers versus having a single streaming layer? Under what conditions would each architecture be appropriate? How do you handle reprocessing historical data in a Kappa architecture?",
+    "difficulty": "HARD",
+    "skills": ["Lambda Architecture", "Kappa Architecture", "Streaming", "Real-Time Processing", "Architecture Design"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Lambda architecture has separate batch and speed layers plus a serving layer that merges results",
+        "Kappa architecture processes all data as a stream, using replay capability for historical reprocessing",
+        "Lambda's batch layer provides accurate recomputation while the speed layer provides low-latency results",
+        "Kappa requires the streaming engine to support stateful processing with exactly-once semantics and long retention",
+        "The key Kappa challenge: replaying historical data through the same streaming logic without performance degradation"
+      ],
+      "commonMistakes": [
+        "Thinking Kappa removes all complexity; it replaces batch/storage complexity with stream reprocessing complexity",
+        "Not accounting for the serving layer merge complexity in Lambda: reconciling batch and speed layer results",
+        "Assuming Kappa cannot handle high latency tolerance use cases; it can, but with unnecessary stream processing overhead",
+        "Believing Lambda is always legacy; many mature systems (e.g., Netflix, Twitter) still use Lambda variants"
+      ],
+      "answerStructure": [
+        "Define Lambda architecture: batch, speed, and serving layers with their responsibilities",
+        "Define Kappa architecture: unified streaming layer with long-lived event log (Kafka) as the source of truth",
+        "Compare trade-offs: Lambda (complexity, data consistency reconciliation) vs Kappa (replay, state management, tooling maturity)",
+        "Discuss reprocessing in Kappa: reset consumer offsets, reprocess from the beginning with updated logic, materialize new state",
+        "Provide guidance on choosing: Kappa for real-time analytics with bounded historical lookback; Lambda for systems needing daily batch reconciliation with complex transformations"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "Explain exactly-once semantics in distributed streaming systems. How do different systems (Apache Kafka, Apache Flink, Apache Spark Streaming) implement exactly-once processing? What are the trade-offs in throughput, latency, and fault tolerance between the implementations? When is exactly-once actually necessary versus at-least-once with deduplication?",
+    "difficulty": "HARD",
+    "skills": ["Exactly-Once Semantics", "Apache Kafka", "Apache Flink", "Apache Spark", "Distributed Systems"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Exactly-once requires: idempotent producers, transactional writes, and consistent state store commits",
+        "Kafka EOS uses transaction coordinator, producer ID + epoch for fencing, and two-phase commit to output topics and consumer offsets",
+        "Flink implements EOS via checkpointing: snapshot of operator state + exactly-once sinks (two-phase commit or idempotent writes)",
+        "Spark Streaming EOS: write-ahead log + transactional sinks + idempotent writes, restarting from checkpointed offset range",
+        "True exactly-once is a system property; the application must also be idempotent for downstream consumers"
+      ],
+      "commonMistakes": [
+        "Confusing end-to-end exactly-once with system-level exactly-once; downstream consumers can still cause duplicates",
+        "Not understanding that exactly-once adds significant latency (additional RTTs for transaction commits)",
+        "Assuming all EOS implementations are equivalent; Flink's checkpointing has different guarantees than Kafka's transactions",
+        "Over-applying exactly-once where at-least-once with deduplication in the sink would suffice at lower latency"
+      ],
+      "answerStructure": [
+        "Define the three delivery semantics: at-most-once, at-least-once, exactly-once",
+        "Explain what exactly-once requires at each layer: source, processing, sink",
+        "Detail Kafka's EOS: transaction coordinator, init/commit/abort, producer fencing",
+        "Detail Flink's EOS: checkpoint barriers, state snapshots, two-phase commit sink",
+        "Compare trade-offs: throughput impact (Flink checkpoints non-blocking, Kafka transactions add latency), state size, recovery time"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How would you design a data governance framework for a large organization with multiple data domains, hundreds of pipelines, and regulatory compliance requirements? Cover data cataloging, lineage tracking, access control, data quality SLAs, and cost attribution. How do you operationalize governance without slowing down data teams?",
+    "difficulty": "HARD",
+    "skills": ["Data Governance", "Data Catalog", "Data Lineage", "Access Control", "Compliance"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Data governance needs four pillars: catalog (what exists), lineage (where it comes from), quality (how reliable), access (who can use it)",
+        "Automate cataloging via scanners that crawl data warehouses, lakes, and streaming platforms to populate a metadata store",
+        "Lineage at column level requires parsing query plans and instrumenting ETL code to emit provenance metadata",
+        "Access control should be role-based with attribute-based conditions; implement via views, row-level security, or masking",
+        "Cost attribution requires tagging resources with domain/cost-center and tracking compute and storage per pipeline"
+      ],
+      "commonMistakes": [
+        "Building governance as a centralized bottleneck where every data access requires a ticket",
+        "Collecting metadata without making it useful; a catalog no one uses is worse than no catalog",
+        "Implementing lineage as a manual documentation exercise that becomes stale immediately",
+        "Treating governance as purely a technical problem; organizational buy-in and data ownership are critical"
+      ],
+      "answerStructure": [
+        "Define the governance scope: what data domains exist, regulations, and key stakeholders",
+        "Design the data catalog: automated scanner, business glossary, search and discovery, ownership tags",
+        "Design lineage tracking: automated column-level lineage using SQL parser + tooling (OpenLineage, Marquez)",
+        "Design access control: role-based access with data masking, approval workflows for sensitive data",
+        "Design quality and cost: data quality SLA monitoring, cost attribution by domain/pipeline, chargebacks"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "Describe the internal workings of distributed query engines like Presto/Trino. How does the coordinator-worker architecture work? How does the engine split a SQL query into stages, splits, and tasks? What is the role of the exchange operator and how does data shuffle between stages? How does the cost-based optimizer choose join strategies?",
+    "difficulty": "HARD",
+    "skills": ["Presto", "Trino", "Distributed Query Engine", "Query Planning", "Cost-Based Optimization"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Coordinator parses SQL, creates a logical plan, optimizes it, then fragments into stages that form a tree",
+        "Each stage is split into splits (unit of work) based on table partitions or bucketing",
+        "Tasks run on workers, each processing one split; the exchange operator handles data transfer between stages",
+        "Exchange can be repartitioning (hash-based shuffle), broadcasting (broadcast join), or gathering (aggregation)",
+        "Cost-based optimizer uses table statistics (row count, distinct values, null fraction) to choose between join strategies, aggregation methods, and partition pruning"
+      ],
+      "commonMistakes": [
+        "Confusing stages with tasks; a stage is a plan fragment, tasks are its parallel instances on data splits",
+        "Not understanding that exchange operators materialize intermediate results and can spill to disk",
+        "Assuming Presto/Trino is always faster than Hive; for simple scans without joins, Hive can be competitive",
+        "Believing all joins use distributed shuffle; broadcast joins replicate small tables to all workers without shuffle"
+      ],
+      "answerStructure": [
+        "Describe the coordinator-worker architecture and how they communicate via REST API",
+        "Explain query planning: SQL → AST → logical plan → physical plan → stage fragmentation",
+        "Detail the stage types: source stage (reads data), intermediate stage (aggregation/join), output stage (final aggregation)",
+        "Discuss exchange operators: hash repartitioning, broadcast, gather, and their network implications",
+        "Cover cost-based optimization: table statistics collection, join strategy selection (broadcast vs hash vs merge), join order optimization"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How would you implement Change Data Capture (CDC) at scale? Compare log-based CDC (Debezium, Maxwell) with query-based CDC (timestamp columns, triggers). How do you handle schema changes in the source database without breaking the CDC pipeline? How do you ensure exactly-once delivery of change events?",
+    "difficulty": "HARD",
+    "skills": ["Change Data Capture", "Debezium", "Kafka Connect", "CDC", "Schema Evolution"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Log-based CDC reads the database transaction log (WAL/binlog/redo log) without impacting the source system",
+        "Query-based CDC uses timestamp columns or triggers, which add load to the source database",
+        "Debezium captures every row-level change: INSERT, UPDATE, DELETE, and also captures schema history",
+        "Schema changes in the source: Debezium tracks DDL via the schema history topic and emits schema change events",
+        "Exactly-once delivery requires Kafka Connect with idempotent producers and offset management in the source connector"
+      ],
+      "commonMistakes": [
+        "Using query-based CDC for high-volume OLTP sources; the query load degrades database performance significantly",
+        "Not handling DDL changes: if Debezium encounters a column type change mid-stream, the connector can fail",
+        "Assuming CDC events are ordered globally; ordering is per table primary key within a partition",
+        "Ignoring the initial snapshot phase: CDC needs a consistent snapshot before streaming incremental changes"
+      ],
+      "answerStructure": [
+        "Compare log-based vs query-based CDC: mechanism, latency, impact on source, and scalability",
+        "Describe Debezium architecture: source connector, schema history topic, offset management, SMTs",
+        "Explain the initial snapshot + streaming phases: how consistent snapshot is achieved via global reader lock or LSN pinning",
+        "Discuss schema evolution handling: schema change events, schema registry integration, compatibility enforcement",
+        "Cover operational aspects: monitoring lag, handling network partitions, re-processing from offsets"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "Explain the data mesh architecture paradigm as described by Zhamak Dehghani. How does it differ from centralized data platforms (data warehouse, data lake, lakehouse)? What are the four principles of data mesh and how do you operationalize each? What are the common pitfalls when implementing data mesh in practice?",
+    "difficulty": "HARD",
+    "skills": ["Data Mesh", "Data Architecture", "Domain-Driven Design", "Federated Governance"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Data mesh has four principles: domain ownership, data as a product, federated computational governance, and self-serve data platform",
+        "Domain ownership: each business domain owns, produces, and maintains its data as a product with SLAs",
+        "Data as a product means treating datasets with the same rigor as software products: versioned, documented, tested, with SLAs",
+        "Federated governance: global standards (interoperability, access control) enforced by automated policies, not manual gatekeeping",
+        "Self-serve platform: domain-agnostic infrastructure (storage, catalog, compute) that domains use without building their own"
+      ],
+      "commonMistakes": [
+        "Data mesh is not a technology; buying a data mesh product without organizational transformation will fail",
+        "Not actually decentralizing ownership; renaming central teams to 'domains' without changing decision-making authority",
+        "Underinvesting in the self-serve platform; domains need robust tooling to produce and serve data products",
+        "Ignoring interoperability: domains produce data in different formats, schemas, and semantics, making cross-domain analytics difficult"
+      ],
+      "answerStructure": [
+        "Describe the centralized data platform problem: bottlenecks, tight coupling, domain knowledge gap",
+        "Explain the four data mesh principles and their motivations",
+        "Detail domain ownership: what it means for each team to own their data end-to-end",
+        "Discuss federated governance: global standards with local autonomy, automated policy enforcement",
+        "Cover common pitfalls: organizational resistance, platform underinvestment, interoperability challenges"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How do you design cost-optimized data pipelines in cloud environments? What are the major cost drivers (compute, storage, data transfer) and how do you optimize each? Compare cost optimization strategies for batch vs streaming pipelines. How do you implement cost allocation, monitoring, and budgeting across multiple teams?",
+    "difficulty": "HARD",
+    "skills": ["Cost Optimization", "Cloud Infrastructure", "FinOps", "Pipeline Optimization"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Three major cost categories: compute (Spark clusters, query engines), storage (S3, data warehouse), data transfer (cross-region egress)",
+        "Compute optimization: right-size clusters, use spot/preemptible instances, auto-scaling, avoid idle clusters",
+        "Storage optimization: compress data, use columnar formats, lifecycle policies to tier cold data, partition pruning",
+        "Data transfer costs dominate in multi-region architectures; keep compute close to storage, avoid unnecessary shuffles",
+        "Cost allocation: tag resources with team/cost-center/pipeline-id, have chargeback/showback reports via usage metrics"
+      ],
+      "commonMistakes": [
+        "Only looking at compute costs while ignoring egress and storage costs that compound over time",
+        "Using on-demand instances exclusively; spot instances can reduce compute costs 60-90% with proper fallback",
+        "Not deleting temporary data or staging tables; orphaned storage accumulates silently",
+        "Optimizing for cost at the expense of reliability; a pipeline that fails frequently wastes more resources retrying"
+      ],
+      "answerStructure": [
+        "Categorize costs by service: compute, storage, network, and managed services",
+        "Compute optimization: Spark auto-scaling, spot instances, query engine resource groups, reserved capacity",
+        "Storage optimization: compression (Zstd), columnar formats, partition pruning, lifecycle policies, tiered storage",
+        "Data transfer: minimize cross-region, use same-AZ compute and storage, optimize shuffle in distributed queries",
+        "Cost governance: tagging strategy, budgets, anomaly detection, chargeback reports, quarterly optimization reviews"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "TECHNICAL",
+    "question": "How do you design a real-time data processing system that operates at millions of events per second? Cover data ingestion, serialization, partitioning, state management, and fault tolerance. What are the physical bottlenecks (network, CPU, memory, disk I/O) and how do you address each when designing for extreme throughput?",
+    "difficulty": "HARD",
+    "skills": ["Real-Time Processing", "High Throughput", "Distributed Systems", "Scalability", "Performance Engineering"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "High-throughput ingestion requires partitioning across many Kafka partitions or Kinesis shards based on a distribution key",
+        "Serialization: use binary formats (Avro, Protobuf) with schema registry; JSON text parsing becomes a CPU bottleneck at millions/s",
+        "Partitioning strategy: key by customer_id or similar for ordering within a partition; avoid hot spots with salted keys",
+        "State management: use embedded RocksDB for local state with changelog topics for fault tolerance; keep state small",
+        "Physical bottlenecks: network bandwidth (use compression, batching), CPU (avoid deserialization in hot paths, use SIMD), disk I/O (SSD for state stores, sequential writes to Kafka)"
+      ],
+      "commonMistakes": [
+        "Using a single Kafka topic with 1 partition limits throughput to a single broker's network bandwidth",
+        "Not batching writes: producing one record at a time instead of using batch.size and linger.ms",
+        "Putting stateful operators behind a hot key; one partition processes far more data than others",
+        "Ignoring backpressure: if the sink cannot keep up, the pipeline builds unbounded state or fails"
+      ],
+      "answerStructure": [
+        "Design the ingestion layer: Kafka with enough partitions for target throughput, optimal producer batching, compression (Zstd)",
+        "Design the processing layer: Flink with operator chaining, managed keyed state, buffer debloating",
+        "Design the state layer: RocksDB with managed memory, write-ahead log, state TTL, incremental checkpoints",
+        "Address physical bottlenecks: network (batch, compress), CPU (binary format, vectorized processing), memory (managed in Flink, off-heap in RocksDB)",
+        "Design for fault tolerance: checkpointing frequency, state backup, rebalancing with minimal lag"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "You are designing a data platform for a fast-growing startup that currently has 100GB of data but expects to grow to 100TB within 2 years. The engineering team is small (3 data engineers). They currently use a single PostgreSQL instance for analytics but it is already slowing down. Design the target architecture considering cost, team size, and future growth. What do you migrate first?",
+    "difficulty": "HARD",
+    "skills": ["Data Architecture", "Scalability", "Cloud Migration", "Cost Optimization", "Technical Strategy"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Start with the simplest migration that reduces immediate pain: move analytics to a cloud warehouse (Snowflake/BigQuery) with PostgreSQL still operational",
+        "Keep the small team productive: choose managed services over self-hosted solutions (no Kafka, Spark clusters to maintain)",
+        "Design for 100TB: columnar storage, partitioning by date, compression, and incremental processing from day one",
+        "Migrate incrementally: move the largest tables first to the cloud warehouse, leave smaller dimensions in PostgreSQL",
+        "Choose ELT over ETL: leverage the cloud warehouse's compute for transformations, reducing custom pipeline code"
+      ],
+      "commonMistakes": [
+        "Over-engineering: introducing Kafka, Spark, and a lakehouse when a simple cloud warehouse suffices",
+        "Migrating everything at once instead of a phased approach, risking the team's capacity",
+        "Not accounting for cloud costs: on-demand queries on 100TB can be expensive without proper partitioning and clustering",
+        "Choosing technologies that the small team cannot operate: self-hosted Trino or Spark require significant ops experience"
+      ],
+      "answerStructure": [
+        "Assess current state: what is slow, what are the query patterns, what is the team's skill set",
+        "Design the target architecture: cloud warehouse as the analytics engine, object storage for raw data",
+        "Define the migration phases: Phase 1 (move analytics to warehouse), Phase 2 (add raw data lake with partitioning), Phase 3 (optional streaming if needed)",
+        "Address cost: clustering keys, materialized views, auto-suspend for compute, reserved capacity vs on-demand",
+        "Plan for team productivity: infrastructure as code, CI/CD for SQL, data catalog, and monitoring"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your organization has 200+ data pipelines running on Airflow. Many pipelines have overlapping logic, inconsistent error handling, and no standardized monitoring. The data engineering team spends 40% of their time firefighting failed pipelines. Design a strategy to improve pipeline reliability and reduce operational toil without rewriting everything from scratch.",
+    "difficulty": "HARD",
+    "skills": ["Pipeline Reliability", "Operational Excellence", "Technical Debt", "Platform Engineering", "Airflow"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Measure first: categorize failures by type (source schema change, resource exhaustion, logic error, infrastructure)",
+        "Standardize: create shared Airflow DAG templates, operator wrappers, and error handlers that all new pipelines use",
+        "Instrument: add standardized logging, metrics (duration, row counts, failure reasons), and alerting to all pipelines",
+        "Create a pipeline health dashboard: SLA compliance, failure rate, mean time to recovery, pipeline freshness",
+        "Tackle the worst offenders: identify the top 10 most failure-prone pipelines and refactor them with the new standards"
+      ],
+      "commonMistakes": [
+        "Trying to rewrite all 200 pipelines at once; focus on the highest-impact, highest-failure ones first",
+        "Adding monitoring without also adding automated remediation; alerts alone still require human firefighting",
+        "Standardizing without buy-in: impose templates without feedback from the team that uses them daily",
+        "Not addressing the root cause: lack of testing, code review, and deployment process for pipeline changes"
+      ],
+      "answerStructure": [
+        "Analyze failure data: categorize and quantify failure types to identify the biggest sources of toil",
+        "Design the standardized pipeline framework: base DAG class, shared error handling, retry policies, standardized logging",
+        "Implement observability: pipeline metadata database, health score, SLA dashboards, automated root cause analysis",
+        "Roll out incrementally: create the framework, migrate the top 10 worst pipelines, then set a standard for new pipelines",
+        "Change the process: add pipeline review requirements, automated testing of pipeline code, and a data reliability engineering culture"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "You are tasked with migrating a 50TB on-premise Hive data warehouse to a cloud-based lakehouse (Delta Lake on S3 with Spark). The migration must happen with less than 1 hour of downtime and zero data loss. How do you design the cut-over strategy? How do you validate that the new system produces identical results? How do you handle the inevitable edge cases?",
+    "difficulty": "HARD",
+    "skills": ["Data Migration", "Delta Lake", "Apache Spark", "Cut-Over Strategy", "Data Validation"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Use a dual-write strategy: run both systems in parallel for a period before cutting over queries",
+        "Historical migration: export Hive tables to Parquet in S3, then convert to Delta format with OPTIMIZE and ZORDER",
+        "Incremental sync: capture changes in Hive via audit columns or Hive repl commands, apply to Delta incrementally",
+        "Validation is the hardest part: use row-by-row checksum comparison on sampled partitions and aggregate reconciliation",
+        "Cut-over: redirect new writes to Delta first (dual write), then redirect reads after final validation window"
+      ],
+      "commonMistakes": [
+        "Attempting a big-bang cut-over where all Hive users switch to Delta simultaneously",
+        "Not validating data types: Hive type system differs from Spark/Delays (e.g., Hive DECIMAL vs Spark Decimal)",
+        "Ignoring Hive-specific features: bucketing, sorting, and SerDe processing that do not have direct Delta equivalents",
+        "Forgetting about Hive UDFs and custom SerDes that must be rewritten as Spark native functions"
+      ],
+      "answerStructure": [
+        "Plan the migration: assess table catalog (size, partition count, update frequency), choose parallel run duration",
+        "Design historical migration: export Hive to Parquet, convert to Delta with schema validation, optimize with ZORDER on common filter columns",
+        "Design incremental sync: identify which tables change and how to capture deltas (audit columns, Hive repl, or trigger-based)",
+        "Design validation: checksum-based on sampled rows, aggregate comparison (count, sum, distinct count) at table and partition level",
+        "Design cut-over: dual writes → final validation → redirect reads → decommission old warehouse"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your company's streaming pipeline has been experiencing data loss events during Kafka broker failures. Consumers fail to resume from the correct offset after the leader election, and some messages are never re-processed. How do you diagnose what is happening? Design a fault-tolerant streaming architecture that survives broker failures, network partitions, and consumer crashes without data loss.",
+    "difficulty": "HARD",
+    "skills": ["Apache Kafka", "Fault Tolerance", "Data Loss", "Streaming Reliability", "Consumer Design"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Data loss during leader election: unclean leader election (default.cleanup.policy=delete) allows out-of-sync replicas to become leaders, losing committed data",
+        "Consumer offset commits: auto-commit commits offsets before processing completes; on restart, unprocessed messages are skipped",
+        "Kafka durability requires min.insync.replicas=2 and acks=all on producers to ensure data is replicated before acknowledgment",
+        "Enable unclean.leader.election.enable=false to prevent out-of-sync replicas from becoming leaders",
+        "Consumer design: use manual offset commits after processing, with idempotent sinks to handle duplicates"
+      ],
+      "commonMistakes": [
+        "Using acks=0 or acks=1 for throughput; these modes can lose data if the leader fails immediately after accepting the write",
+        "Enabling auto-commit (enable.auto.commit=true) with at-least-once processing; offsets are committed before processing completes",
+        "Not setting min.insync.replicas, allowing a single replica to confirm writes and then fail, losing the data",
+        "Assuming replication factor of 3 guarantees no data loss without also configuring min.insync.replicas and acks=all"
+      ],
+      "answerStructure": [
+        "Diagnose the data loss: check Kafka broker logs for ISR shrinks, unclean leader elections, and consumer offset lag patterns",
+        "Fix producer durability: acks=all, retries with exponential backoff, delivery.timeout.ms sufficiently high",
+        "Fix broker durability: min.insync.replicas=2, unclean.leader.election.enable=false, replication factor 3",
+        "Fix consumer reliability: manual offset commits after processing and persisting results, idempotent writes to sink",
+        "Design the complete fault-tolerant architecture: dead letter topic for poison pills, monitoring for consumer lag, automated consumer rebalancing"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your organization needs to join two very large tables (5TB and 2TB) daily on a customer_id key using Spark. The join is a simple equi-join, but it takes 12 hours and frequently fails with shuffle fetch failures and OOM errors. The Spark cluster has 50 nodes with 256GB RAM each. How do you diagnose and fix this? Consider data skew, partitioning, and join strategy.",
+    "difficulty": "HARD",
+    "skills": ["Apache Spark", "Large-Scale Join", "Data Skew", "Shuffle Optimization", "Spark Tuning"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "First diagnostic: examine Spark UI for stage duration, shuffle read/write sizes, and task duration distribution",
+        "Data skew: a small number of customer_id keys dominate, causing a few tasks to process most of the data",
+        "Skewed joins: use salting (add a random prefix to skewed keys) to distribute data across more partitions",
+        "Shuffle fetch failures: executor OOM during shuffle read due to insufficient memory or large shuffle blocks",
+        "Broadcast hash join: if one table is smaller than the other, broadcast it; otherwise use SortMergeJoin with proper partition count"
+      ],
+      "commonMistakes": [
+        "Simply increasing executor memory without addressing data skew; skewed partitions still OOM",
+        "Using broadcast join hint when the smaller table is actually too large for broadcast (exceeds spark.sql.autoBroadcastJoinThreshold)",
+        "Not considering adaptive query execution (AQE): Spark 3.x can dynamically coalesce partitions and handle skew",
+        "Setting shuffle partitions too high, creating millions of tiny files and overwhelming the shuffle service"
+      ],
+      "answerStructure": [
+        "Diagnose: Spark UI reveals skewed task execution times (a few tasks take much longer than the median)",
+        "Handle skew with salting: add a random number 0-9 to skewed keys and explode the smaller side to match",
+        "Enable Spark AQE: spark.sql.adaptive.enabled=true, spark.sql.adaptive.coalescePartitions.enabled=true, spark.sql.adaptive.skewJoin.enabled=true",
+        "Tune resources: spark.executor.memory=32G, spark.executor.cores=4, spark.sql.shuffle.partitions = data_size / 200MB",
+        "Alternative join strategies: bucketing both tables by join key to eliminate shuffle entirely"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your company runs hundreds of analytical queries on a Trino cluster querying data from Hive, Delta Lake, and PostgreSQL. Queries are becoming slower as more teams onboard. Some teams run expensive ad-hoc queries that consume resources needed by production dashboards. Design a multi-tenant query architecture with resource isolation, prioritization, and fair scheduling.",
+    "difficulty": "HARD",
+    "skills": ["Trino", "Multi-Tenancy", "Resource Management", "Query Scheduling", "Workload Management"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Trino resource groups provide hierarchical resource allocation with CPU and memory limits per group",
+        "Define resource groups by team/priority: production dashboards (highest), analytics team (medium), ad-hoc exploration (lowest)",
+        "Use query queues with backpressure: when a resource group reaches its limit, new queries are queued rather than rejected",
+        "For data sources, use separate catalogs with connection pooling and rate limiting per connector",
+        "Implement query CPU and memory limits: per-query max execution time, max memory, max scanned bytes to prevent runaway queries"
+      ],
+      "commonMistakes": [
+        "Using a single resource group for all queries; high-concurrency ad-hoc queries starve production dashboards",
+        "Not setting per-query limits; a single bad Cartesian join can exhaust cluster memory",
+        "Assuming all connectors have the same performance characteristics; JDBC connectors to PostgreSQL are slower than Hive/Delta connectors",
+        "Ignoring data source impedance: expensive queries scanning large partitions affect all concurrent queries on the same data source"
+      ],
+      "answerStructure": [
+        "Design the resource group hierarchy: production (scheduled, high priority), batch (ETL, medium), ad-hoc (exploratory, low)",
+        "Configure resource groups: cpu_max, memory_max, queued_query_limit, concurrent_query_limit per group",
+        "Set per-query limits: session properties for query_max_execution_time, query_max_memory, query_max_scan_physical_bytes",
+        "Design data source access: separate catalogs with caching, materialized views for common queries",
+        "Implement monitoring and chargeback: track per-team query cost (CPU time, data scanned), dashboard for resource utilization"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "An executive wants to implement real-time personalization on the company website using user clickstream data. The current architecture batch-processes clickstream data every 6 hours using Spark, with a 40-minute processing window. The executive wants sub-second personalization. Design the real-time personalization pipeline. What are the architectural trade-offs between pure streaming, micro-batch, and hybrid approaches?",
+    "difficulty": "HARD",
+    "skills": ["Real-Time Personalization", "Streaming Architecture", "Feature Engineering", "Online/Offline Architecture", "Trade-Off Analysis"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Real-time personalization needs: feature computation (user attributes, session context), model inference, and low-latency serving",
+        "Pure streaming (Flink with keyed state) computes features incrementally per event and maintains a real-time user feature store",
+        "Micro-batch (Spark Structured Streaming with 1-5 second windows) provides higher throughput at the cost of higher latency",
+        "Hybrid: use streaming for critical features (immediate signals) and batch for complex aggregations (hourly refresh)",
+        "Feature store (Feast/Redis) serves pre-computed features for model inference with sub-millisecond lookup latency"
+      ],
+      "commonMistakes": [
+        "Designing for pure streaming for all features when many features (7-day averages) can be pre-computed offline",
+        "Not separating the online feature computation from the offline batch pipeline, causing training-serving skew",
+        "Underestimating the complexity of exactly-once state management in continuous streaming systems",
+        "Building the model serving layer without considering feature freshness requirements; some features need <100ms latency, others can tolerate minutes"
+      ],
+      "answerStructure": [
+        "Decompose the problem: what features are needed, what freshness do they require, and what is the model inference latency budget",
+        "Design the streaming layer (Flink): ingest clickstream from Kafka, compute per-user session features in keyed state, emit to feature store",
+        "Design the batch layer (Spark): compute historical features (aggregations over days/weeks), write to feature store with periodic refresh",
+        "Design the serving layer: feature store (Redis) at the edge for low-latency lookup, model server (FastAPI/Triton) with lightweight model",
+        "Address trade-offs: duplicate feature computation (streaming + batch), consistency model for feature updates, training-serving skew prevention"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you led a major data infrastructure migration or redesign. How did you convince stakeholders to invest in the work? How did you manage the risks? How did you measure success? What did you learn about leading technical change in an organization?",
+    "difficulty": "HARD",
+    "skills": ["Technical Leadership", "Change Management", "Stakeholder Influence", "Migration Strategy", "Risk Management"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Build the business case: quantify the current pain (downtime cost, engineer hours lost, SLA misses) in terms stakeholders care about",
+        "Start with a pilot project: prove the new approach on a low-risk pipeline before proposing a full migration",
+        "Design the migration in phases with clear rollback criteria at each phase",
+        "Measure success with concrete metrics: pipeline duration, failure rate, engineer time spent firefighting, cost",
+        "Invest in team alignment: regular updates, celebrate quick wins, address concerns transparently"
+      ],
+      "commonMistakes": [
+        "Leading with technology (Spark 3.5 is faster!) instead of business value (dashboards will be ready 2 hours earlier)",
+        "Underestimating the organizational inertia: people resist change even when the current system is painful",
+        "Designing a perfect architecture that takes too long to deliver value; stakeholders lose patience",
+        "Not having a rollback plan; when things go wrong, confidence in the leadership erodes"
+      ],
+      "answerStructure": [
+        "Set the context: what was the current state, what were the pain points, why was change needed",
+        "Describe how you built the case: metrics, stakeholder mapping, and alignment building",
+        "Explain the approach: phased migration, pilot project, risk mitigation strategies",
+        "Discuss the outcome: metrics before and after, what went well and what did not",
+        "Reflect on leadership lessons learned: what you would do differently and how the experience shaped your approach"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "There is a contentious debate within your organization about build vs buy for a new data catalog and lineage platform. The engineering team wants to build it themselves; the CTO prefers buying a commercial solution. How do you facilitate this decision? What factors do you evaluate? How do you handle the disagreement?",
+    "difficulty": "HARD",
+    "skills": ["Build vs Buy", "Technical Decision Making", "Executive Communication", "Facilitation", "Trade-Off Analysis"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Evaluate based on: core vs context — is data catalog strategic differentiation (build) or commodity (buy)?",
+        "TCO over 3 years: build costs (engineering salary, maintenance, infrastructure) vs buy costs (license, implementation, customizations)",
+        "Build flexibility vs buy speed: a commercial solution can be operational in weeks; building takes months with ongoing maintenance",
+        "Data catalog maturity: consider if open-source (DataHub, Amundsen, Marquez) strikes the right balance between build and buy",
+        "Facilitate a structured decision: score both options against weighted criteria with both teams present"
+      ],
+      "commonMistakes": [
+        "Making the decision purely on engineering enthusiasm for building without a TCO analysis",
+        "Assuming a commercial solution will work out of the box; most require significant customization and integration work",
+        "Not considering total cost of ownership beyond year 1: upgrades, migrations, support contracts",
+        "Letting the debate become political rather than data-driven; use a weighted decision matrix"
+      ],
+      "answerStructure": [
+        "Describe the context: what capabilities are needed, who the stakeholders are, and the disagreement",
+        "Explain the evaluation framework: core vs context, TCO analysis, time to value, scalability, integration effort",
+        "Facilitate the process: bring engineers and executives together with a weighted decision matrix",
+        "Describe the recommendation and the rationale: build, buy, or open-source hybrid",
+        "Discuss the outcome and what you learned about cross-functional decision-making"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "You join a new company as the most senior data engineer on a team of five. The existing data infrastructure is fragile, undocumented, and the team has a culture of quick fixes without tests. How do you introduce better engineering practices without demoralizing the team or being seen as the person who slows everything down?",
+    "difficulty": "HARD",
+    "skills": ["Technical Leadership", "Culture Change", "Team Influence", "Engineering Excellence", "Change Management"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Earn trust first: spend the first weeks understanding the existing systems and building relationships before suggesting changes",
+        "Find allies: identify team members who want better practices and work with them on a single, visible improvement",
+        "Lead by example: write tests for your code, document your pipelines, and the team will see the benefits naturally",
+        "Introduce changes incrementally: one new practice at a time (start with code review, then CI, then testing standards)",
+        "Focus on visible pain points: if quick fixes cause repeated incidents, use those as teaching moments for better practices"
+      ],
+      "commonMistakes": [
+        "Coming in and immediately declaring that everything is wrong; the team built the current system for valid reasons",
+        "Introducing too many changes at once, overwhelming the team and generating resistance",
+        "Not understanding the business context: the team may have been pressured to deliver features at the expense of quality",
+        "Using authority (title) rather than influence (shared goals, data, collaboration) to drive change"
+      ],
+      "answerStructure": [
+        "Describe the situation: the team culture, the infrastructure state, and your approach to the first weeks",
+        "Explain how you built trust: listened to team members, understood their pain, and acknowledged their work",
+        "Detail the first change you introduced: what it was, why you chose it, and how you got buy-in",
+        "Describe the progression: how practices improved over time, what resisted, how you adapted",
+        "Reflect on the outcome: measured improvements in reliability and team satisfaction, and what you learned about leading change"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Your team has a critical data pipeline that feeds regulatory reports. The pipeline has a known bug that the team has been working around for months. The fix is complex and risky. A regulatory audit deadline is approaching. How do you balance the need to fix the bug with the risk of breaking the pipeline before the deadline? What decision-making framework do you use?",
+    "difficulty": "HARD",
+    "skills": ["Risk Management", "Decision Making", "Regulatory Compliance", "Technical Leadership", "Crisis Management"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Assess the bug's severity: does it produce incorrect regulatory numbers or just noisy warnings?",
+        "Consider three options: fix now (risk of new bugs before deadline), workaround as-is (risk of regulatory finding), build a parallel safe pipeline",
+        "Use a risk matrix: likelihood of each option failing × impact of failure",
+        "If the pipeline produces correct data but is fragile to changes, defer the big fix and invest in monitoring and testing instead",
+        "Document the known issue, the risk assessment, and the decision for the audit trail; regulators value transparency"
+      ],
+      "commonMistakes": [
+        "Fixing the bug at the last minute without proper testing, causing a worse outage right before the deadline",
+        "Doing nothing and hoping the regulator does not notice; lack of documented risk assessment is itself a finding",
+        "Not involving compliance and legal stakeholders in the decision; they may accept a known workaround scenario",
+        "Spending all time on the fix and neglecting the existing pipeline's stability when it is needed most"
+      ],
+      "answerStructure": [
+        "Describe the scenario: the pipeline, the bug, the workaround, and the regulatory deadline",
+        "Explain the risk assessment: what are the possible outcomes of each option, what is the probability of failure",
+        "Detail your decision framework: how you evaluated trade-offs and who you consulted",
+        "Discuss the decision and execution: what you did and how you communicated it to stakeholders",
+        "Reflect on lessons learned: how this experience shaped your approach to high-stakes pipeline management"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Your data platform serves 10 different teams. One team consistently pushes back on adopting the shared platform, insisting on running their own PostgreSQL instance and building custom pipelines. How do you understand their resistance and bring them onto the platform? What technical and organizational strategies do you use?",
+    "difficulty": "HARD",
+    "skills": ["Platform Engineering", "Cross-Team Collaboration", "Stakeholder Management", "Adoption Strategy"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Understand their resistance: are they frustrated with platform reliability, missing features, or loss of autonomy?",
+        "Identify their unmet needs: what does the shared platform not provide that their custom setup does?",
+        "Build bridges: offer to help them migrate, provide dedicated support, and incorporate their feedback into the platform roadmap",
+        "Create asymmetric benefits: make the platform so much better that staying on their own becomes untenable",
+        "Avoid mandating usage; instead, make the platform the path of least resistance with better SLAs, cheaper costs, and more features"
+      ],
+      "commonMistakes": [
+        "Mandating platform adoption through policy; this creates resentment and shadow IT",
+        "Ignoring their feedback as 'not-invented-here' syndrome; they may have legitimate concerns",
+        "Trying to build a perfect platform before onboarding them; deliver value incrementally",
+        "Not having a product mindset: treat other teams as customers, not users who must conform"
+      ],
+      "answerStructure": [
+        "Describe the situation: the platform, the resistant team, and the reasons they gave for staying independent",
+        "Explain your approach: listening sessions to understand their pain points and needs",
+        "Detail the actions: what you changed in the platform, what migration support you offered, how you built trust",
+        "Discuss the outcome: did they migrate? What compromises were made?",
+        "Reflect on what you learned about platform adoption and building an engineering culture of collaboration"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "PROBLEM_SOLVING",
+    "question": "Your organization maintains a data lake with thousands of tables in Parquet format. Over time, many tables have developed severe small-file problems: millions of tiny 1-10MB files instead of optimal 256MB+ files. This causes slow query planning, poor compression ratios, and excessive S3 LIST costs. How do you design an automated compaction and optimization framework? What metrics do you use to prioritize which tables to compact first?",
+    "difficulty": "HARD",
+    "skills": ["Data Lake", "Compaction", "Parquet", "Small File Problem", "Performance Optimization", "Delta Lake"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Small files increase query planning time (more files to list), reduce compression ratio (less data per page), and increase S3 API costs",
+        "Compaction: read small files, coalesce into larger files (target 256MB-1GB per file), and rewrite",
+        "Metrics to prioritize: file count to data ratio, age since last compaction, query frequency on the table, partition layout health",
+        "Compaction strategies: bin-packing (merge files of similar size), sorted merge (merge sorted files for clustered output)",
+        "Delta/Iceberg have built-in OPTIMIZE/ZORDER commands; raw Parquet requires a custom Spark job with dynamic coalesce"
+      ],
+      "commonMistakes": [
+        "Compacting all tables equally instead of prioritizing by query frequency and data size",
+        "Not accounting for concurrent writers: compaction can conflict with active writes unless using table format with ACID",
+        "Choosing a single file size target for all tables; large dimension tables benefit from bigger files than small dimension tables",
+        "Compacting without also sorting, which misses the opportunity to improve query filter efficiency"
+      ],
+      "answerStructure": [
+        "Define the small-file problem: causes (streaming, partitioning, frequent overwrites) and symptoms (slow queries, high costs)",
+        "Design the compaction framework: scan table metadata, compute file size distribution, identify tables needing compaction",
+        "Set prioritization criteria: query frequency × data size × file count ratio, with user-defined overrides for critical tables",
+        "Implement the compactor: Spark job reading small files, coalescing/repartitioning to target size, optionally sorting",
+        "Operationalize: schedule compactions during low-usage windows, monitor compaction ratio improvement over time"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Tell me about a time you had to make a decision that traded off data quality for speed. The business needed data immediately, but you knew the quality checks were not ready. How did you navigate this? What safeguards did you put in place? How did you communicate the risk to stakeholders?",
+    "difficulty": "HARD",
+    "skills": ["Decision Making", "Risk Communication", "Data Quality", "Engineering Trade-Offs", "Stakeholder Management"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Evaluate the risk: what is the worst case if data is wrong? Can it be corrected later with reprocessing?",
+        "If the risk is low (internal experiment) and the reward is high (urgent business decision), accept temporary lower quality",
+        "If the risk is high (customer-facing, regulatory), push back even under pressure",
+        "When accepting lower quality: add clear data quality flags, labels, or warnings to the data consumers",
+        "Plan for backfill: commit to improving quality and reprocessing the data within a defined timeline"
+      ],
+      "commonMistakes": [
+        "Blindly accepting all quality risks under pressure; some data defects compound silently",
+        "Not labeling the data as 'preliminary' or 'subject to change' when communicating with stakeholders",
+        "Promising to fix quality later but never actually prioritizing the clean-up",
+        "Not learning from the experience: the fire drill should drive investment in automated quality checks"
+      ],
+      "answerStructure": [
+        "Describe the context: what data was needed, by whom, and why the quality checks were not ready",
+        "Explain your assessment: what was the risk of incorrect data, what was the business cost of delay",
+        "Detail the decision: what level of quality was acceptable, what safeguards (flags, labeling) were applied",
+        "Describe the communication: how you framed the trade-off to stakeholders and got their agreement",
+        "Discuss the outcome: was the data used correctly? How did you improve quality afterward?"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "As a senior data engineer, how do you stay current with the rapidly evolving data engineering landscape? How do you evaluate new technologies and decide when to adopt them versus waiting for maturity? Give a specific example of a technology you evaluated, how you assessed it, and whether you adopted or deferred it.",
+    "difficulty": "HARD",
+    "skills": ["Technical Evaluation", "Continuous Learning", "Technology Adoption", "Judgment"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Follow a structured evaluation: identify the problem first, then look for technologies that solve it (not the other way around)",
+        "Use the technology adoption lifecycle: bleeding-edge (high risk, high learning), early majority (proven in similar contexts), late majority (industry standard)",
+        "Run a proof-of-concept with realistic data and workloads before committing to production",
+        "Consider the ecosystem: community size, documentation quality, hiring pool, integration with existing stack",
+        "Factor in operational maturity: is the technology cloud-managed? Is there vendor support? Can the team operate it?"
+      ],
+      "commonMistakes": [
+        "Adopting a technology because it is popular on Hacker News, not because it solves a real problem in your org",
+        "Spending too long evaluating without actually running any code or benchmarking",
+        "Not considering the team's ability to operate and debug the technology in production",
+        "Ignoring vendor lock-in: migrating data out of a proprietary format or service is costly"
+      ],
+      "answerStructure": [
+        "Explain your general approach: how you stay informed, how you evaluate, and your adoption criteria",
+        "Describe a specific evaluation: what technology, what problem were you solving, what alternatives existed",
+        "Detail the evaluation process: PoC design, success criteria, metrics collected",
+        "Discuss the decision: adopted or deferred, and the rationale",
+        "Reflect on the outcome: was the decision validated over time? What would you do differently?"
+      ]
+    }
+  },
+  {
+    "role": "DATA_ENGINEER",
+    "level": "SENIOR",
+    "category": "BEHAVIORAL",
+    "question": "Your organization is considering moving from a centralized data platform team to a data mesh model where domain teams own their data products. As a senior data engineer, you have been asked to recommend whether to proceed. How do you evaluate this organizational change? What conditions must be in place for data mesh to succeed? What metrics would you track to measure success?",
+    "difficulty": "HARD",
+    "skills": ["Data Mesh", "Organizational Design", "Strategic Decision Making", "Platform Engineering"],
+    "estimatedTime": "5-7 min",
+    "guidance": {
+      "keyPoints": [
+        "Data mesh requires domain teams to have the skills and bandwidth to own data products end-to-end",
+        "Success conditions: strong self-serve platform, clear data product contracts, federated governance with automated policies",
+        "Risks: domain teams may lack data engineering skills, silos may worsen without interoperability standards",
+        "Measure: time-to-insight for new data products, data product ownership satisfaction, cross-domain join success rate",
+        "Pilot approach: start with 2-3 motivated domain teams before scaling to the entire organization"
+      ],
+      "commonMistakes": [
+        "Treating data mesh as a technology migration rather than an organizational transformation",
+        "Underfunding the self-serve platform; domains need robust tooling to produce and maintain data products",
+        "Expecting all domains to succeed equally; some teams may not have the capacity or skills for data ownership",
+        "Not defining interoperability standards upfront, making cross-domain analytics nearly impossible"
+      ],
+      "answerStructure": [
+        "Describe the organizational context: current centralized model, its pain points, and the proposed mesh model",
+        "Evaluate the conditions: domain team readiness, platform maturity, executive support, governance framework",
+        "Discuss the risks: domain skill gaps, data silos, governance complexity, platform investment needed",
+        "Recommend a pilot approach: select willing domains, define success metrics, run for 3-6 months",
+        "Propose success metrics: data product adoption, cross-domain query success, time to deliver new data products"
+      ]
+    }
+  }
+]

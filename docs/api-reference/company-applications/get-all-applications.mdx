@@ -39,6 +39,64 @@ GET /api/v1/companies/me/applications
   Number of results per page (default: 20).
 </ParamField>
 
+## Request Examples
+
+### Pagination only
+
+```bash
+# Page 1, 20 items (defaults)
+GET /api/v1/companies/me/applications
+
+# Page 2, 50 items per page
+GET /api/v1/companies/me/applications?page=2&limit=50
+```
+
+### Filter by job
+
+```bash
+# Applications for a specific job
+GET /api/v1/companies/me/applications?jobId=550e8400-e29b-41d4-a716-446655440000
+```
+
+### Filter by status (single)
+
+```bash
+# All pending applications across all jobs
+GET /api/v1/companies/me/applications?status=PENDING
+
+# All hired candidates
+GET /api/v1/companies/me/applications?status=HIRED
+```
+
+### Filter by status (multi-value)
+
+```bash
+# Pending + Reviewed
+GET /api/v1/companies/me/applications?status=PENDING&status=REVIEWED
+
+# Active pipeline statuses
+GET /api/v1/companies/me/applications?status=PENDING&status=REVIEWED&status=SHORTLISTED&status=INTERVIEW_SCHEDULED
+
+# Rejected + Withdrawn (archived)
+GET /api/v1/companies/me/applications?status=REJECTED&status=WITHDRAWN
+```
+
+### Combined filters
+
+```bash
+# Pending applications for a specific job
+GET /api/v1/companies/me/applications?jobId=550e8400-e29b-41d4-a716-446655440000&status=PENDING
+
+# Active pipeline for a specific job
+GET /api/v1/companies/me/applications?jobId=550e8400-e29b-41d4-a716-446655440000&status=PENDING&status=REVIEWED&status=SHORTLISTED&status=INTERVIEW_SCHEDULED
+
+# Hired candidates for a specific job
+GET /api/v1/companies/me/applications?jobId=550e8400-e29b-41d4-a716-446655440000&status=HIRED
+
+# All filters combined
+GET /api/v1/companies/me/applications?jobId=550e8400-e29b-41d4-a716-446655440000&status=PENDING&status=REVIEWED&page=1&limit=20
+```
+
 ## Response
 
 ```json

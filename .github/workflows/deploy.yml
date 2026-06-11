@@ -22,5 +22,6 @@ jobs:
             pnpm install
             pnpm prisma generate
             pnpm prisma migrate deploy
+            node scripts/seed-interview-questions.js
             pnpm run build
             pm2 restart careerk
