@@ -331,3 +331,16 @@ Husky runs lint-staged on commit:
 - API docs built with Mintlify in `/docs`
 - Run `pnpm run start:dev` and visit Mintlify local server
 - Update `docs.json` to add new documentation pages
+
+## Session Log — 2026-06-11
+
+### Done
+- **Company application detail** — added `matchScore` to `GET /api/v1/companies/me/applications/:id` and list endpoint by querying `DirectJobMatch` via `(jobSeekerId, directJobId)` compound key
+- **Job seekers public list** — added `search` param (`OR` across `firstName`, `lastName`, `profile.title`, `skill.name`); made `availabilityStatus` and `workPreference` multi-value (arrays via `@Transform`, Prisma `in`); fixed regression where job seekers without profiles leaked into results (now uses `where.profile = { is: {} }`)
+- **Job seeker applications** — made `status` multi-value: `?status=PENDING&status=REVIEWED`
+
+### Key Patterns
+- Multi-value query params use `@IsEnum(..., { each: true })` + `@Transform` normalizing to array → Prisma `in` operator
+- Optional 1:1 relation filter: use `{ is: {} }` to enforce existence (INNER JOIN)
+- `DirectJobMatch` lookup uses `@@unique([directJobId, jobSeekerId])` compound key
+

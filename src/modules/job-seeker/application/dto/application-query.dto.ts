@@ -1,12 +1,15 @@
+import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsIn, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApplicationStatusEnum } from 'generated/prisma/enums';
 
 export class ApplicationQueryDto {
   @IsOptional()
-  @IsEnum(ApplicationStatusEnum)
-  @IsString()
-  status?: ApplicationStatusEnum;
+  @IsEnum(ApplicationStatusEnum, { each: true })
+  @Transform(({ value }: { value: string | string[] }) => {
+    const arr = Array.isArray(value) ? value : [value];
+    return arr.map((v) => v as ApplicationStatusEnum);
+  })
+  status?: ApplicationStatusEnum[];
 
   @IsOptional()
   @IsString()

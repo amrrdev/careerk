@@ -1,19 +1,27 @@
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Min, MinLength } from 'class-validator';
 import { AvailabilityStatusEnum, JobTypeEnum, WorkPreferenceEnum } from 'generated/prisma/enums';
 
 export class JobSeekerQueryDto {
   @IsOptional()
-  @IsEnum(AvailabilityStatusEnum)
-  availabilityStatus?: AvailabilityStatusEnum;
+  @IsEnum(AvailabilityStatusEnum, { each: true })
+  @Transform(({ value }: { value: string | string[] }) => {
+    const arr = Array.isArray(value) ? value : [value];
+    return arr.map((v) => v as AvailabilityStatusEnum);
+  })
+  availabilityStatus?: AvailabilityStatusEnum[];
 
   @IsOptional()
   @IsString()
   location?: string;
 
   @IsOptional()
-  @IsEnum(WorkPreferenceEnum)
-  workPreference?: WorkPreferenceEnum;
+  @IsEnum(WorkPreferenceEnum, { each: true })
+  @Transform(({ value }: { value: string | string[] }) => {
+    const arr = Array.isArray(value) ? value : [value];
+    return arr.map((v) => v as WorkPreferenceEnum);
+  })
+  workPreference?: WorkPreferenceEnum[];
 
   @IsOptional()
   @Type(() => Number)
@@ -34,6 +42,11 @@ export class JobSeekerQueryDto {
     return arr.map((v) => v as JobTypeEnum);
   })
   preferredJobTypes?: JobTypeEnum[];
+
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  search?: string;
 
   @IsOptional()
   @Type(() => Number)

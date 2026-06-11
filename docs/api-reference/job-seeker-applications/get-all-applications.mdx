@@ -23,9 +23,18 @@ GET /api/v1/job-seekers/me/applications
 ## Query Parameters
 
 <ParamField query="status" type="enum" optional>
-  Filter by application status. - `PENDING` - Under review - `REVIEWED` - Reviewed by company -
-  `SHORTLISTED` - Added to shortlist - `INTERVIEW_SCHEDULED` - Interview scheduled - `REJECTED` -
-  Application rejected - `HIRED` - Candidate hired - `WITHDRAWN` - Withdrawn by candidate
+  Filter by application status. Can be repeated for multiple values. - `PENDING` - Under review -
+  `REVIEWED` - Reviewed by company - `SHORTLISTED` - Added to shortlist - `INTERVIEW_SCHEDULED` -
+  Interview scheduled - `REJECTED` - Application rejected - `HIRED` - Candidate hired - `WITHDRAWN` -
+  Withdrawn by candidate
+</ParamField>
+
+<ParamField query="search" type="string" optional>
+  Search across job title, description, requirements, responsibilities, and company name (case-insensitive, substring match).
+</ParamField>
+
+<ParamField query="dateApplied" type="enum" optional>
+  Filter by application date range. - `Last 24 hours` - `Last 7 days` - `Last 30 days` - `All time`
 </ParamField>
 
 <ParamField query="page" type="number" optional>
@@ -74,6 +83,22 @@ GET /api/v1/job-seekers/me/applications
     "method": "GET"
   }
 }
+```
+
+## Examples
+
+```bash
+# All pending and reviewed applications
+GET /api/v1/job-seekers/me/applications?status=PENDING&status=REVIEWED
+
+# Search for applications related to a specific company or skill
+GET /api/v1/job-seekers/me/applications?search=software
+
+# Applications from the last 7 days
+GET /api/v1/job-seekers/me/applications?dateApplied=Last+7+days
+
+# Combined: search + status + date
+GET /api/v1/job-seekers/me/applications?search=engineer&status=PENDING&dateApplied=Last+24+hours
 ```
 
 ## Error Responses

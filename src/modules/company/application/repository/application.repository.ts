@@ -6,6 +6,7 @@ import {
   PaginatedApplications,
   UpdateApplicationData,
 } from '../types/application.types';
+import { DirectJobMatch } from 'generated/prisma/client';
 
 @Injectable()
 export abstract class CompanyApplicationRepository {
@@ -29,5 +30,14 @@ export abstract class CompanyApplicationRepository {
     applicationId: string,
     companyId: string,
   ): Promise<ApplicationForStatusUpdate | null>;
+
+  abstract findDirectJobMatch(
+    jobSeekerId: string,
+    directJobId: string,
+  ): Promise<Pick<DirectJobMatch, 'matchScore'> | null>;
+
+  abstract findDirectJobMatches(
+    pairs: { jobSeekerId: string; directJobId: string }[],
+  ): Promise<Map<string, number>>;
   // abstract getApplicationCvKey(applicationId: string, companyId: string): Promise<string | null>;
 }

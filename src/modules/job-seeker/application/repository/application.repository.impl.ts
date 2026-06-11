@@ -33,7 +33,7 @@ export class JobSeekerApplicationRepositoryImpl implements JobSeekerApplicationR
       jobSeekerId,
     };
 
-    if (status) where.status = status;
+    if (status?.length) where.status = { in: status };
 
     if (search) {
       where.OR = [
