@@ -22,7 +22,22 @@ export class CompanyApplicationService {
   ) {}
 
   async getCompanyApplications(companyId: string, filters: ApplicationQueryDto) {
-    return this.applicationRepository.findApplicationsByCompanyId(companyId, filters);
+    const result = await this.applicationRepository.findApplicationsByCompanyId(companyId, filters);
+
+    const pairs = result.applications.map((app) => ({
+      jobSeekerId: app.jobSeeker.id,
+      directJobId: app.directJob.id,
+    }));
+
+    const matchScores = await this.applicationRepository.findDirectJobMatches(pairs);
+
+    return {
+      ...result,
+      applications: result.applications.map((app) => ({
+        ...app,
+        matchScore: matchScores.get(`${app.jobSeeker.id}:${app.directJob.id}`) ?? 0,
+      })),
+    };
   }
 
   async getApplicationById(applicationId: string, companyId: string) {
@@ -34,11 +49,18 @@ export class CompanyApplicationService {
       throw new NotFoundException('Application not found');
     }
 
-    const cvUrl = await this.cvService.getMyCvDownloadUrl(application.jobSeeker.id);
+    const [directJobMatch, cvUrl] = await Promise.all([
+      this.applicationRepository.findDirectJobMatch(
+        application.jobSeeker.id,
+        application.directJob.id,
+      ),
+      this.cvService.getMyCvDownloadUrl(application.jobSeeker.id),
+    ]);
     const { jobSeekerSkills, ...jobSeekerRest } = application.jobSeeker;
 
     return {
       ...application,
+      matchScore: Number(directJobMatch?.matchScore ?? 0),
       jobSeeker: {
         ...jobSeekerRest,
         skills: jobSeekerSkills.map((jss) => ({

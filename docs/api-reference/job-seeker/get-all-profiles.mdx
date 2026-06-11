@@ -16,18 +16,18 @@ GET /api/v1/job-seekers
 
 ## Query Parameters
 
-<ParamField query="availabilityStatus" type="enum">
-  Filter by availability status. - `OPEN_TO_WORK` - Actively looking - `NOT_LOOKING` - Not looking -
-  `PASSIVELY_LOOKING` - Open to opportunities
+<ParamField query="availabilityStatus" type="enum" optional>
+  Filter by availability status. Can be repeated for multiple values. - `OPEN_TO_WORK` - Actively
+  looking - `NOT_LOOKING` - Not looking - `PASSIVELY_LOOKING` - Open to opportunities
 </ParamField>
 
 <ParamField query="location" type="string">
   Filter by location (partial string match, case-insensitive).
 </ParamField>
 
-<ParamField query="workPreference" type="enum">
-  Filter by work preference. - `REMOTE` - Remote work - `ONSITE` - On-site work - `HYBRID` - Hybrid
-  work - `ANY` - No preference
+<ParamField query="workPreference" type="enum" optional>
+  Filter by work preference. Can be repeated for multiple values. - `REMOTE` - Remote work -
+  `ONSITE` - On-site work - `HYBRID` - Hybrid work - `ANY` - No preference
 </ParamField>
 
 <ParamField query="minYearsOfExperience" type="number">
@@ -43,6 +43,10 @@ GET /api/v1/job-seekers
   `CONTRACT` - `INTERNSHIP` - `FREELANCE`
 </ParamField>
 
+<ParamField query="search" type="string" optional>
+  Search across name, job title, and skills (case-insensitive, substring match).
+</ParamField>
+
 <ParamField query="maxNoticePeriod" type="number">
   Maximum notice period in days.
 </ParamField>
@@ -55,10 +59,17 @@ GET /api/v1/job-seekers
   Items per page (default: 20).
 </ParamField>
 
-## Request Example
+## Request Examples
 
 ```bash
+# Basic filtering
 GET /api/v1/job-seekers?location=London&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=2&page=1&limit=10
+
+# Search by name, title, or skills
+GET /api/v1/job-seekers?search=software+engineer
+
+# Multi-value filters
+GET /api/v1/job-seekers?availabilityStatus=OPEN_TO_WORK&availabilityStatus=IMMEDIATE&workPreference=REMOTE&workPreference=HYBRID
 ```
 
 ## Response
@@ -273,10 +284,24 @@ GET /api/v1/job-seekers?location=London&workPreference=REMOTE&availabilityStatus
 GET /api/v1/job-seekers?location=London
 ```
 
-### Filter by Work Preference
+### Search
 
 ```bash
-GET /api/v1/job-seekers?workPreference=REMOTE
+GET /api/v1/job-seekers?search=software
+```
+
+Searches across `firstName`, `lastName`, `profile.title`, and `skill.name`.
+
+### Filter by Work Preference (Multi)
+
+```bash
+GET /api/v1/job-seekers?workPreference=REMOTE&workPreference=HYBRID
+```
+
+### Filter by Availability Status (Multi)
+
+```bash
+GET /api/v1/job-seekers?availabilityStatus=OPEN_TO_WORK&availabilityStatus=IMMEDIATE
 ```
 
 ### Filter by Experience Range
@@ -294,7 +319,7 @@ GET /api/v1/job-seekers?preferredJobTypes=FULL_TIME&preferredJobTypes=CONTRACT
 ### Combine Multiple Filters
 
 ```bash
-GET /api/v1/job-seekers?location=Berlin&workPreference=REMOTE&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=3
+GET /api/v1/job-seekers?location=Berlin&workPreference=REMOTE&workPreference=HYBRID&availabilityStatus=OPEN_TO_WORK&minYearsOfExperience=3
 ```
 
 ## Error Responses

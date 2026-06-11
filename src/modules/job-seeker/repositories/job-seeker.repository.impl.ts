@@ -77,36 +77,56 @@ export class JobSeekerRepositoryImpl implements JobSeekerRepository {
       maxYearsOfExperience,
       preferredJobTypes,
       maxNoticePeriod,
+      search,
       page = 1,
       limit = 20,
     } = filters;
 
-    const where: Prisma.JobSeekerProfileWhereInput = {
-      jobSeeker: { isActive: true, isVerified: true },
-    };
-    if (availabilityStatus) where.availabilityStatus = availabilityStatus;
-    if (workPreference) where.workPreference = workPreference;
-    if (location) where.location = location;
-    if (maxNoticePeriod !== undefined) where.noticePeriod = { lte: maxNoticePeriod };
-    if (preferredJobTypes?.length) where.preferredJobTypes = { hasSome: preferredJobTypes };
+    const profileWhere: Prisma.JobSeekerProfileWhereInput = {};
+
+    if (availabilityStatus?.length) profileWhere.availabilityStatus = { in: availabilityStatus };
+    if (workPreference?.length) profileWhere.workPreference = { in: workPreference };
+    if (location) profileWhere.location = location;
+    if (maxNoticePeriod !== undefined) profileWhere.noticePeriod = { lte: maxNoticePeriod };
+    if (preferredJobTypes?.length) profileWhere.preferredJobTypes = { hasSome: preferredJobTypes };
     if (minYearsOfExperience !== undefined || maxYearsOfExperience !== undefined) {
-      where.yearsOfExperience = {};
-      if (minYearsOfExperience !== undefined) where.yearsOfExperience.gte = minYearsOfExperience;
-      if (maxYearsOfExperience !== undefined) where.yearsOfExperience.lte = maxYearsOfExperience;
+      profileWhere.yearsOfExperience = {};
+      if (minYearsOfExperience !== undefined)
+        profileWhere.yearsOfExperience.gte = minYearsOfExperience;
+      if (maxYearsOfExperience !== undefined)
+        profileWhere.yearsOfExperience.lte = maxYearsOfExperience;
+    }
+
+    const where: Prisma.JobSeekerWhereInput = {
+      isActive: true,
+      isVerified: true,
+    };
+
+    where.profile = Object.keys(profileWhere).length > 0 ? profileWhere : { is: {} };
+
+    if (search) {
+      where.OR = [
+        { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName: { contains: search, mode: 'insensitive' } },
+        { profile: { title: { contains: search, mode: 'insensitive' } } },
+        {
+          jobSeekerSkills: {
+            some: { skill: { name: { contains: search, mode: 'insensitive' } } },
+          },
+        },
+      ];
     }
 
     const [jobSeekers, total] = await this.databaseService.$transaction([
       this.databaseService.jobSeeker.findMany({
-        where: {
-          profile: where,
-        },
+        where,
         ...publicProfileSelect,
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { profile: { yearsOfExperience: 'desc' } },
       }),
 
-      this.databaseService.jobSeekerProfile.count({ where }),
+      this.databaseService.jobSeeker.count({ where }),
     ]);
 
     return {

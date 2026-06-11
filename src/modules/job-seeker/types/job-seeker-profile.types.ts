@@ -1,4 +1,5 @@
 import { Prisma } from 'generated/prisma/client';
+import { AvailabilityStatusEnum, WorkPreferenceEnum } from 'generated/prisma/enums';
 import { UpdateJobSeekerData } from './job-seeker.types';
 
 /**
@@ -219,13 +220,14 @@ export type UpdateJobSeekerProfileData = Partial<
  * Filters for querying job seeker profiles
  */
 export type JobSeekerProfileFilters = {
-  availabilityStatus?: JobSeekerProfile['availabilityStatus'];
+  availabilityStatus?: AvailabilityStatusEnum[];
   location?: string;
-  workPreference?: JobSeekerProfile['workPreference'];
+  workPreference?: WorkPreferenceEnum[];
   preferredJobTypes?: JobSeekerProfile['preferredJobTypes'];
   minYearsOfExperience?: number;
   maxYearsOfExperience?: number;
   maxNoticePeriod?: number;
+  search?: string;
   page?: number;
   limit?: number;
 };
