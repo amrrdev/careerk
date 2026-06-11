@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DirectJobMatch } from 'generated/prisma/client';
 import {
   ApplicationDetail,
   ApplicationFilters,
@@ -22,4 +23,13 @@ export abstract class JobSeekerApplicationRepository {
   abstract withdrawApplication(jobSeekerId: string, applicationId: string): Promise<void>;
 
   abstract checkExistingApplication(jobSeekerId: string, directJobId: string): Promise<boolean>;
+
+  abstract findDirectJobMatch(
+    jobSeekerId: string,
+    directJobId: string,
+  ): Promise<Pick<DirectJobMatch, 'matchScore'> | null>;
+
+  abstract findDirectJobMatches(
+    pairs: { jobSeekerId: string; directJobId: string }[],
+  ): Promise<Map<string, number>>;
 }

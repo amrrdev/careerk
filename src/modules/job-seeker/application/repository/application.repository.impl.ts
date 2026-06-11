@@ -109,4 +109,33 @@ export class JobSeekerApplicationRepositoryImpl implements JobSeekerApplicationR
     });
     return count > 0;
   }
+
+  async findDirectJobMatch(jobSeekerId: string, directJobId: string) {
+    return this.databaseService.directJobMatch.findUnique({
+      where: { directJobId_jobSeekerId: { directJobId, jobSeekerId } },
+      select: { matchScore: true },
+    });
+  }
+
+  async findDirectJobMatches(
+    pairs: { jobSeekerId: string; directJobId: string }[],
+  ): Promise<Map<string, number>> {
+    if (pairs.length === 0) return new Map();
+
+    const matches = await this.databaseService.directJobMatch.findMany({
+      where: {
+        OR: pairs.map(({ jobSeekerId, directJobId }) => ({
+          jobSeekerId,
+          directJobId,
+        })),
+      },
+      select: { jobSeekerId: true, directJobId: true, matchScore: true },
+    });
+
+    const map = new Map<string, number>();
+    for (const m of matches) {
+      map.set(`${m.jobSeekerId}:${m.directJobId}`, Number(m.matchScore));
+    }
+    return map;
+  }
 }
